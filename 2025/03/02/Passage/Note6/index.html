@@ -1,0 +1,447 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>基础知识5 | 忘歸人</title><meta name="author" content="Megumin"><meta name="copyright" content="Megumin"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="C#1.C#中如何让自定义容器类能够使用for循环遍历？（通过 类对象[索引] 的形式遍历）要让自定义容器类支持 for 循环遍历（通过索引访问），需要实现索引器（Indexer）。索引器允许类实例像数组一样通过索引访问元素。 实现步骤：  定义一个索引器，使用 this 关键字。 在索引器中实现 get 和 set 访问器。123456789101112131415161718192021222">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基础知识5">
+<meta property="og:url" content="https://megumin.github.io.git/2025/03/02/Passage/Note6/index.html">
+<meta property="og:site_name" content="忘歸人">
+<meta property="og:description" content="C#1.C#中如何让自定义容器类能够使用for循环遍历？（通过 类对象[索引] 的形式遍历）要让自定义容器类支持 for 循环遍历（通过索引访问），需要实现索引器（Indexer）。索引器允许类实例像数组一样通过索引访问元素。 实现步骤：  定义一个索引器，使用 this 关键字。 在索引器中实现 get 和 set 访问器。123456789101112131415161718192021222">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://megumin.github.io.git/img/xiaoyuan.jpg">
+<meta property="article:published_time" content="2025-03-02T14:00:00.000Z">
+<meta property="article:modified_time" content="2025-03-02T14:19:24.723Z">
+<meta property="article:author" content="Megumin">
+<meta property="article:tag" content="めぐみん">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://megumin.github.io.git/img/xiaoyuan.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://megumin.github.io.git/2025/03/02/Passage/Note6/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":600,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '基础知识5',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/chuyin.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/makima.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 時間軸</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-heartbeat"></i><span> 清單</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音樂</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 電影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/xiaoyuan.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">忘歸人</span></a><a class="nav-page-title" href="/"><span class="site-name">基础知识5</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 時間軸</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-heartbeat"></i><span> 清單</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音樂</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 電影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">基础知识5</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-03-02T14:00:00.000Z" title="发表于 2025-03-02 22:00:00">2025-03-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-03-02T14:19:24.723Z" title="更新于 2025-03-02 22:19:24">2025-03-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="C"><a href="#C" class="headerlink" title="C#"></a>C#</h1><h1 id="1-C-中如何让自定义容器类能够使用for循环遍历？（通过-类对象-索引-的形式遍历）"><a href="#1-C-中如何让自定义容器类能够使用for循环遍历？（通过-类对象-索引-的形式遍历）" class="headerlink" title="1.C#中如何让自定义容器类能够使用for循环遍历？（通过 类对象[索引] 的形式遍历）"></a>1.C#中如何让自定义容器类能够使用for循环遍历？（通过 类对象[索引] 的形式遍历）</h1><p>要让自定义容器类支持 for 循环遍历（通过索引访问），需要实现索引器（Indexer）。索引器允许类实例像数组一样通过索引访问元素。</p>
+<p>实现步骤：</p>
+<ol>
+<li>定义一个索引器，使用 this 关键字。</li>
+<li>在索引器中实现 get 和 set 访问器。<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MyContainer</span>&lt;<span class="title">T</span>&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> T[] _items;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyContainer</span>(<span class="params"><span class="built_in">int</span> capacity</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _items = <span class="keyword">new</span> T[capacity];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实现索引器</span></span><br><span class="line">    <span class="keyword">public</span> T <span class="keyword">this</span>[<span class="built_in">int</span> index]</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (index &lt; <span class="number">0</span> || index &gt;= _items.Length)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfRangeException();</span><br><span class="line">            <span class="keyword">return</span> _items[index];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">set</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (index &lt; <span class="number">0</span> || index &gt;= _items.Length)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfRangeException();</span><br><span class="line">            _items[index] = <span class="keyword">value</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> Length =&gt; _items.Length;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用示例</span></span><br><span class="line">MyContainer&lt;<span class="built_in">int</span>&gt; container = <span class="keyword">new</span> MyContainer&lt;<span class="built_in">int</span>&gt;(<span class="number">5</span>);</span><br><span class="line">container[<span class="number">0</span>] = <span class="number">10</span>;</span><br><span class="line">container[<span class="number">1</span>] = <span class="number">20</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; container.Length; i++)</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(container[i]); <span class="comment">// 输出 10, 20, 0, 0, 0</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+补充：<br>通过在类中实现索引器实现</li>
+</ol>
+<h1 id="2-C-中如何让自定义容器类能够使用-foreach-循环遍历？"><a href="#2-C-中如何让自定义容器类能够使用-foreach-循环遍历？" class="headerlink" title="2. C# 中如何让自定义容器类能够使用 foreach 循环遍历？"></a>2. C# 中如何让自定义容器类能够使用 foreach 循环遍历？</h1><p>要让自定义容器类支持 foreach 循环遍历，需要实现 IEnumerable 接口，并提供 GetEnumerator 方法。</p>
+<p>实现步骤：</p>
+<ol>
+<li>实现 IEnumerable 接口。</li>
+<li>实现 GetEnumerator 方法，返回一个枚举器（Enumerator）。</li>
+<li>枚举器需要实现 IEnumerator 接口，包括 Current、MoveNext 和 Reset 方法。<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MyContainer</span>&lt;<span class="title">T</span>&gt; : <span class="title">IEnumerable</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> T[] _items;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyContainer</span>(<span class="params"><span class="built_in">int</span> capacity</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _items = <span class="keyword">new</span> T[capacity];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> T <span class="keyword">this</span>[<span class="built_in">int</span> index]</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span> =&gt; _items[index];</span><br><span class="line">        <span class="keyword">set</span> =&gt; _items[index] = <span class="keyword">value</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> Length =&gt; _items.Length;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实现 IEnumerable 接口</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IEnumerator <span class="title">GetEnumerator</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> MyEnumerator&lt;T&gt;(_items);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 自定义枚举器</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">class</span> <span class="title">MyEnumerator</span>&lt;<span class="title">T</span>&gt; : <span class="title">IEnumerator</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> T[] _items;</span><br><span class="line">        <span class="keyword">private</span> <span class="built_in">int</span> _index = <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">MyEnumerator</span>(<span class="params">T[] items</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            _items = items;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">object</span> Current</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">get</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span> (_index &lt; <span class="number">0</span> || _index &gt;= _items.Length)</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> InvalidOperationException();</span><br><span class="line">                <span class="keyword">return</span> _items[_index];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="built_in">bool</span> <span class="title">MoveNext</span>()</span></span><br><span class="line">        &#123;</span><br><span class="line">            _index++;</span><br><span class="line">            <span class="keyword">return</span> _index &lt; _items.Length;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Reset</span>()</span></span><br><span class="line">        &#123;</span><br><span class="line">            _index = <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用示例</span></span><br><span class="line">MyContainer&lt;<span class="built_in">int</span>&gt; container = <span class="keyword">new</span> MyContainer&lt;<span class="built_in">int</span>&gt;(<span class="number">5</span>);</span><br><span class="line">container[<span class="number">0</span>] = <span class="number">10</span>;</span><br><span class="line">container[<span class="number">1</span>] = <span class="number">20</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> (<span class="built_in">int</span> item <span class="keyword">in</span> container)</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(item); <span class="comment">// 输出 10, 20, 0, 0, 0</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+补充：<br>通过为该类实现迭代器可以让其使用foreach遍历</li>
+</ol>
+<ul>
+<li>传统方式：<br>继承IEnumerator、IEnumerable两个接口<br>实现其中的 <ol>
+<li>GetEnumerator方法</li>
+<li>Current属性</li>
+<li>MoveNext方法</li>
+</ol>
+</li>
+<li>语法糖方式：<br>利用yield return语法糖，实现GetEnumerator方法即可完成迭代器的实现</li>
+</ul>
+<h2 id="3-C-中接口的作用是什么？"><a href="#3-C-中接口的作用是什么？" class="headerlink" title="3. C# 中接口的作用是什么？"></a>3. C# 中接口的作用是什么？</h2><p>接口的作用：</p>
+<ul>
+<li><p>定义契约：</p>
+<ul>
+<li>接口定义了一组方法、属性或事件的签名，要求实现类必须实现这些成员。</li>
+<li>它提供了一种标准化的方式，确保不同类具有相同的行为。</li>
+</ul>
+</li>
+<li><p>实现多态：</p>
+<ul>
+<li>接口允许不同的类实现相同的接口，从而可以通过接口类型调用这些类的实例。</li>
+<li>例如，IEnumerable 接口可以让数组、列表、字典等不同类型的集合支持 foreach 循环。</li>
+</ul>
+</li>
+<li><p>解耦和扩展性：</p>
+<ul>
+<li>通过接口，可以将实现与定义分离，降低代码的耦合度。</li>
+<li>新增功能时，只需实现新的接口，而不需要修改现有代码。</li>
+</ul>
+</li>
+<li><p>支持依赖注入：</p>
+<ul>
+<li>接口是依赖注入（DI）的核心，通过接口可以将具体实现注入到需要的地方，便于测试和维护。<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">ILogger</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Log</span>(<span class="params"><span class="built_in">string</span> message</span>)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ConsoleLogger</span> : <span class="title">ILogger</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Log</span>(<span class="params"><span class="built_in">string</span> message</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(message);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">FileLogger</span> : <span class="title">ILogger</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Log</span>(<span class="params"><span class="built_in">string</span> message</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        System.IO.File.AppendAllText(<span class="string">&quot;log.txt&quot;</span>, message);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用接口</span></span><br><span class="line">ILogger logger = <span class="keyword">new</span> ConsoleLogger();</span><br><span class="line">logger.Log(<span class="string">&quot;Hello, Interface!&quot;</span>);</span><br></pre></td></tr></table></figure>
+补充：<br>用于建立行为的继承关系，而不是对象<br>不同对象，有相同行为时，我们可以利用接口对不同对象的行为进行整合</li>
+</ul>
+</li>
+</ul>
+<h2 id="4-Unity-引擎中哪些功能使用了-C-的反射功能？"><a href="#4-Unity-引擎中哪些功能使用了-C-的反射功能？" class="headerlink" title="4. Unity 引擎中哪些功能使用了 C# 的反射功能？"></a>4. Unity 引擎中哪些功能使用了 C# 的反射功能？</h2><p>Unity 中使用反射的功能：</p>
+<ol>
+<li><p>序列化与反序列化：</p>
+<ul>
+<li>Unity 使用反射来序列化和反序列化场景、预制体和脚本数据。</li>
+<li>例如，SerializeField 和 Serializable 属性通过反射访问私有字段或自定义类型。</li>
+</ul>
+</li>
+<li><p>Inspector 面板：</p>
+<ul>
+<li>Unity 的 Inspector 面板通过反射动态显示脚本的公共字段和属性。</li>
+<li>例如，public 变量会自动显示在 Inspector 中。</li>
+</ul>
+</li>
+<li><p>事件系统：</p>
+<ul>
+<li>Unity 的事件系统（如 UnityEvent）使用反射来绑定和调用方法。</li>
+<li>例如，在 Inspector 中为按钮绑定事件时，Unity 会通过反射找到对应的方法。</li>
+</ul>
+</li>
+<li><p>自定义编辑器工具：</p>
+<ul>
+<li>Unity 编辑器扩展（如自定义 Inspector 或窗口）使用反射来访问和修改脚本数据。</li>
+<li>例如，EditorGUILayout.PropertyField 通过反射显示和编辑序列化属性。</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.Reflection;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ReflectionExample</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 使用反射获取私有字段</span></span><br><span class="line">        FieldInfo fieldInfo = <span class="keyword">typeof</span>(MyClass).GetField(<span class="string">&quot;_privateField&quot;</span>, BindingFlags.NonPublic | BindingFlags.Instance);</span><br><span class="line">        MyClass obj = <span class="keyword">new</span> MyClass();</span><br><span class="line">        fieldInfo.SetValue(obj, <span class="number">42</span>);</span><br><span class="line">        Debug.Log(fieldInfo.GetValue(obj)); <span class="comment">// 输出 42</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MyClass</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">int</span> _privateField;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>补充：</p>
+<ol>
+<li>Inspector窗口中显示的内容</li>
+<li>预设体文件</li>
+<li>场景文件</li>
+<li>Unity中的各种特性</li>
+</ol>
+<h1 id="Unity"><a href="#Unity" class="headerlink" title="Unity"></a>Unity</h1><h2 id="1-Unity-中-Awake-和-Start-两个生命周期函数，分别在什么时候被调用？"><a href="#1-Unity-中-Awake-和-Start-两个生命周期函数，分别在什么时候被调用？" class="headerlink" title="1. Unity 中 Awake 和 Start 两个生命周期函数，分别在什么时候被调用？"></a>1. Unity 中 Awake 和 Start 两个生命周期函数，分别在什么时候被调用？</h2><p>Awake：</p>
+<ul>
+<li><p>调用时机：在脚本实例化时立即调用，无论脚本是否启用（enabled 为 true 或 false）。</p>
+</li>
+<li><p>特点：</p>
+<ul>
+<li>在脚本生命周期中只调用一次。</li>
+<li>适合用于初始化变量或引用其他对象。</li>
+</ul>
+</li>
+</ul>
+<p>Start：</p>
+<ul>
+<li><p>调用时机：在脚本启用后（enabled 为 true），且在第一次 Update 之前调用。</p>
+</li>
+<li><p>特点：</p>
+<ul>
+<li>在脚本生命周期中只调用一次。</li>
+<li>适合用于初始化依赖于其他对象的内容。</li>
+</ul>
+</li>
+</ul>
+<p>总结：<br>Awake：脚本实例化时调用，适合初始化。<br>Start：脚本启用后调用，适合依赖其他对象的初始化。</p>
+<p>补充：</p>
+<ul>
+<li>Awake：运行时<br>当脚本被动态添加到对象上时立即被调用。当对象被实例化时，依附它的脚本会立即调用Awake，它类似构造函数</li>
+<li>Start：第一次Update之前被调用</li>
+</ul>
+<h2 id="2-Unity-场景上有多个对象，都分别挂载了-n-个脚本。我们如何控制不同脚本间生命周期函数-Awake-的执行先后顺序？"><a href="#2-Unity-场景上有多个对象，都分别挂载了-n-个脚本。我们如何控制不同脚本间生命周期函数-Awake-的执行先后顺序？" class="headerlink" title="2. Unity 场景上有多个对象，都分别挂载了 n 个脚本。我们如何控制不同脚本间生命周期函数 Awake 的执行先后顺序？"></a>2. Unity 场景上有多个对象，都分别挂载了 n 个脚本。我们如何控制不同脚本间生命周期函数 Awake 的执行先后顺序？</h2><p>Unity 默认不保证 Awake 的执行顺序，但可以通过以下方法控制：</p>
+<ul>
+<li><p>方法 1：脚本执行顺序设置</p>
+<ol>
+<li>打开 Project Settings → Script Execution Order。</li>
+<li>添加需要控制的脚本，并设置它们的执行顺序（数值越小，优先级越高）。</li>
+<li>Unity 会按照设置的顺序调用 Awake。</li>
+</ol>
+</li>
+<li><p>方法 2：手动控制初始化</p>
+<ul>
+<li>在某个脚本的 Awake 中手动调用其他脚本的初始化方法。<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ScriptA</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Awake</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 手动调用 ScriptB 的初始化方法</span></span><br><span class="line">        FindObjectOfType&lt;ScriptB&gt;().Initialize();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ScriptB</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Initialize</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 初始化逻辑</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>方法 3：使用依赖注入</p>
+<ul>
+<li>通过设计模式（如单例模式或服务定位器）确保脚本按需初始化。</li>
+</ul>
+</li>
+</ul>
+<p>补充：</p>
+<ol>
+<li>可以通过选中脚本文件，点击Inspector窗口右上角的Execution Order（执行顺序）按钮 </li>
+<li>可以打开Project Setting窗口，选择Script Execution Order选项</li>
+</ol>
+<p>通过这两种方式我们可以打开脚本执行顺序窗口<br>在其中我们可以自己设置自定义脚本的执行顺序</p>
+<h2 id="3-想要在-Unity-中使用指针，我们需要进行哪些操作？"><a href="#3-想要在-Unity-中使用指针，我们需要进行哪些操作？" class="headerlink" title="3. 想要在 Unity 中使用指针，我们需要进行哪些操作？"></a>3. 想要在 Unity 中使用指针，我们需要进行哪些操作？</h2><p>在 Unity 中使用指针需要启用 不安全代码（Unsafe Code），并使用 unsafe 关键字。</p>
+<p>步骤：</p>
+<ol>
+<li><p>启用不安全代码：</p>
+<ul>
+<li>打开 Player Settings → Other Settings。</li>
+<li>勾选 Allow ‘unsafe’ code。</li>
+</ul>
+</li>
+<li><p>使用 unsafe 关键字：</p>
+<ul>
+<li>在代码中使用 unsafe 块或标记方法为 unsafe。<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">unsafe</span> <span class="keyword">void</span> <span class="title">UsePointer</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">int</span> <span class="keyword">value</span> = <span class="number">10</span>;</span><br><span class="line">    <span class="built_in">int</span>* pointer = &amp;<span class="keyword">value</span>;</span><br><span class="line">    Debug.Log(*pointer); <span class="comment">// 输出 10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>编译：</p>
+<ul>
+<li>确保项目编译时支持不安全代码。</li>
+</ul>
+</li>
+</ol>
+<h2 id="4-Unity-中的协同程序中-yield-return-不同的内容，代表的含义不同。请说明下面这些-yield-return-的含义："><a href="#4-Unity-中的协同程序中-yield-return-不同的内容，代表的含义不同。请说明下面这些-yield-return-的含义：" class="headerlink" title="4. Unity 中的协同程序中 yield return 不同的内容，代表的含义不同。请说明下面这些 yield return 的含义："></a>4. Unity 中的协同程序中 yield return 不同的内容，代表的含义不同。请说明下面这些 yield return 的含义：</h2><ol>
+<li><p>yield return 数字;</p>
+<ul>
+<li>含义：暂停协同程序，等待指定帧数后继续执行。<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="number">5</span>; <span class="comment">// 等待 5 帧后继续执行</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>yield return null;</p>
+<ul>
+<li>含义：暂停协同程序，等待下一帧继续执行。<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="literal">null</span>; <span class="comment">// 等待下一帧</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>yield return new WaitForSeconds(数字);</p>
+<ul>
+<li>含义：暂停协同程序，等待指定的秒数后继续执行。<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="keyword">new</span> <span class="title">WaitForSeconds</span>(<span class="params"><span class="number">2</span></span>)</span>; <span class="comment">// 等待 2 秒</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>yield return new WaitForFixedUpdate();</p>
+<ul>
+<li>含义：暂停协同程序，等待下一次 FixedUpdate 调用后继续执行。<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="keyword">new</span> <span class="title">WaitForFixedUpdate</span>()</span>; <span class="comment">// 等待 FixedUpdate</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>yield return new WaitForEndOfFrame();</p>
+<ul>
+<li>含义：暂停协同程序，等待当前帧结束后继续执行。<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="keyword">new</span> <span class="title">WaitForEndOfFrame</span>()</span>; <span class="comment">// 等待帧结束</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>yield break;</p>
+<ul>
+<li>含义：立即终止协同程序。<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">yield</span> <span class="keyword">break</span>; <span class="comment">// 终止协同程序</span></span><br></pre></td></tr></table></figure>
+补充：</li>
+</ul>
+</li>
+<li><p>yield return 数字; 下一帧执行</p>
+</li>
+<li><p>yield return null;  下一帧执行</p>
+</li>
+<li><p>yield return new WaitForSeconds(数字); 等待指定秒后执行</p>
+</li>
+<li><p>yield return new WaitForFixedUpdate(); 等待下一个固定物理帧更新时执行</p>
+</li>
+<li><p>yield return new WaitForEndOfFrame(); 等待摄像机和GUI渲染完成后执行</p>
+</li>
+<li><p>yield break; 跳出协程</p>
+</li>
+</ol>
+<h2 id="5-使用-Unity-协同程序进行异步加载时，底层是否会使用多线程？"><a href="#5-使用-Unity-协同程序进行异步加载时，底层是否会使用多线程？" class="headerlink" title="5. 使用 Unity 协同程序进行异步加载时，底层是否会使用多线程？"></a>5. 使用 Unity 协同程序进行异步加载时，底层是否会使用多线程？</h2><p>不会。</p>
+<ul>
+<li>原因：<ul>
+<li>Unity 的协同程序是基于单线程的，它通过 yield 关键字将任务分割成多个步骤，在主线程中按帧执行。</li>
+<li>协同程序的本质是迭代器（Iterator），通过 IEnumerator 实现暂停和恢复。</li>
+</ul>
+</li>
+</ul>
+<p>补充：<br>可能会。<br>协同程序的原理是分时分步完成指定逻辑，在其中的某一步骤中，是可以使用多线程来完成某些加载操作的，多线程加载完成后，再进入协同程序的下一步继续执行</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://Megumin.github.io.git">Megumin</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://megumin.github.io.git/2025/03/02/Passage/Note6/">https://megumin.github.io.git/2025/03/02/Passage/Note6/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://Megumin.github.io.git" target="_blank">忘歸人</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/xiaoyuan.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/03/02/Passage/Note7/" title="基础知识6"><img class="cover" src="/img/xiaoyuan2.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">基础知识6</div></div><div class="info-2"><div class="info-item-1">C#1. C#中如何让一个类不能再被其他类所继承？在C#中，可以通过将类声明为 sealed 来阻止其他类继承它。sealed 关键字用于修饰类，表示该类不能被继承。 1234public sealed class MyClass&#123;    // 类成员&#125; 2. C#中使用泛型的好处是什么？使用泛型的主要好处包括：  类型安全：泛型允许在编译时进行类型检查，减少了运行时类型转换的错误。 代码复用：泛型允许编写可以处理多种数据类型的通用代码，减少了代码重复。 性能提升：泛型避免了装箱和拆箱操作（对于值类型），提高了性能。 更好的可读性和可维护性：泛型代码通常更简洁、更易于理解和维护。  补充：  可以为不同类型对象的相同行为进行通用处理，提升代码复用率 避免装箱拆箱，提升性能  3....</div></div></div></a><a class="pagination-related" href="/2024/11/26/hello-world/" title="Hello World"><img class="cover" src="https://picsum.photos/id/16/2500/1667" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Hello World</div></div><div class="info-2"><div class="info-item-1">Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new &quot;My New Post&quot;  More info: Writing Run server1$ hexo server  More info: Server Generate static files1$ hexo generate  More info: Generating Deploy to remote sites1$ hexo deploy  More info: Deployment </div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/makima.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Megumin</div><div class="author-info-description">黒より黒く闇より暗き漆黒に我が深紅の混淆を望みたもう。覚醒のとき来たれり。無謬の境界に落ちし理。無行の歪みとなりて現出せよ！踊れ踊れ踊れ、我が力の奔流に望むは崩壊なり。並ぶ者なき崩壊なり。万象等しく灰塵に帰し、深淵より来たれ！これが人類最大の威力の攻撃手段、これこそが究極の攻撃魔法、エクスプロージョン！</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Megumin-1204" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:1725603185@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#C"><span class="toc-number">1.</span> <span class="toc-text">C#</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-C-%E4%B8%AD%E5%A6%82%E4%BD%95%E8%AE%A9%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%B9%E5%99%A8%E7%B1%BB%E8%83%BD%E5%A4%9F%E4%BD%BF%E7%94%A8for%E5%BE%AA%E7%8E%AF%E9%81%8D%E5%8E%86%EF%BC%9F%EF%BC%88%E9%80%9A%E8%BF%87-%E7%B1%BB%E5%AF%B9%E8%B1%A1-%E7%B4%A2%E5%BC%95-%E7%9A%84%E5%BD%A2%E5%BC%8F%E9%81%8D%E5%8E%86%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">1.C#中如何让自定义容器类能够使用for循环遍历？（通过 类对象[索引] 的形式遍历）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-C-%E4%B8%AD%E5%A6%82%E4%BD%95%E8%AE%A9%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%B9%E5%99%A8%E7%B1%BB%E8%83%BD%E5%A4%9F%E4%BD%BF%E7%94%A8-foreach-%E5%BE%AA%E7%8E%AF%E9%81%8D%E5%8E%86%EF%BC%9F"><span class="toc-number">3.</span> <span class="toc-text">2. C# 中如何让自定义容器类能够使用 foreach 循环遍历？</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-C-%E4%B8%AD%E6%8E%A5%E5%8F%A3%E7%9A%84%E4%BD%9C%E7%94%A8%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">3.1.</span> <span class="toc-text">3. C# 中接口的作用是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Unity-%E5%BC%95%E6%93%8E%E4%B8%AD%E5%93%AA%E4%BA%9B%E5%8A%9F%E8%83%BD%E4%BD%BF%E7%94%A8%E4%BA%86-C-%E7%9A%84%E5%8F%8D%E5%B0%84%E5%8A%9F%E8%83%BD%EF%BC%9F"><span class="toc-number">3.2.</span> <span class="toc-text">4. Unity 引擎中哪些功能使用了 C# 的反射功能？</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Unity"><span class="toc-number">4.</span> <span class="toc-text">Unity</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Unity-%E4%B8%AD-Awake-%E5%92%8C-Start-%E4%B8%A4%E4%B8%AA%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%87%BD%E6%95%B0%EF%BC%8C%E5%88%86%E5%88%AB%E5%9C%A8%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E8%A2%AB%E8%B0%83%E7%94%A8%EF%BC%9F"><span class="toc-number">4.1.</span> <span class="toc-text">1. Unity 中 Awake 和 Start 两个生命周期函数，分别在什么时候被调用？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Unity-%E5%9C%BA%E6%99%AF%E4%B8%8A%E6%9C%89%E5%A4%9A%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%8C%E9%83%BD%E5%88%86%E5%88%AB%E6%8C%82%E8%BD%BD%E4%BA%86-n-%E4%B8%AA%E8%84%9A%E6%9C%AC%E3%80%82%E6%88%91%E4%BB%AC%E5%A6%82%E4%BD%95%E6%8E%A7%E5%88%B6%E4%B8%8D%E5%90%8C%E8%84%9A%E6%9C%AC%E9%97%B4%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%87%BD%E6%95%B0-Awake-%E7%9A%84%E6%89%A7%E8%A1%8C%E5%85%88%E5%90%8E%E9%A1%BA%E5%BA%8F%EF%BC%9F"><span class="toc-number">4.2.</span> <span class="toc-text">2. Unity 场景上有多个对象，都分别挂载了 n 个脚本。我们如何控制不同脚本间生命周期函数 Awake 的执行先后顺序？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%83%B3%E8%A6%81%E5%9C%A8-Unity-%E4%B8%AD%E4%BD%BF%E7%94%A8%E6%8C%87%E9%92%88%EF%BC%8C%E6%88%91%E4%BB%AC%E9%9C%80%E8%A6%81%E8%BF%9B%E8%A1%8C%E5%93%AA%E4%BA%9B%E6%93%8D%E4%BD%9C%EF%BC%9F"><span class="toc-number">4.3.</span> <span class="toc-text">3. 想要在 Unity 中使用指针，我们需要进行哪些操作？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Unity-%E4%B8%AD%E7%9A%84%E5%8D%8F%E5%90%8C%E7%A8%8B%E5%BA%8F%E4%B8%AD-yield-return-%E4%B8%8D%E5%90%8C%E7%9A%84%E5%86%85%E5%AE%B9%EF%BC%8C%E4%BB%A3%E8%A1%A8%E7%9A%84%E5%90%AB%E4%B9%89%E4%B8%8D%E5%90%8C%E3%80%82%E8%AF%B7%E8%AF%B4%E6%98%8E%E4%B8%8B%E9%9D%A2%E8%BF%99%E4%BA%9B-yield-return-%E7%9A%84%E5%90%AB%E4%B9%89%EF%BC%9A"><span class="toc-number">4.4.</span> <span class="toc-text">4. Unity 中的协同程序中 yield return 不同的内容，代表的含义不同。请说明下面这些 yield return 的含义：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%BD%BF%E7%94%A8-Unity-%E5%8D%8F%E5%90%8C%E7%A8%8B%E5%BA%8F%E8%BF%9B%E8%A1%8C%E5%BC%82%E6%AD%A5%E5%8A%A0%E8%BD%BD%E6%97%B6%EF%BC%8C%E5%BA%95%E5%B1%82%E6%98%AF%E5%90%A6%E4%BC%9A%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%EF%BC%9F"><span class="toc-number">4.5.</span> <span class="toc-text">5. 使用 Unity 协同程序进行异步加载时，底层是否会使用多线程？</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/03/02/Passage/Note1/" title="基础知识1"><img src="/img/heita1.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基础知识1"/></a><div class="content"><a class="title" href="/2025/03/02/Passage/Note1/" title="基础知识1">基础知识1</a><time datetime="2025-03-02T14:00:00.000Z" title="发表于 2025-03-02 22:00:00">2025-03-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/02/Passage/Note2/" title="基础知识2"><img src="/img/liuying2.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基础知识2"/></a><div class="content"><a class="title" href="/2025/03/02/Passage/Note2/" title="基础知识2">基础知识2</a><time datetime="2025-03-02T14:00:00.000Z" title="发表于 2025-03-02 22:00:00">2025-03-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/02/Passage/Note5/" title="基础知识5"><img src="/img/kon.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基础知识5"/></a><div class="content"><a class="title" href="/2025/03/02/Passage/Note5/" title="基础知识5">基础知识5</a><time datetime="2025-03-02T14:00:00.000Z" title="发表于 2025-03-02 22:00:00">2025-03-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/02/Passage/Note3/" title="基础知识3"><img src="/img/liuying3.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基础知识3"/></a><div class="content"><a class="title" href="/2025/03/02/Passage/Note3/" title="基础知识3">基础知识3</a><time datetime="2025-03-02T14:00:00.000Z" title="发表于 2025-03-02 22:00:00">2025-03-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/02/Passage/Note4/" title="基础知识4"><img src="/img/huiyuan1.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基础知识4"/></a><div class="content"><a class="title" href="/2025/03/02/Passage/Note4/" title="基础知识4">基础知识4</a><time datetime="2025-03-02T14:00:00.000Z" title="发表于 2025-03-02 22:00:00">2025-03-02</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/xiaoyuan.jpg);"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Megumin</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script>(() => {
+  const panguFn = () => {
+    if (typeof pangu === 'object') pangu.autoSpacingPage()
+    else {
+      btf.getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+        .then(() => {
+          pangu.autoSpacingPage()
+        })
+    }
+  }
+
+  const panguInit = () => {
+    if (false){
+      GLOBAL_CONFIG_SITE.isPost && panguFn()
+    } else {
+      panguFn()
+    }
+  }
+
+  btf.addGlobalFn('pjaxComplete', panguInit, 'pangu')
+  document.addEventListener('DOMContentLoaded', panguInit)
+})()</script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="12967630832" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true" data-loop="all" data-preload="auto" data-volume="0.4"> </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

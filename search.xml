@@ -19,25 +19,1603 @@
 ]]></content>
   </entry>
   <entry>
-    <title>测试文章1</title>
-    <url>/2024/11/23/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A01/</url>
-    <content><![CDATA[<p>测试文章1测试文章1</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>图片展示</title>
-    <url>/2024/11/24/Passage/showImg/</url>
-    <content><![CDATA[<p><img src="/img/akane.jpg" alt="测试图片1"></p>
-]]></content>
-  </entry>
-  <entry>
-    <title>Lua基础</title>
-    <url>/2024/11/24/codeBlockDisplay/display/</url>
-    <content><![CDATA[<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line">array = &#123;<span class="string">&quot;Google&quot;</span>, <span class="string">&quot;Runoob&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">elementIterator</span> <span class="params">(collection)</span></span></span><br><span class="line">   <span class="keyword">local</span> index = <span class="number">0</span></span><br><span class="line">   <span class="keyword">local</span> count = #collection</span><br><span class="line">   <span class="comment">-- 闭包函数</span></span><br><span class="line">   <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="params">()</span></span></span><br><span class="line">      index = index + <span class="number">1</span></span><br><span class="line">      <span class="keyword">if</span> index &lt;= count</span><br><span class="line">      <span class="keyword">then</span></span><br><span class="line">         <span class="comment">--  返回迭代器的当前元素</span></span><br><span class="line">         <span class="keyword">return</span> collection[index]</span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">   <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> element <span class="keyword">in</span> elementIterator(array)</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">   <span class="built_in">print</span>(element)</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="测试的二级标题"><a href="#测试的二级标题" class="headerlink" title="测试的二级标题"></a>测试的二级标题</h2><ul>
-<li>lua是一个脚本语言</li>
+    <title>基础知识1</title>
+    <url>/2025/03/02/Passage/Note1/</url>
+    <content><![CDATA[<h1 id="C"><a href="#C" class="headerlink" title="C#"></a>C#</h1><h2 id="1-装箱和拆箱是什么？"><a href="#1-装箱和拆箱是什么？" class="headerlink" title="1.装箱和拆箱是什么？"></a>1.装箱和拆箱是什么？</h2><ul>
+<li>装箱（Boxing）：将值类型转换为引用类型的过程。例如，将一个 int 类型的值赋值给一个 object 类型的变量时，会发生装箱操作。装箱会在堆上分配内存，并将值类型的值复制到该内存中。</li>
 </ul>
-<h3 id="测试的三级标题"><a href="#测试的三级标题" class="headerlink" title="测试的三级标题"></a>测试的三级标题</h3>]]></content>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="built_in">int</span> i = <span class="number">123</span>;</span><br><span class="line"><span class="built_in">object</span> o = i;  <span class="comment">// 装箱</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>拆箱（Unboxing）：将引用类型转换回值类型的过程。拆箱操作会检查引用类型是否与目标值类型兼容，并将堆中的值复制回值类型变量中。</li>
+</ul>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="built_in">int</span> j = (<span class="built_in">int</span>)o;  <span class="comment">// 拆箱</span></span><br></pre></td></tr></table></figure>
+
+<p>补充：</p>
+<ul>
+<li><p>装箱——把栈中内容迁移到堆中去（值转引用）</p>
+</li>
+<li><p>拆箱——把堆中内容迁移到栈中去（引用转值）</p>
+</li>
+</ul>
+<h2 id="2-值和引用类型在变量赋值时的区别是什么？"><a href="#2-值和引用类型在变量赋值时的区别是什么？" class="headerlink" title="2.值和引用类型在变量赋值时的区别是什么？"></a>2.值和引用类型在变量赋值时的区别是什么？</h2><p>值类型（Value Type）：</p>
+<ul>
+<li>值类型的变量直接包含其数据。</li>
+<li>赋值时，会将数据复制一份给新的变量。</li>
+<li>修改一个变量的值不会影响另一个变量的值。</li>
+</ul>
+<p>常见值类型包括 int、float、bool、struct 等。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="built_in">int</span> a = <span class="number">10</span>;</span><br><span class="line"><span class="built_in">int</span> b = a;  <span class="comment">// b 是 a 的副本</span></span><br><span class="line">b = <span class="number">20</span>;     <span class="comment">// 修改 b 不会影响 a</span></span><br><span class="line">Console.WriteLine(a);  <span class="comment">// 输出 10</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-委托和事件在使用上的区别是什么？"><a href="#3-委托和事件在使用上的区别是什么？" class="headerlink" title="3.委托和事件在使用上的区别是什么？"></a>3.委托和事件在使用上的区别是什么？</h2><p>委托（Delegate）：</p>
+<ul>
+<li>委托是一种类型安全的函数指针，用于封装一个或多个方法。</li>
+<li>委托可以用于调用方法，也可以作为参数传递给其他方法。</li>
+<li>委托可以显式调用，并且可以用于实现回调机制。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="built_in">delegate</span> <span class="keyword">void</span> <span class="title">MyDelegate</span>(<span class="params"><span class="built_in">string</span> message</span>)</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">DisplayMessage</span>(<span class="params"><span class="built_in">string</span> message</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(message);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">MyDelegate del = <span class="keyword">new</span> MyDelegate(DisplayMessage);</span><br><span class="line">del(<span class="string">&quot;Hello, World!&quot;</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>事件（Event）：</p>
+<ul>
+<li>事件是基于委托的，用于实现发布-订阅模式。</li>
+<li>事件只能在声明它的类内部触发，外部类只能订阅或取消订阅事件。</li>
+<li>事件通常用于通知其他对象发生了某些动作或状态变化。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MyClass</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">event</span> MyDelegate MyEvent;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">RaiseEvent</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (MyEvent != <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            MyEvent(<span class="string">&quot;Event Raised!&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">MyClass obj = <span class="keyword">new</span> MyClass();</span><br><span class="line">obj.MyEvent += DisplayMessage;</span><br><span class="line">obj.RaiseEvent();  <span class="comment">// 输出 &quot;Event Raised!&quot;</span></span><br></pre></td></tr></table></figure>
+区别：</li>
+<li>委托可以直接调用，而事件只能在声明它的类内部触发。</li>
+<li>事件提供了更好的封装性，外部类只能订阅或取消订阅事件，而不能直接调用或修改事件。</li>
+</ul>
+<h2 id="4-有两个接口IA和IB，他们中有一个同名方法Test-。一个类同时继承这两个接口，应该如何处理他们的同名方法？"><a href="#4-有两个接口IA和IB，他们中有一个同名方法Test-。一个类同时继承这两个接口，应该如何处理他们的同名方法？" class="headerlink" title="4.有两个接口IA和IB，他们中有一个同名方法Test()。一个类同时继承这两个接口，应该如何处理他们的同名方法？"></a>4.有两个接口IA和IB，他们中有一个同名方法Test()。一个类同时继承这两个接口，应该如何处理他们的同名方法？</h2><p>当一个类实现多个接口，并且这些接口中有同名方法时，可以使用显式接口实现来区分它们。显式接口实现通过在方法名前加上接口名称来指定该方法属于哪个接口。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title">IA</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Test</span>()</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> <span class="title">IB</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Test</span>()</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">MyClass</span> : <span class="title">IA</span>, <span class="title">IB</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">void</span> IA.Test()</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">&quot;IA.Test&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">void</span> IB.Test()</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">&quot;IB.Test&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">MyClass obj = <span class="keyword">new</span> MyClass();</span><br><span class="line">((IA)obj).Test();  <span class="comment">// 输出 &quot;IA.Test&quot;</span></span><br><span class="line">((IB)obj).Test();  <span class="comment">// 输出 &quot;IB.Test&quot;</span></span><br></pre></td></tr></table></figure>
+<p>通过显式接口实现，可以避免方法名的冲突，并且在使用时需要将对象强制转换为相应的接口类型来调用对应的方法。</p>
+<h2 id="5-C-中的List是如何扩容的"><a href="#5-C-中的List是如何扩容的" class="headerlink" title="5.C#中的List是如何扩容的"></a>5.C#中的List是如何扩容的</h2><p>List<T> 是 C# 中常用的动态数组，它可以根据需要自动扩容。List<T> 的内部实现是基于数组的，当元素数量超过当前容量时，List<T> 会自动扩容。</p>
+<p>扩容机制：</p>
+<ul>
+<li>初始容量：List<T> 在创建时有一个初始容量（默认是 0 或 4，具体取决于构造函数）。</li>
+<li>添加元素：当向 List<T> 中添加元素时，如果当前元素数量已经达到容量上限，List<T> 会触发扩容。</li>
+<li>扩容策略：List<T> 的扩容策略是创建一个新的数组，新数组的容量通常是当前容量的两倍（具体倍数可能因版本不同而有所变化）。然后将旧数组中的元素复制到新数组中。</li>
+<li>性能考虑：扩容操作会带来一定的性能开销，因为涉及到内存分配和元素复制。为了避免频繁扩容，可以在创建 List<T> 时指定一个较大的初始容量。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">List&lt;<span class="built_in">int</span>&gt; list = <span class="keyword">new</span> List&lt;<span class="built_in">int</span>&gt;();  <span class="comment">// 初始容量为 0</span></span><br><span class="line">list.Add(<span class="number">1</span>);  <span class="comment">// 容量扩容到 4</span></span><br><span class="line">list.Add(<span class="number">2</span>);</span><br><span class="line">list.Add(<span class="number">3</span>);</span><br><span class="line">list.Add(<span class="number">4</span>);</span><br><span class="line">list.Add(<span class="number">5</span>);  <span class="comment">// 容量扩容到 8</span></span><br></pre></td></tr></table></figure>
+手动设置容量：<br>为了避免频繁扩容，可以在创建 List<T> 时指定一个初始容量，或者在需要时手动调整容量。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">List&lt;<span class="built_in">int</span>&gt; list = <span class="keyword">new</span> List&lt;<span class="built_in">int</span>&gt;(<span class="number">100</span>);  <span class="comment">// 初始容量为 100</span></span><br><span class="line">list.Capacity = <span class="number">200</span>;  <span class="comment">// 手动调整容量</span></span><br></pre></td></tr></table></figure>
+通过合理设置初始容量，可以减少扩容操作的次数，从而提高性能。</li>
+</ul>
+<h1 id="Unity"><a href="#Unity" class="headerlink" title="Unity"></a>Unity</h1><h2 id="1-Unity中点乘和叉乘对于我们来说的作用是什么？"><a href="#1-Unity中点乘和叉乘对于我们来说的作用是什么？" class="headerlink" title="1.Unity中点乘和叉乘对于我们来说的作用是什么？"></a>1.Unity中点乘和叉乘对于我们来说的作用是什么？</h2><p>点乘（Dot Product）：</p>
+<ul>
+<li>点乘是两个向量的标量积，结果是一个标量值。</li>
+<li>在 Unity 中，点乘常用于计算两个向量之间的夹角、判断两个向量的方向关系（如是否同向、反向或垂直）。</li>
+<li>点乘还可以用于投影计算，例如计算一个向量在另一个向量上的投影长度。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">Vector3 a = <span class="keyword">new</span> Vector3(<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">Vector3 b = <span class="keyword">new</span> Vector3(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line"><span class="built_in">float</span> dot = Vector3.Dot(a, b);  <span class="comment">// 结果为 0，表示两个向量垂直</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>叉乘（Cross Product）：</p>
+<ul>
+<li>叉乘是两个向量的向量积，结果是一个新的向量。</li>
+<li>在 Unity 中，叉乘常用于计算两个向量的垂直向量（法向量），例如计算平面的法向量或旋转轴。</li>
+<li>叉乘还可以用于计算两个向量的夹角方向（顺时针或逆时针）。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">Vector3 a = <span class="keyword">new</span> Vector3(<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">Vector3 b = <span class="keyword">new</span> Vector3(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">Vector3 cross = Vector3.Cross(a, b);  <span class="comment">// 结果为 (0, 0, 1)，表示垂直于 a 和 b 的向量</span></span><br></pre></td></tr></table></figure>
+作用：</li>
+<li>点乘和叉乘在 Unity 中广泛应用于物理模拟、碰撞检测、光照计算、相机控制等场景。</li>
+<li>点乘用于判断方向和投影，叉乘用于计算法向量和旋转轴。</li>
+</ul>
+<p>补充：</p>
+<p>点乘作用：</p>
+<ul>
+<li>判断对象的方位</li>
+<li>计算两向量之间的夹角</li>
+</ul>
+<p>叉乘作用：</p>
+<ul>
+<li>获取一个平面的法向量</li>
+<li>得到两向量之间的左右位置关系</li>
+</ul>
+<h2 id="2-Unity中多线程执行下面哪些代码会报错？"><a href="#2-Unity中多线程执行下面哪些代码会报错？" class="headerlink" title="2. Unity中多线程执行下面哪些代码会报错？"></a>2. Unity中多线程执行下面哪些代码会报错？</h2><p>在 Unity 中，主线程负责处理与 Unity 引擎相关的操作（如 GameObject、Transform、渲染等），而多线程不能直接访问这些 Unity API，否则会报错。</p>
+<p>以下代码在多线程中执行是否会报错：</p>
+<p>A. Application.persistentDataPath：</p>
+<ul>
+<li>不会报错。Application.persistentDataPath 是一个只读属性，返回应用程序的持久化数据路径，可以在多线程中安全访问。</li>
+</ul>
+<p>B. File.Exists(“文件名”)：</p>
+<ul>
+<li>不会报错。File.Exists 是 .NET 的 API，与 Unity 引擎无关，可以在多线程中安全调用。</li>
+</ul>
+<p>C. transform.Translate：</p>
+<ul>
+<li>会报错。transform.Translate 是 Unity 的 API，涉及到 GameObject 的 Transform 组件，必须在主线程中调用。</li>
+</ul>
+<p>D. Object.Destroy(对象)：</p>
+<ul>
+<li>会报错。Object.Destroy 是 Unity 的 API，用于销毁 GameObject 或组件，必须在主线程中调用。</li>
+</ul>
+<p>总结：</p>
+<ul>
+<li>会报错的选项：C 和 D。</li>
+<li>不会报错的选项：A 和 B。</li>
+</ul>
+<p>补充：A C D, UnityEngine命名空间中相关类基本都不能被Unity中多线程使用</p>
+<h2 id="3-Application-streamingAssetsPath-和-Application-persistentDataPath-的区别"><a href="#3-Application-streamingAssetsPath-和-Application-persistentDataPath-的区别" class="headerlink" title="3. Application.streamingAssetsPath 和 Application.persistentDataPath 的区别"></a>3. Application.streamingAssetsPath 和 Application.persistentDataPath 的区别</h2><p>Application.streamingAssetsPath：</p>
+<ul>
+<li>Assets&#x2F;StreamingAssets&#x2F; 目录下的文件，只读，打包后不会更改</li>
+<li>用于存放游戏资源，如配置文件、内置数据（不会被用户修改）</li>
+</ul>
+<p>Application.persistentDataPath：</p>
+<ul>
+<li>设备上的可读写存储目录，存储游戏数据</li>
+<li>存储用户数据，如存档、下载资源等</li>
+</ul>
+<p>具体区别：</p>
+<ul>
+<li><p>streamingAssetsPath 是 应用内资源，打包时放入 StreamingAssets&#x2F; 目录，不能修改。</p>
+</li>
+<li><p>persistentDataPath 是 用户数据存储路径，可以在运行时读写。</p>
+</li>
+<li><p>streamingAssetsPath 在 PC 上是一个文件夹，但在 Android&#x2F;iOS 上可能是 apk 或 bundle 内的资源，需要通过 WWW 或 UnityWebRequest 读取。</p>
+</li>
+<li><p>persistentDataPath 是 跨平台的读写路径，适用于存储存档、日志、下载内容。</p>
+</li>
+</ul>
+<p>补充：</p>
+<ul>
+<li>Application.streamingAssetsPath 只读，适合放置一些默认2进制配置文件</li>
+<li>Application.persistentDataPath 可读可写，用于处理数据持久化，或作为热更新下载内容的存放目录</li>
+</ul>
+<h2 id="4-Unity-中协程的原理"><a href="#4-Unity-中协程的原理" class="headerlink" title="4.Unity 中协程的原理"></a>4.Unity 中协程的原理</h2><p>协程（Coroutine）：</p>
+<ul>
+<li>协程是 Unity 中一种特殊的函数，可以在执行过程中暂停，并在稍后的时间点继续执行。</li>
+<li>协程通过 IEnumerator 接口实现，使用 yield 关键字来暂停执行。</li>
+</ul>
+<p>原理：</p>
+<p>1.迭代器模式：</p>
+<ul>
+<li>协程本质上是一个迭代器，通过 IEnumerator 接口实现。</li>
+<li>yield return 语句会返回一个值，并暂停协程的执行，直到下一次调用 MoveNext()。</li>
+</ul>
+<p>2.Unity 的协程调度器：</p>
+<ul>
+<li>Unity 在主线程中维护了一个协程调度器，负责管理所有协程的执行。</li>
+<li>协程的恢复条件由 yield return 后面的对象决定，例如：<ul>
+<li>yield return null：等待下一帧继续执行。</li>
+<li>yield return new WaitForSeconds(2)：等待 2 秒后继续执行。</li>
+<li>yield return new WaitUntil(() &#x3D;&gt; condition)：等待条件满足后继续执行。</li>
+</ul>
+</li>
+</ul>
+<p>3.执行流程：</p>
+<ul>
+<li>协程启动后，Unity 会将其加入调度器。</li>
+<li>每次更新时，调度器会检查协程的恢复条件是否满足。</li>
+<li>如果满足，协程会从上次暂停的位置继续执行。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="function">IEnumerator <span class="title">MyCoroutine</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    Debug.Log(<span class="string">&quot;Start&quot;</span>);</span><br><span class="line">    <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="keyword">new</span> <span class="title">WaitForSeconds</span>(<span class="params"><span class="number">1</span></span>)</span>;  <span class="comment">// 暂停 1 秒</span></span><br><span class="line">    Debug.Log(<span class="string">&quot;After 1 second&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+意义：</li>
+<li>协程非常适合用于实现延时、分帧加载、动画控制等需要暂停和恢复的场景。</li>
+</ul>
+<p>补充：<br>Unity中的协同程序分为两部分</p>
+<ul>
+<li>协程函数本体（迭代器函数）</li>
+<li>协程调度器（协程管理器）</li>
+<li>协程利用迭代器函数的分步执行的特点，加上协程调度器对迭代器函数们进行统一管理，，根据迭代器函数的返回值来决定下一次执行函数逻辑的时间点，从而实现逻辑分时分步执行的目的</li>
+</ul>
+<h2 id="5-Unity-底层如何处理-C-代码？"><a href="#5-Unity-底层如何处理-C-代码？" class="headerlink" title="5.Unity 底层如何处理 C# 代码？"></a>5.Unity 底层如何处理 C# 代码？</h2><ol start="5">
+<li>Unity 底层如何处理 C# 代码？<br>Unity 底层对 C# 代码的处理主要分为以下几个步骤：</li>
+</ol>
+<ul>
+<li><p>编译：</p>
+<ul>
+<li>Unity 使用 Mono 或 IL2CPP 作为脚本后端。</li>
+<li>在开发阶段，C# 代码会被编译为 CIL（Common Intermediate Language，中间语言）。</li>
+<li>如果使用 IL2CPP，CIL 会进一步编译为 C++ 代码，然后再编译为平台原生的机器码。</li>
+</ul>
+</li>
+<li><p>执行：</p>
+<ul>
+<li>在运行时，Unity 通过 Mono 或 IL2CPP 执行编译后的代码。</li>
+<li>Mono 是一个跨平台的 .NET 运行时，直接解释或 JIT（Just-In-Time）编译 CIL 代码。</li>
+<li>IL2CPP 将 CIL 转换为 C++ 代码，再编译为原生机器码，性能更高，但构建时间更长。</li>
+</ul>
+</li>
+<li><p>与引擎交互：</p>
+<ul>
+<li>Unity 引擎的核心是用 C++ 编写的。</li>
+<li>C# 脚本通过 P&#x2F;Invoke（平台调用）或绑定层与引擎核心交互。</li>
+<li>例如，调用 transform.Translate 时，C# 代码会通过绑定层调用引擎的 C++ 实现。</li>
+</ul>
+</li>
+<li><p>垃圾回收：</p>
+<ul>
+<li>Unity 使用 Mono 或 IL2CPP 的垃圾回收器（GC）来管理内存。</li>
+<li>GC 会自动回收不再使用的对象，但频繁的 GC 可能会导致性能问题。</li>
+</ul>
+</li>
+</ul>
+<p>总结：</p>
+<ul>
+<li>Unity 将 C# 代码编译为中间语言，再通过 Mono 或 IL2CPP 执行。</li>
+<li>C# 脚本通过绑定层与引擎核心交互。</li>
+<li>垃圾回收由 Mono 或 IL2CPP 管理，开发者需要注意内存使用以避免性能问题。</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>基础知识2</title>
+    <url>/2025/03/02/Passage/Note2/</url>
+    <content><![CDATA[<h1 id="C"><a href="#C" class="headerlink" title="C#"></a>C#</h1><h2 id="1-C-中-和-Equals-的区别是什么？"><a href="#1-C-中-和-Equals-的区别是什么？" class="headerlink" title="1.C# 中 &#x3D;&#x3D; 和 Equals 的区别是什么？"></a>1.C# 中 &#x3D;&#x3D; 和 Equals 的区别是什么？</h2><p>&#x3D;&#x3D; 运算符：</p>
+<ul>
+<li>&#x3D;&#x3D; 是一个运算符，用于比较两个变量的值是否相等。</li>
+<li>对于值类型，&#x3D;&#x3D; 比较的是两个变量的实际值。</li>
+<li>对于引用类型，&#x3D;&#x3D; 比较的是两个变量的引用（即内存地址）是否相同，而不是它们的内容。</li>
+<li>&#x3D;&#x3D; 可以被重载，例如在自定义类中重载 &#x3D;&#x3D; 以实现特定的比较逻辑。</li>
+</ul>
+<p>Equals 方法：</p>
+<ul>
+<li>Equals 是一个方法，定义在 System.Object 类中，所有类型都继承了这个方法。</li>
+<li>对于值类型，Equals 比较的是两个变量的实际值（与 &#x3D;&#x3D; 类似）。</li>
+<li>对于引用类型，Equals 的默认行为是比较两个变量的引用是否相同（与 &#x3D;&#x3D; 类似），但可以被重写以实现内容比较。</li>
+<li>Equals 是一个虚方法，可以在自定义类中重写以实现自定义的相等性比较逻辑。</li>
+</ul>
+<p>区别：</p>
+<ul>
+<li><p>比较方式：</p>
+<ul>
+<li>&#x3D;&#x3D; 是一个运算符，Equals 是一个方法。</li>
+<li>&#x3D;&#x3D; 的行为取决于操作数的类型（值类型或引用类型），而 Equals 的行为可以通过重写来改变。</li>
+</ul>
+</li>
+<li><p>可重载性：</p>
+<ul>
+<li>&#x3D;&#x3D; 可以被重载，但只能在类或结构体内部重载。</li>
+<li>Equals 是一个虚方法，可以在子类中重写。</li>
+</ul>
+</li>
+<li><p>默认行为：</p>
+<ul>
+<li>对于引用类型，&#x3D;&#x3D; 和 Equals 的默认行为都是比较引用。</li>
+<li>对于值类型，&#x3D;&#x3D; 和 Equals 的默认行为都是比较值。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="built_in">string</span> a = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line"><span class="built_in">string</span> b = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line"><span class="built_in">string</span> c = <span class="keyword">new</span> <span class="built_in">string</span>(<span class="string">&quot;hello&quot;</span>.ToCharArray());</span><br><span class="line"></span><br><span class="line">Console.WriteLine(a == b);        <span class="comment">// True，因为字符串是常量池中的同一个引用</span></span><br><span class="line">Console.WriteLine(a == c);        <span class="comment">// True，因为字符串内容相同</span></span><br><span class="line">Console.WriteLine(a.Equals(b));   <span class="comment">// True，内容相同</span></span><br><span class="line">Console.WriteLine(a.Equals(c));   <span class="comment">// True，内容相同</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">object</span> obj1 = a;</span><br><span class="line"><span class="built_in">object</span> obj2 = c;</span><br><span class="line"></span><br><span class="line">Console.WriteLine(obj1 == obj2);  <span class="comment">// False，因为 obj1 和 obj2 是不同的引用</span></span><br><span class="line">Console.WriteLine(obj1.Equals(obj2));  <span class="comment">// True，因为 Equals 比较的是字符串内容</span></span><br></pre></td></tr></table></figure>
+
+<p>补充：</p>
+<ol>
+<li>&#x3D;&#x3D; 是运算符，Equals是万物之父Object中的虚方法，子类可重写</li>
+<li>Equals 一般在子类中重写后用于比较两个对象中内容是否相同，&#x3D;&#x3D;在没有运算符重载的前提下时，引用类型用于比较地址；值类型用于比较值是否相同</li>
+<li>运算效率不同，一般Equals没有&#x3D;&#x3D;效率高，因为一般Equals比较的内容比&#x3D;&#x3D;多</li>
+</ol>
+<h2 id="2-浅拷贝和深拷贝的区别？可以举例说明"><a href="#2-浅拷贝和深拷贝的区别？可以举例说明" class="headerlink" title="2. 浅拷贝和深拷贝的区别？可以举例说明"></a>2. 浅拷贝和深拷贝的区别？可以举例说明</h2><p>浅拷贝（Shallow Copy）：</p>
+<ul>
+<li>浅拷贝只复制对象的顶层结构，而不会复制对象内部的引用类型字段所指向的对象。</li>
+<li>对于值类型字段，浅拷贝会复制其值。</li>
+<li>对于引用类型字段，浅拷贝只会复制引用（即内存地址），因此原始对象和拷贝对象共享内部的引用类型字段。</li>
+</ul>
+<p>深拷贝（Deep Copy）：</p>
+<ul>
+<li>深拷贝会递归地复制对象的所有层次结构，包括内部的引用类型字段所指向的对象。</li>
+<li>深拷贝会创建全新的对象，原始对象和拷贝对象之间没有任何共享的引用类型字段。</li>
+</ul>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Person</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> Name;</span><br><span class="line">    <span class="keyword">public</span> Address Address;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Person <span class="title">ShallowCopy</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> (Person)<span class="keyword">this</span>.MemberwiseClone();  <span class="comment">// 浅拷贝</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Person <span class="title">DeepCopy</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Person other = (Person)<span class="keyword">this</span>.MemberwiseClone();</span><br><span class="line">        other.Address = <span class="keyword">new</span> Address &#123; City = <span class="keyword">this</span>.Address.City &#125;;  <span class="comment">// 深拷贝 Address</span></span><br><span class="line">        <span class="keyword">return</span> other;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Address</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> City;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 测试</span></span><br><span class="line">Person p1 = <span class="keyword">new</span> Person &#123; Name = <span class="string">&quot;Alice&quot;</span>, Address = <span class="keyword">new</span> Address &#123; City = <span class="string">&quot;New York&quot;</span> &#125; &#125;;</span><br><span class="line">Person p2 = p1.ShallowCopy();  <span class="comment">// 浅拷贝</span></span><br><span class="line">Person p3 = p1.DeepCopy();     <span class="comment">// 深拷贝</span></span><br><span class="line"></span><br><span class="line">p2.Name = <span class="string">&quot;Bob&quot;</span>;</span><br><span class="line">p2.Address.City = <span class="string">&quot;Los Angeles&quot;</span>;</span><br><span class="line"></span><br><span class="line">Console.WriteLine(p1.Name);  <span class="comment">// Alice，浅拷贝的 Name 是值类型，不影响原始对象</span></span><br><span class="line">Console.WriteLine(p1.Address.City);  <span class="comment">// Los Angeles，浅拷贝的 Address 是引用类型，影响原始对象</span></span><br><span class="line"></span><br><span class="line">Console.WriteLine(p3.Name);  <span class="comment">// Alice，深拷贝的 Name 是值类型，不影响原始对象</span></span><br><span class="line">Console.WriteLine(p3.Address.City);  <span class="comment">// New York，深拷贝的 Address 是全新对象，不影响原始对象</span></span><br></pre></td></tr></table></figure>
+<p>区别：</p>
+<ul>
+<li><p>复制层次：</p>
+<ul>
+<li>浅拷贝只复制顶层结构，深拷贝复制所有层次结构。</li>
+</ul>
+</li>
+<li><p>引用类型字段：</p>
+<ul>
+<li>浅拷贝后，原始对象和拷贝对象共享引用类型字段。</li>
+<li>深拷贝后，原始对象和拷贝对象拥有独立的引用类型字段。</li>
+</ul>
+</li>
+<li><p>性能：</p>
+<ul>
+<li>浅拷贝性能较高，因为它只复制顶层结构。</li>
+<li>深拷贝性能较低，因为它需要递归复制所有层次结构。</li>
+</ul>
+</li>
+<li><p>适用场景：</p>
+<ul>
+<li>浅拷贝适用于对象结构简单，且不需要独立内部引用类型字段的场景。</li>
+<li>深拷贝适用于对象结构复杂，且需要完全独立副本的场景。</li>
+</ul>
+</li>
+</ul>
+<h1 id="Unity"><a href="#Unity" class="headerlink" title="Unity"></a>Unity</h1><h2 id="1-Unity-中当一个细小高速物体撞击另一个较大物体时，会出现什么情况？如何避免？"><a href="#1-Unity-中当一个细小高速物体撞击另一个较大物体时，会出现什么情况？如何避免？" class="headerlink" title="1. Unity 中当一个细小高速物体撞击另一个较大物体时，会出现什么情况？如何避免？"></a>1. Unity 中当一个细小高速物体撞击另一个较大物体时，会出现什么情况？如何避免？</h2><p>情况：</p>
+<ul>
+<li>在 Unity 中，当一个细小高速物体撞击另一个较大物体时，可能会出现<strong>穿透（Tunneling）</strong>现象。</li>
+<li>这是因为 Unity 的物理引擎是基于离散时间步长（Fixed Timestep）进行计算的。如果物体速度过快，在两次物理更新之间，物体可能已经移动了很远的距离，导致碰撞检测未能正确触发。</li>
+</ul>
+<p>如何避免：</p>
+<ul>
+<li><p>增加碰撞检测精度：</p>
+<ul>
+<li>在 Unity 的物理设置中，减小 Fixed Timestep（默认是 0.02 秒），可以提高物理更新的频率，减少穿透的可能性。</li>
+<li>设置方法：Edit &gt; Project Settings &gt; Time &gt; Fixed Timestep。</li>
+</ul>
+</li>
+<li><p>使用连续碰撞检测（Continuous Collision Detection, CCD）：</p>
+<ul>
+<li>为高速物体启用 CCD，可以确保在物体高速移动时仍能正确检测碰撞。</li>
+<li>设置方法：在 Rigidbody 组件中，将 Collision Detection 设置为 Continuous 或 Continuous Dynamic。</li>
+</ul>
+</li>
+<li><p>增大碰撞体：</p>
+<ul>
+<li>为细小物体适当增大碰撞体（如增加碰撞体的大小或使用复合碰撞体），可以增加碰撞检测的准确性。</li>
+</ul>
+</li>
+<li><p>使用射线检测：</p>
+<ul>
+<li>在高速物体移动时，使用射线检测（Raycast）来预测碰撞，并在碰撞前手动处理物体的运动。</li>
+</ul>
+</li>
+</ul>
+<p>补充：</p>
+<ul>
+<li>我们可以尽量用射线检测来替代细小物体的物理系统碰撞，因为传统的FPS游戏都是通过射线检测加模拟计算来判断伤害的</li>
+<li>修改Rigidbody刚体中的Interpolate（插值）和CollisionDetection（碰撞检测）两个参数，来提高碰撞检测的准确性</li>
+</ul>
+<h2 id="2-Prefab（预制体）的本质是什么？"><a href="#2-Prefab（预制体）的本质是什么？" class="headerlink" title="2.Prefab（预制体）的本质是什么？"></a>2.Prefab（预制体）的本质是什么？</h2><p>Prefab 的本质：</p>
+<ul>
+<li>Prefab（预制体）是 Unity 中的一种资源类型，用于存储 GameObject 的完整结构和组件配置。</li>
+<li>Prefab 本质上是一个模板，可以在场景中实例化多个相同的 GameObject。</li>
+<li>Prefab 保存了 GameObject 的层次结构、组件属性、脚本设置等信息。</li>
+</ul>
+<p>作用：</p>
+<ul>
+<li>复用性：通过 Prefab 可以快速创建多个相同的对象，避免重复设置。</li>
+<li>一致性：修改 Prefab 资源后，所有实例化的对象会自动同步更新。</li>
+<li>动态创建：可以在运行时通过代码动态实例化 Prefab。</li>
+</ul>
+<p>示例：</p>
+<ul>
+<li>创建一个敌人 Prefab，包含模型、动画、脚本等。</li>
+<li>在场景中多次实例化该 Prefab，生成多个敌人。</li>
+<li>修改 Prefab 后，所有敌人实例会自动更新。</li>
+</ul>
+<p>补充：</p>
+<ul>
+<li>Prefab的本质就是一个配置文件，其中记录了一个GameObject对象上挂载的脚本信息，并且记录了脚本信息中的可配置的属性信息</li>
+</ul>
+<h2 id="3-Unity-是否支持写成多线程程序？如果支持的话需要注意什么？"><a href="#3-Unity-是否支持写成多线程程序？如果支持的话需要注意什么？" class="headerlink" title="3.Unity 是否支持写成多线程程序？如果支持的话需要注意什么？"></a>3.Unity 是否支持写成多线程程序？如果支持的话需要注意什么？</h2><p>支持多线程：</p>
+<ul>
+<li>Unity 支持使用多线程，但仅限于非 Unity API 的操作，例如计算密集型任务、文件读写、网络请求等。</li>
+</ul>
+<p>注意事项：</p>
+<ul>
+<li><p>Unity API 的限制：</p>
+<ul>
+<li>Unity 的 API（如 Transform、GameObject、Physics 等）只能在主线程中调用。</li>
+<li>如果在多线程中调用 Unity API，会导致崩溃或未定义行为。</li>
+</ul>
+</li>
+<li><p>线程安全：</p>
+<ul>
+<li>多线程操作共享数据时，需要使用锁（如 lock 关键字）来避免竞争条件。</li>
+</ul>
+</li>
+<li><p>主线程同步：</p>
+<ul>
+<li>如果需要在多线程中修改 Unity 对象，可以将结果存储在线程安全的容器中，然后在主线程中处理。</li>
+</ul>
+</li>
+<li><p>任务调度：</p>
+<ul>
+<li>可以使用 System.Threading.Tasks 或 UnityWebRequest 的异步方法来简化多线程编程。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Threading.Tasks;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    Task.Run(() =&gt; HeavyCalculation());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">HeavyCalculation</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 多线程中执行计算任务</span></span><br><span class="line">    <span class="built_in">int</span> result = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++) result += i;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将结果传递到主线程</span></span><br><span class="line">    UnityMainThreadDispatcher.Instance.Enqueue(() =&gt; Debug.Log(<span class="string">&quot;Result: &quot;</span> + result));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>补充：</p>
+<ul>
+<li>只能从主线程访问Unity相关组件、对象以及UnityEngine命名空间中的绝大部分内容</li>
+<li>如果多线程中要和Unity主线程同时修改一些数据可以通过lock关键词加锁</li>
+</ul>
+<h2 id="4-对象池，在游戏开发中我们什么时候会用到它？"><a href="#4-对象池，在游戏开发中我们什么时候会用到它？" class="headerlink" title="4.对象池，在游戏开发中我们什么时候会用到它？"></a>4.对象池，在游戏开发中我们什么时候会用到它？</h2><p>对象池（Object Pooling）：</p>
+<ul>
+<li>对象池是一种优化技术，用于管理对象的创建和销毁。</li>
+<li>对象池预先创建一组对象并存储在池中，当需要时从池中获取对象，使用完毕后将对象放回池中，而不是直接销毁。</li>
+</ul>
+<p>使用场景：</p>
+<ul>
+<li><p>频繁创建和销毁的对象：</p>
+<ul>
+<li>例如子弹、敌人、特效等。</li>
+<li>频繁创建和销毁对象会导致内存碎片和性能开销，使用对象池可以避免这些问题。</li>
+</ul>
+</li>
+<li><p>性能敏感的场景：</p>
+<ul>
+<li>例如移动设备或 VR 游戏，需要尽量减少内存分配和垃圾回收。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ObjectPool</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> GameObject prefab;</span><br><span class="line">    <span class="keyword">private</span> Queue&lt;GameObject&gt; pool = <span class="keyword">new</span> Queue&lt;GameObject&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> GameObject <span class="title">GetObject</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (pool.Count &gt; <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            GameObject obj = pool.Dequeue();</span><br><span class="line">            obj.SetActive(<span class="literal">true</span>);</span><br><span class="line">            <span class="keyword">return</span> obj;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> Instantiate(prefab);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ReturnObject</span>(<span class="params">GameObject obj</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        obj.SetActive(<span class="literal">false</span>);</span><br><span class="line">        pool.Enqueue(obj);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>补充：</p>
+<ul>
+<li><p>对象池的主要作用是 避免大量创建对象再释放对象时造成的内存消耗，可以有效降低GC发生的频率。我们把不用的对象放入对象池中而不是让它直接变为垃圾，下次需要用到对象时再从对象池中获取，我们通过占用内存来避免更多的内存消耗和GC的发生</p>
+</li>
+<li><p>在游戏中频繁创建对象、实例化对象的地方，都可以用到对象池。比如前端开发中，游戏中的子弹、伤害字体、特效等等，比如后端开发中线程池等等</p>
+</li>
+</ul>
+<h2 id="5-什么是-DrawCall？DrawCall-为什么会影响游戏运行效率？如何减少-DrawCall？"><a href="#5-什么是-DrawCall？DrawCall-为什么会影响游戏运行效率？如何减少-DrawCall？" class="headerlink" title="5.什么是 DrawCall？DrawCall 为什么会影响游戏运行效率？如何减少 DrawCall？"></a>5.什么是 DrawCall？DrawCall 为什么会影响游戏运行效率？如何减少 DrawCall？</h2><p>DrawCall：</p>
+<ul>
+<li>DrawCall 是 CPU 向 GPU 发送绘制命令的过程。</li>
+<li>每次绘制一个物体（如 Mesh）时，都会产生一个 DrawCall。</li>
+</ul>
+<p>影响效率的原因：</p>
+<ul>
+<li><p>CPU 开销：</p>
+<ul>
+<li>每次 DrawCall 都需要 CPU 准备数据并发送给 GPU，过多的 DrawCall 会导致 CPU 瓶颈。</li>
+</ul>
+</li>
+<li><p>GPU 开销：</p>
+<ul>
+<li>每次 DrawCall 都会触发 GPU 的状态切换（如材质、纹理等），增加 GPU 的负担。</li>
+</ul>
+</li>
+</ul>
+<p>如何减少 DrawCall：</p>
+<ul>
+<li><p>合并材质：</p>
+<ul>
+<li>使用相同的材质和纹理可以减少 DrawCall。</li>
+</ul>
+</li>
+<li><p>静态批处理（Static Batching）：</p>
+<ul>
+<li>将静态物体（如场景中的墙壁、地板）标记为 Static，Unity 会自动合并它们的 DrawCall。</li>
+</ul>
+</li>
+<li><p>动态批处理（Dynamic Batching）：</p>
+<ul>
+<li>Unity 会自动合并小型动态物体的 DrawCall，但有一定的限制（如顶点数量、材质等）。</li>
+</ul>
+</li>
+<li><p>使用图集（Atlas）：</p>
+<ul>
+<li>将多个小纹理合并为一个大纹理，减少材质切换。</li>
+</ul>
+</li>
+<li><p>减少透明物体：</p>
+<ul>
+<li>透明物体无法被批处理，尽量减少透明物体的数量。</li>
+</ul>
+</li>
+<li><p>使用 GPU Instancing：</p>
+<ul>
+<li>对于大量相同的物体（如草、树木），可以使用 GPU Instancing 来减少 DrawCall。</li>
+</ul>
+<p>总结：</p>
+</li>
+<li><p>DrawCall 是影响游戏性能的重要因素。</p>
+</li>
+<li><p>通过合并材质、使用批处理、减少透明物体等方法，可以有效减少 DrawCall，提升游戏性能。</p>
+</li>
+</ul>
+<p>补充：</p>
+<ul>
+<li><p>什么是DrawCall？</p>
+<ul>
+<li>每次CPU准备渲染相关数据并通知GPU的过程称为一次DrawCall</li>
+</ul>
+</li>
+<li><p>DrawCall为什么会影响游戏运行效率？</p>
+<ul>
+<li>如果DrawCall次数较高，意味着CPU会花费更多的时间准备渲染数据，这会进行更多的计算，进而影响游戏的运行效率</li>
+</ul>
+</li>
+<li><p>如何减少DrawCall？</p>
+<ul>
+<li>2D和UI层面：打图集，并且注意面板中不同图集图片的层级不要穿插</li>
+<li>3D模型层面：利用动态批处理和静态批处理，尽量不使用实时光照和实时阴影等等</li>
+</ul>
+</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>基础知识5</title>
+    <url>/2025/03/02/Passage/Note5/</url>
+    <content><![CDATA[<h1 id="C"><a href="#C" class="headerlink" title="C#"></a>C#</h1><h2 id="1-数组和链表的区别是什么？"><a href="#1-数组和链表的区别是什么？" class="headerlink" title="1. 数组和链表的区别是什么？"></a>1. 数组和链表的区别是什么？</h2><ul>
+<li><p>存储结构不同</p>
+<ul>
+<li>数组是顺序存储结构，在内存中是连续存储的</li>
+<li>链表是链式存储结构，在内存中是非连续存储的</li>
+</ul>
+</li>
+<li><p>访问效率不同</p>
+<ul>
+<li>数组由于是顺序存储，通过下标访问，访问效率高</li>
+<li>链表由于是非连续存储，我们想要获取其中某一元素，需要从头或尾遍历，效率低</li>
+</ul>
+</li>
+<li><p>插入、删除效率不同</p>
+<ul>
+<li>数组由于是顺序存储，在插入和删除时，需要整体移动数组中的大部分元素，效率低</li>
+<li>链表由于是链式存储，在插入和删除时，效率高</li>
+</ul>
+</li>
+<li><p>越界问题</p>
+<ul>
+<li>数组由于是顺序存储，声明时容量是固定的，如果不处理扩容逻辑，存在越界风险</li>
+<li>链表由于是链式存储，无越界风险</li>
+</ul>
+</li>
+</ul>
+<p>总结：数组和链表：数组适合频繁访问，链表适合频繁插入&#x2F;删除。</p>
+<h2 id="2-C-中的-Action-和-Func-是什么？Unity-中的-UnityAction-是什么？它们有什么区别？"><a href="#2-C-中的-Action-和-Func-是什么？Unity-中的-UnityAction-是什么？它们有什么区别？" class="headerlink" title="2. C# 中的 Action 和 Func 是什么？Unity 中的 UnityAction 是什么？它们有什么区别？"></a>2. C# 中的 Action 和 Func 是什么？Unity 中的 UnityAction 是什么？它们有什么区别？</h2><p>C#中的Action:</p>
+<ul>
+<li>是一个无返回值的委托类型。</li>
+<li>可以接受 0 到 16 个参数。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">Action&lt;<span class="built_in">string</span>&gt; printMessage = (message) =&gt; Console.WriteLine(message);</span><br><span class="line">printMessage(<span class="string">&quot;Hello, World!&quot;</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>C#中的Func:</p>
+<ul>
+<li>是一个有返回值的委托类型。</li>
+<li>最后一个泛型参数是返回值类型，其余是参数类型。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">Func&lt;<span class="built_in">int</span>, <span class="built_in">int</span>, <span class="built_in">int</span>&gt; <span class="keyword">add</span> = (a, b) =&gt; a + b;</span><br><span class="line"><span class="built_in">int</span> result = <span class="keyword">add</span>(<span class="number">3</span>, <span class="number">5</span>); <span class="comment">// result = 8</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>Unity中的UnityAction:</p>
+<ul>
+<li>是 Unity 提供的一个无返回值的委托类型。</li>
+<li>主要用于 Unity 的事件系统（如 UnityEvent）。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">UnityAction&lt;<span class="built_in">string</span>&gt; logMessage = (message) =&gt; Debug.Log(message);</span><br><span class="line">logMessage(<span class="string">&quot;Hello, Unity!&quot;</span>);</span><br></pre></td></tr></table></figure>
+总结：Action、Func 和 UnityAction：Action 和 Func 是 C# 的通用委托，UnityAction 是 Unity 专为事件系统设计的委托。</li>
+</ul>
+<p>补充：</p>
+<ul>
+<li><p>Action和Func是System命名空间下 C#为我们提供的两个写好的委托<br>Action本身是一个无参无返回值的委托<br>对应的Action&lt;&gt;泛型委托支持最多16个参数</p>
+</li>
+<li><p>Func本身是一个无参有返回值的委托<br>对应的Func&lt;&gt;泛型委托支持最多16个参数，并且有返回值</p>
+</li>
+<li><p>UnityAction是UnityEngine.Events命名空间下 Unity为我们提供的写好的委托<br>UnityAction本身是一个无参无返回值的委托<br>对应的UnityAction&lt;&gt;泛型委托支持最多4个参数</p>
+</li>
+</ul>
+<h2 id="3-网络游戏开发中，网络传输数据的基本流程是什么？"><a href="#3-网络游戏开发中，网络传输数据的基本流程是什么？" class="headerlink" title="3. 网络游戏开发中，网络传输数据的基本流程是什么？"></a>3. 网络游戏开发中，网络传输数据的基本流程是什么？</h2><p>网络游戏开发中，网络传输数据的基本流程通常包括以下步骤：</p>
+<ol>
+<li>数据序列化<br>定义：将游戏中的数据（如玩家位置、状态等）转换为二进制或文本格式，以便通过网络传输。</li>
+</ol>
+<ul>
+<li>常用方法：<ul>
+<li>二进制序列化：使用 Protobuf、MessagePack 等高效二进制格式。</li>
+<li>文本序列化：使用 JSON、XML 等可读性较高的格式。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 使用 JSON 序列化</span></span><br><span class="line"><span class="built_in">string</span> jsonData = JsonUtility.ToJson(playerData);</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li>数据压缩（可选）</li>
+</ol>
+<ul>
+<li>目的：减少数据量，降低网络带宽占用。</li>
+<li>常用方法：GZip、Deflate 等压缩算法。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="built_in">byte</span>[] compressedData = CompressData(Encoding.UTF8.GetBytes(jsonData));</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="3">
+<li>数据加密（可选）</li>
+</ol>
+<ul>
+<li><p>目的：防止数据被篡改或窃取。</p>
+</li>
+<li><p>常用方法：</p>
+<ul>
+<li>对称加密：如 AES。</li>
+<li>非对称加密：如 RSA。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="built_in">byte</span>[] encryptedData = EncryptData(compressedData, encryptionKey);</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<ol start="4">
+<li>数据传输</li>
+</ol>
+<ul>
+<li>协议选择：<ul>
+<li>TCP：可靠传输，适合对数据完整性要求高的场景（如玩家位置同步）。</li>
+<li>UDP：高效传输，适合对实时性要求高的场景（如射击游戏）。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 使用 TCP 发送数据</span></span><br><span class="line">tcpClient.Send(encryptedData);</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<ol start="5">
+<li>数据接收</li>
+</ol>
+<ul>
+<li>服务器或客户端接收数据，并进行解密、解压和反序列化。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="built_in">byte</span>[] receivedData = tcpClient.Receive();</span><br><span class="line"><span class="built_in">byte</span>[] decryptedData = DecryptData(receivedData, encryptionKey);</span><br><span class="line"><span class="built_in">byte</span>[] decompressedData = DecompressData(decryptedData);</span><br><span class="line">PlayerData playerData = JsonUtility.FromJson&lt;PlayerData&gt;(Encoding.UTF8.GetString(decompressedData));</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="6">
+<li>数据处理</li>
+</ol>
+<ul>
+<li>根据反序列化后的数据更新游戏状态。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">player.position = playerData.position;</span><br><span class="line">player.health = playerData.health;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="7">
+<li>数据同步</li>
+</ol>
+<ul>
+<li>将更新后的状态同步给其他玩家或服务器，确保游戏世界的一致性。</li>
+</ul>
+<p>总结</p>
+<ul>
+<li>网络传输流程：序列化 → 压缩 → 加密 → 传输 → 接收 → 解密 → 解压 → 反序列化 → 数据处理 → 同步。</li>
+</ul>
+<p>补充：<br>客户端将自定义类对象数据序列化为2进制数据发送给服务端，服务端将收到的2进制数据反序列化为对应的类对象进行逻辑处理，如果是服务端发送给客户端的消息也是同理</p>
+<h1 id="Unity"><a href="#Unity" class="headerlink" title="Unity"></a>Unity</h1><h2 id="1-两个四元数相乘有什么作用？四元数乘以向量有什么作用？"><a href="#1-两个四元数相乘有什么作用？四元数乘以向量有什么作用？" class="headerlink" title="1. 两个四元数相乘有什么作用？四元数乘以向量有什么作用？"></a>1. 两个四元数相乘有什么作用？四元数乘以向量有什么作用？</h2><p>两个四元数相乘的作用</p>
+<ul>
+<li>作用：两个四元数相乘表示旋转的组合。</li>
+<li>数学意义：四元数乘法可以将两个旋转操作合并为一个等效的旋转。</li>
+<li>应用场景：在 Unity 中，常用于将多个旋转操作合并为一个。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">Quaternion rotation1 = Quaternion.Euler(<span class="number">0</span>, <span class="number">90</span>, <span class="number">0</span>); <span class="comment">// 绕 Y 轴旋转 90 度</span></span><br><span class="line">Quaternion rotation2 = Quaternion.Euler(<span class="number">0</span>, <span class="number">0</span>, <span class="number">45</span>); <span class="comment">// 绕 Z 轴旋转 45 度</span></span><br><span class="line">Quaternion combinedRotation = rotation1 * rotation2; <span class="comment">// 组合旋转</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>四元数乘以向量的作用</p>
+<ul>
+<li>作用：四元数乘以向量表示将向量进行旋转。</li>
+<li>数学意义：通过四元数旋转向量，可以得到旋转后的新向量。</li>
+<li>应用场景：在 Unity 中，常用于计算物体旋转后的方向或位置。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">Quaternion rotation = Quaternion.Euler(<span class="number">0</span>, <span class="number">90</span>, <span class="number">0</span>); <span class="comment">// 绕 Y 轴旋转 90 度</span></span><br><span class="line">Vector3 originalDirection = Vector3.forward; <span class="comment">// 原始方向 (0, 0, 1)</span></span><br><span class="line">Vector3 rotatedDirection = rotation * originalDirection; <span class="comment">// 旋转后的方向 (1, 0, 0)</span></span><br></pre></td></tr></table></figure>
+补充：</li>
+<li>四元数相乘：角度叠加</li>
+<li>四元数乘以向量：向量旋转</li>
+</ul>
+<h2 id="2-如果不考虑-iOS-平台，只在-Windows-和-Android-平台上发布游戏，如何在不使用第三方热更新方案的前提下实现热更新功能？"><a href="#2-如果不考虑-iOS-平台，只在-Windows-和-Android-平台上发布游戏，如何在不使用第三方热更新方案的前提下实现热更新功能？" class="headerlink" title="2. 如果不考虑 iOS 平台，只在 Windows 和 Android 平台上发布游戏，如何在不使用第三方热更新方案的前提下实现热更新功能？"></a>2. 如果不考虑 iOS 平台，只在 Windows 和 Android 平台上发布游戏，如何在不使用第三方热更新方案的前提下实现热更新功能？</h2><p>在不使用第三方热更新方案（如 xLua、ILRuntime）的情况下，可以通过以下方式实现热更新：</p>
+<ol>
+<li>资源热更新</li>
+</ol>
+<ul>
+<li>原理：将游戏资源（如场景、预制体、纹理等）打包为 AssetBundle，运行时从服务器下载并加载。</li>
+<li>步骤：<ol>
+<li>打包 AssetBundle：  <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">BuildPipeline.BuildAssetBundles(<span class="string">&quot;AssetBundles&quot;</span>, BuildAssetBundleOptions.None, BuildTarget.Android);</span><br></pre></td></tr></table></figure></li>
+<li>上传到服务器：将生成的 AssetBundle 文件上传到服务器。</li>
+<li>下载 AssetBundle：  <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> (UnityWebRequest webRequest = UnityWebRequestAssetBundle.GetAssetBundle(url))</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">yield</span> <span class="keyword">return</span> webRequest.SendWebRequest();</span><br><span class="line">    AssetBundle bundle = DownloadHandlerAssetBundle.GetContent(webRequest);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>加载资源：  <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">GameObject prefab = bundle.LoadAsset&lt;GameObject&gt;(<span class="string">&quot;MyPrefab&quot;</span>);</span><br><span class="line">Instantiate(prefab);</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+<ol start="2">
+<li>代码热更新</li>
+</ol>
+<ul>
+<li>原理：通过动态加载 DLL 或脚本实现代码更新。</li>
+<li>步骤：<ol>
+<li>编译代码为 DLL：将需要热更新的代码编译为 DLL。  <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 使用 C# 编译器生成 DLL</span></span><br><span class="line">csc /target:library /<span class="keyword">out</span>:MyCode.dll MyCode.cs</span><br></pre></td></tr></table></figure></li>
+<li>上传到服务器：将 DLL 文件上传到服务器。</li>
+<li>下载并加载 DLL：  <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> (UnityWebRequest webRequest = UnityWebRequest.Get(url))</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">yield</span> <span class="keyword">return</span> webRequest.SendWebRequest();</span><br><span class="line">    <span class="built_in">byte</span>[] dllBytes = webRequest.downloadHandler.data;</span><br><span class="line">    Assembly assembly = Assembly.Load(dllBytes);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>反射调用方法：  <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">Type type = assembly.GetType(<span class="string">&quot;MyNamespace.MyClass&quot;</span>);</span><br><span class="line">MethodInfo method = type.GetMethod(<span class="string">&quot;MyMethod&quot;</span>);</span><br><span class="line">method.Invoke(<span class="literal">null</span>, <span class="literal">null</span>);</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+<ol start="3">
+<li>配置文件热更新</li>
+</ol>
+<ul>
+<li>原理：通过更新配置文件（如 JSON、XML）来调整游戏逻辑或数据。</li>
+<li>步骤：<ol>
+<li>上传配置文件：将配置文件上传到服务器。</li>
+<li>下载并解析配置文件：  <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> (UnityWebRequest webRequest = UnityWebRequest.Get(url))</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">yield</span> <span class="keyword">return</span> webRequest.SendWebRequest();</span><br><span class="line">    <span class="built_in">string</span> jsonData = webRequest.downloadHandler.text;</span><br><span class="line">    MyConfig config = JsonUtility.FromJson&lt;MyConfig&gt;(jsonData);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+<p>补充：<br>C#的反射，可以通过热更DLL文件的形式，加载程序集（dll），利用反射执行热更DLL包中的逻辑</p>
+<h2 id="3-Unity-中如何调试排查-Android-上运行的项目问题？"><a href="#3-Unity-中如何调试排查-Android-上运行的项目问题？" class="headerlink" title="3. Unity 中如何调试排查 Android 上运行的项目问题？"></a>3. Unity 中如何调试排查 Android 上运行的项目问题？</h2><ol>
+<li><p>如果需要进行断点调试，通过数据线链接运行项目的Android设备，发布时开启了<br>Development Build 开发模式构建<br>Autoconnect Profiler 自动连接分析器<br>Script Debuggins 脚本调试<br>Wait For Managed Debugger 等待托管调试器<br>等选项<br>然后只需要Build and Run既可以<br>利用Unity的Profiler 性能剖析器窗口排查性能问题<br>并且还可以进行断点调试</p>
+</li>
+<li><p>如果只是获取一些打印调试信息,可以利用Unity2019.4及其以上版本提供的Android Logcat工具获取信息,Unity2019.4以下的版本，可以使用Android的ADB（安卓调试桥）工具</p>
+</li>
+<li><p>如果需要获取设备输入信息，可以利用Unity Remote来测试移动设备的输入相关逻辑</p>
+</li>
+</ol>
+]]></content>
+  </entry>
+  <entry>
+    <title>基础知识3</title>
+    <url>/2025/03/02/Passage/Note3/</url>
+    <content><![CDATA[<h1 id="c"><a href="#c" class="headerlink" title="c#"></a>c#</h1><h2 id="1-泛型的约束有哪几种？"><a href="#1-泛型的约束有哪几种？" class="headerlink" title="1. 泛型的约束有哪几种？"></a>1. 泛型的约束有哪几种？</h2><ul>
+<li><p>where T : struct：</p>
+<ul>
+<li>类型参数必须是值类型（如 int、float、struct 等）。</li>
+</ul>
+</li>
+<li><p>where T : class：</p>
+<ul>
+<li>类型参数必须是引用类型（如 class、interface、delegate 等）。</li>
+</ul>
+</li>
+<li><p>where T : new()：</p>
+<ul>
+<li>类型参数必须有一个无参数的公共构造函数。</li>
+</ul>
+</li>
+<li><p>where T : 基类名：</p>
+<ul>
+<li>类型参数必须是指定基类或其派生类。</li>
+</ul>
+</li>
+<li><p>where T : 接口名：</p>
+<ul>
+<li>类型参数必须实现指定的接口。</li>
+</ul>
+</li>
+<li><p>where T : U：</p>
+<ul>
+<li>类型参数必须是另一个类型参数 U 或其派生类。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MyClass</span>&lt;<span class="title">T</span>&gt; <span class="keyword">where</span> <span class="title">T</span> : <span class="title">IComparable</span>, <span class="title">new</span>()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">CreateInstance</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> T();  <span class="comment">// 必须有无参数构造函数</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">int</span> <span class="title">Compare</span>(<span class="params">T a, T b</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> a.CompareTo(b);  <span class="comment">// 必须实现 IComparable 接口</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>补充：</p>
+<ol>
+<li>值类型约束 T:struct</li>
+<li>引用类型约束 T:class</li>
+<li>公共无参构造约束 T:new()</li>
+<li>类约束 T:类名</li>
+<li>接口约束 T:接口名</li>
+<li>另一个泛型约束 T:U</li>
+</ol>
+<h2 id="2-什么是闭包？可以举例说明"><a href="#2-什么是闭包？可以举例说明" class="headerlink" title="2.什么是闭包？可以举例说明"></a>2.什么是闭包？可以举例说明</h2><p>闭包（Closure）：</p>
+<ul>
+<li><p>闭包是指一个函数（或方法）捕获并保存了其外部作用域中的变量，即使外部作用域已经结束，闭包仍然可以访问这些变量。</p>
+</li>
+<li><p>闭包的本质是一个函数和其引用的外部变量的组合。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> Action <span class="title">CreateClosure</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">int</span> x = <span class="number">10</span>;  <span class="comment">// 局部变量</span></span><br><span class="line">        <span class="keyword">return</span> () =&gt; Console.WriteLine(x);  <span class="comment">// 闭包捕获了 x</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Action action = CreateClosure();</span><br><span class="line">        action();  <span class="comment">// 输出 10，即使 CreateClosure 已经结束，闭包仍然可以访问 x</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>解释：</p>
+<ul>
+<li>CreateClosure 方法中定义了一个局部变量 x。</li>
+<li>返回的匿名函数（() &#x3D;&gt; Console.WriteLine(x)）捕获了 x，形成了闭包。</li>
+<li>即使 CreateClosure 方法已经执行完毕，闭包仍然可以访问并输出 x 的值。</li>
+</ul>
+<p>闭包的应用：</p>
+<ul>
+<li>闭包常用于回调函数、事件处理、延迟执行等场景。</li>
+</ul>
+<p>补充：<br>闭包是指有权访问另一个函数作用域中的变量的函数，所以闭包一般都是指的一个函数，创建这种特殊闭包函数的方式往往是在一个函数中创建另一个函数</p>
+<h2 id="3-内存泄漏指什么？常见的内存泄漏有哪些？"><a href="#3-内存泄漏指什么？常见的内存泄漏有哪些？" class="headerlink" title="3.内存泄漏指什么？常见的内存泄漏有哪些？"></a>3.内存泄漏指什么？常见的内存泄漏有哪些？</h2><p>内存泄漏（Memory Leak）：</p>
+<ul>
+<li>内存泄漏是指程序在运行过程中，动态分配的内存未能正确释放，导致内存占用不断增加，最终可能导致程序崩溃或系统性能下降。</li>
+</ul>
+<p>常见的内存泄漏：</p>
+<ul>
+<li><p>未释放的资源：</p>
+<ul>
+<li>例如文件流、数据库连接、网络连接等未显式关闭或释放。</li>
+</ul>
+</li>
+<li><p>事件未取消订阅：</p>
+<ul>
+<li>当一个对象订阅了事件，但未在对象销毁前取消订阅，会导致事件持有对象的引用，阻止垃圾回收。</li>
+</ul>
+</li>
+<li><p>静态变量持有引用：</p>
+<ul>
+<li>静态变量会一直存在于内存中，如果静态变量持有对象的引用，会导致对象无法被回收。</li>
+</ul>
+</li>
+<li><p>循环引用：</p>
+<ul>
+<li>两个或多个对象相互引用，导致垃圾回收器无法识别它们为垃圾。</li>
+</ul>
+</li>
+<li><p>未释放的缓存：</p>
+<ul>
+<li>缓存中的数据未及时清理，导致内存占用不断增加。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">MyClass</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">event</span> Action MyEvent;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Subscribe</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        MyEvent += HandleEvent;  <span class="comment">// 订阅事件</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">HandleEvent</span>()</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">    ~MyClass()</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">&quot;MyClass finalized&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Test</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass();</span><br><span class="line">    obj.Subscribe();</span><br><span class="line">    <span class="comment">// obj 未取消订阅事件，导致内存泄漏</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>补充：</p>
+<ul>
+<li><p>内存泄漏指的就是对象超过生命周期后而不能被GC回收，一般指不会再使用的引用对象由于某些操作而不能被GC垃圾回收，而一直占用着内存</p>
+</li>
+<li><p>更风趣通俗一点的说就是：没用的家伙没有被当成垃圾回收</p>
+</li>
+<li><p>常见的内存泄漏有：</p>
+</li>
+</ul>
+<ol>
+<li>静态引用</li>
+<li>不使用的引用对象没有置null，一直被引用</li>
+<li>文件操作时，没有使用using或者没有进行Dispose()</li>
+<li>委托或事件注册后没有解除注册（有加就有减）等等</li>
+</ol>
+<h2 id="4-序列化是什么？常见的序列化方式有哪些？什么时候我们会用到序列化？"><a href="#4-序列化是什么？常见的序列化方式有哪些？什么时候我们会用到序列化？" class="headerlink" title="4.序列化是什么？常见的序列化方式有哪些？什么时候我们会用到序列化？"></a>4.序列化是什么？常见的序列化方式有哪些？什么时候我们会用到序列化？</h2><p>序列化（Serialization）：</p>
+<ul>
+<li>序列化是将对象的状态转换为可存储或传输的格式（如字节流、JSON、XML 等）的过程。</li>
+<li>反序列化是将存储或传输的格式重新转换为对象的过程。</li>
+</ul>
+<p>常见的序列化方式：</p>
+<ul>
+<li><p>二进制序列化：</p>
+<ul>
+<li>将对象转换为二进制格式，适用于高效存储或网络传输。</li>
+<li>使用 BinaryFormatter（已过时）或第三方库（如 MessagePack）。</li>
+</ul>
+</li>
+<li><p>XML 序列化：</p>
+<ul>
+<li>将对象转换为 XML 格式，适用于跨平台数据交换。</li>
+<li>使用 XmlSerializer。</li>
+</ul>
+</li>
+<li><p>JSON 序列化：</p>
+<ul>
+<li>将对象转换为 JSON 格式，适用于 Web API 或配置文件。</li>
+<li>使用 JsonSerializer（.NET Core 内置）或第三方库（如 Newtonsoft.Json）。</li>
+</ul>
+</li>
+<li><p>自定义序列化：</p>
+<ul>
+<li>实现 ISerializable 接口，自定义序列化逻辑。</li>
+</ul>
+</li>
+</ul>
+<p>使用场景：</p>
+<ul>
+<li><p>数据存储：</p>
+<ul>
+<li>将对象保存到文件或数据库中。</li>
+</ul>
+</li>
+<li><p>网络传输：</p>
+<ul>
+<li>将对象转换为字节流或 JSON，通过网络传输。</li>
+</ul>
+</li>
+<li><p>跨进程通信：</p>
+<ul>
+<li>在不同进程之间传递对象。</li>
+</ul>
+</li>
+<li><p>配置文件：</p>
+<ul>
+<li>将应用程序的配置保存为 JSON 或 XML 文件。</li>
+</ul>
+</li>
+</ul>
+<p>补充：</p>
+<ul>
+<li>序列化是将程序中数据对象转换为可以存储或传输的形式 的过程。</li>
+<li>举例：<br>比如我们常见的序列化方式 xml、Json、2进制等。就是将内存中的数据按照我们自己定义的规则进行序列化，序列化之后就可以用于存储和传输，当读取和接受数据时，只需要按照对应规则进行反序列化便可得到原始数据，所谓的存储读取和传输接受，一般指的就是数据持久化和网络通讯</li>
+</ul>
+<h1 id="Unity"><a href="#Unity" class="headerlink" title="Unity"></a>Unity</h1><h2 id="1-transform-forward-和-Vector3-forward-的区别"><a href="#1-transform-forward-和-Vector3-forward-的区别" class="headerlink" title="1. transform.forward 和 Vector3.forward 的区别"></a>1. transform.forward 和 Vector3.forward 的区别</h2><p>transform.forward：</p>
+<ul>
+<li>transform.forward 是 GameObject 的 Transform 组件的一个属性。</li>
+<li>它表示物体在世界坐标系中的前方方向（即物体的 Z 轴正方向）。</li>
+<li>它的值是基于物体的旋转（rotation）计算的，因此会随着物体的旋转而变化。</li>
+</ul>
+<p>Vector3.forward：</p>
+<ul>
+<li>Vector3.forward 是一个静态常量，表示世界坐标系中的正 Z 轴方向，其值为 (0, 0, 1)。</li>
+<li>它不会随物体的旋转而变化，始终指向世界坐标系的正 Z 轴。</li>
+</ul>
+<p>区别：</p>
+<ul>
+<li>transform.forward 是相对于物体的局部坐标系，表示物体的前方方向。</li>
+<li>Vector3.forward 是相对于世界坐标系，表示固定的正 Z 轴方向。</li>
+</ul>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    Debug.Log(transform.forward);  <span class="comment">// 输出物体的前方方向</span></span><br><span class="line">    Debug.Log(Vector3.forward);    <span class="comment">// 输出 (0, 0, 1)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>补充：</p>
+<ul>
+<li>Vector3.forword始终是(0,0,1),可以认为是世界坐标系的Z轴朝向</li>
+<li>transform.forword是当前物体的局部坐标系的Z轴在世界坐标系下的朝向,可以认为是物体自己的Z轴朝向</li>
+</ul>
+<h2 id="2-Unity-中如何解决过多创建和删除对象带来的卡顿问题？"><a href="#2-Unity-中如何解决过多创建和删除对象带来的卡顿问题？" class="headerlink" title="2. Unity 中如何解决过多创建和删除对象带来的卡顿问题？"></a>2. Unity 中如何解决过多创建和删除对象带来的卡顿问题？</h2><p>问题原因：</p>
+<ul>
+<li>频繁创建和删除对象会导致内存分配和垃圾回收（GC）频繁触发，从而引起卡顿。</li>
+</ul>
+<p>解决方案：</p>
+<ul>
+<li><p>使用对象池（Object Pooling）：</p>
+<ul>
+<li>预先创建一组对象并存储在池中，需要时从池中获取对象，使用完毕后将对象放回池中，而不是直接销毁。</li>
+<li>对象池可以有效减少内存分配和垃圾回收的频率。</li>
+</ul>
+</li>
+<li><p>减少临时对象的创建：</p>
+<ul>
+<li>避免在频繁调用的方法（如 Update）中创建临时对象（如 new Vector3()、new List() 等）。</li>
+<li>可以使用缓存变量或静态变量来复用对象。</li>
+</ul>
+</li>
+<li><p>手动触发垃圾回收：</p>
+<ul>
+<li>在合适的时机（如场景切换时）手动调用 System.GC.Collect()，避免在游戏运行时频繁触发 GC。</li>
+</ul>
+</li>
+<li><p>使用结构体（Struct）代替类（Class）：</p>
+<ul>
+<li>结构体是值类型，分配在栈上，不会触发垃圾回收。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ObjectPool</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> GameObject prefab;</span><br><span class="line">    <span class="keyword">private</span> Queue&lt;GameObject&gt; pool = <span class="keyword">new</span> Queue&lt;GameObject&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> GameObject <span class="title">GetObject</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (pool.Count &gt; <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            GameObject obj = pool.Dequeue();</span><br><span class="line">            obj.SetActive(<span class="literal">true</span>);</span><br><span class="line">            <span class="keyword">return</span> obj;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> Instantiate(prefab);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ReturnObject</span>(<span class="params">GameObject obj</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        obj.SetActive(<span class="literal">false</span>);</span><br><span class="line">        pool.Enqueue(obj);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>补充：<br>可以通过协同程序，分时分步创建或删除，原理是避免一帧中处理太多对象</p>
+<h2 id="3-游戏中的成就系统，我们一般会使用设计模式中的哪种模式来制作？为什么？"><a href="#3-游戏中的成就系统，我们一般会使用设计模式中的哪种模式来制作？为什么？" class="headerlink" title="3. 游戏中的成就系统，我们一般会使用设计模式中的哪种模式来制作？为什么？"></a>3. 游戏中的成就系统，我们一般会使用设计模式中的哪种模式来制作？为什么？</h2><p>使用模式：观察者模式（Observer Pattern）<br>原因：</p>
+<ul>
+<li><p>解耦：</p>
+<ul>
+<li>成就系统需要监听游戏中各种事件（如击杀敌人、收集物品等），观察者模式可以将成就系统与游戏逻辑解耦，避免直接依赖。</li>
+</ul>
+</li>
+<li><p>扩展性：</p>
+<ul>
+<li>当需要新增成就时，只需添加新的观察者（成就），而不需要修改现有代码。</li>
+</ul>
+</li>
+<li><p>灵活性：</p>
+<ul>
+<li>成就系统可以动态订阅和取消订阅事件，灵活应对不同的游戏状态。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 事件管理器</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">EventManager</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">event</span> Action&lt;<span class="built_in">int</span>&gt; OnEnemyKilled;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">TriggerEnemyKilled</span>(<span class="params"><span class="built_in">int</span> enemyId</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        OnEnemyKilled?.Invoke(enemyId);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 成就系统</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AchievementSystem</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">AchievementSystem</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        EventManager.OnEnemyKilled += HandleEnemyKilled;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">HandleEnemyKilled</span>(<span class="params"><span class="built_in">int</span> enemyId</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (enemyId == <span class="number">1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.Log(<span class="string">&quot;成就达成：击杀 Boss！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+补充：</li>
+</ul>
+</li>
+<li><p>观察者模式，Unity基础小框架中的 事件中心 就是基于观察者模式的一种订阅通知机制</p>
+</li>
+</ul>
+<h2 id="4-请简述热更新的流程"><a href="#4-请简述热更新的流程" class="headerlink" title="4.请简述热更新的流程"></a>4.请简述热更新的流程</h2><p>热更新（Hot Update）：</p>
+<ul>
+<li>热更新是指在不需要重新发布游戏的情况下，通过下载和加载新的资源或代码来更新游戏内容。</li>
+</ul>
+<p>流程：</p>
+<ul>
+<li><p>资源打包：</p>
+<ul>
+<li>将需要更新的资源（如脚本、纹理、预制体等）打包为 AssetBundle。</li>
+</ul>
+</li>
+<li><p>版本管理：</p>
+<ul>
+<li>在服务器上维护一个版本文件，记录当前最新的资源版本号。</li>
+</ul>
+</li>
+<li><p>版本检测：</p>
+<ul>
+<li>游戏启动时，向服务器请求版本文件，检查本地资源是否需要更新。</li>
+</ul>
+</li>
+<li><p>下载更新：</p>
+<ul>
+<li>如果需要更新，从服务器下载新的 AssetBundle 文件。</li>
+</ul>
+</li>
+<li><p>加载更新：</p>
+<ul>
+<li>下载完成后，加载新的 AssetBundle 文件，替换旧的资源或代码。</li>
+</ul>
+</li>
+<li><p>运行新逻辑：</p>
+<ul>
+<li>使用新的资源或代码运行游戏。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="function">IEnumerator <span class="title">CheckForUpdates</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">string</span> versionUrl = <span class="string">&quot;http://yourserver.com/version.txt&quot;</span>;</span><br><span class="line">    UnityWebRequest request = UnityWebRequest.Get(versionUrl);</span><br><span class="line">    <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> latestVersion = request.downloadHandler.text;</span><br><span class="line">        <span class="keyword">if</span> (latestVersion != localVersion)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">DownloadAssetBundle</span>()</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">IEnumerator <span class="title">DownloadAssetBundle</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">string</span> bundleUrl = <span class="string">&quot;http://yourserver.com/assetbundle&quot;</span>;</span><br><span class="line">    UnityWebRequest request = UnityWebRequestAssetBundle.GetAssetBundle(bundleUrl);</span><br><span class="line">    <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">    &#123;</span><br><span class="line">        AssetBundle bundle = DownloadHandlerAssetBundle.GetContent(request);</span><br><span class="line">        <span class="comment">// 加载并使用新的 AssetBundle</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+补充：</li>
+</ul>
+</li>
+</ul>
+<p>本地存在资源对比文件和已有资源</p>
+<ol>
+<li>下载资源服务器中的对比文件</li>
+<li>将下载下来的远端对比文件和本地的做对比，记录需要更新的资源和要移除的资源</li>
+<li>根据第二步中记录的信息，进行资源下载和移除</li>
+<li>更新本地对比文件，其内容和刚才下载的远端对比文件一致</li>
+</ol>
+<h2 id="5-我们应该如何优化-UI（基于-UGUI）？"><a href="#5-我们应该如何优化-UI（基于-UGUI）？" class="headerlink" title="5. 我们应该如何优化 UI（基于 UGUI）？"></a>5. 我们应该如何优化 UI（基于 UGUI）？</h2><p>UGUI 优化方法：</p>
+<ul>
+<li><p>减少 Canvas 的重绘：</p>
+<ul>
+<li>将动态 UI 和静态 UI 分开，使用不同的 Canvas。</li>
+<li>将频繁变化的 UI 元素放在单独的 Canvas 中，避免触发整个 Canvas 的重绘。</li>
+</ul>
+</li>
+<li><p>合批（Batching）：</p>
+<ul>
+<li>确保 UI 元素使用相同的材质和纹理，以触发合批。</li>
+<li>使用图集（Atlas）将多个小纹理合并为一个大纹理。</li>
+</ul>
+</li>
+<li><p>减少 Raycast Target：</p>
+<ul>
+<li>对于不需要交互的 UI 元素，禁用 Raycast Target，减少射线检测的开销。</li>
+</ul>
+</li>
+<li><p>避免频繁激活&#x2F;禁用 UI：</p>
+<ul>
+<li>频繁激活&#x2F;禁用 UI 元素会导致 Canvas 重新构建布局，可以使用 CanvasGroup 控制 UI 的可见性。</li>
+</ul>
+</li>
+<li><p>使用对象池：</p>
+<ul>
+<li>对于频繁创建和销毁的 UI 元素（如列表项），使用对象池来复用对象。</li>
+</ul>
+</li>
+<li><p>优化布局：</p>
+<ul>
+<li>避免使用复杂的布局组件（如 GridLayoutGroup、VerticalLayoutGroup），在运行时计算并固定 UI 元素的位置。</li>
+</ul>
+</li>
+<li><p>减少透明度和遮罩：</p>
+<ul>
+<li>透明度和遮罩会增加渲染开销，尽量减少使用。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 使用 CanvasGroup 控制 UI 可见性</span></span><br><span class="line">CanvasGroup canvasGroup = GetComponent&lt;CanvasGroup&gt;();</span><br><span class="line">canvasGroup.alpha = <span class="number">0</span>;  <span class="comment">// 隐藏 UI</span></span><br><span class="line">canvasGroup.blocksRaycasts = <span class="literal">false</span>;  <span class="comment">// 禁用交互</span></span><br></pre></td></tr></table></figure>
+<p>总结：<br>通过减少 Canvas 重绘、合批、禁用不必要的 Raycast Target、使用对象池等方法，可以有效优化 UGUI 的性能。</p>
+<p>补充：</p>
+<ul>
+<li><p>性能上</p>
+<ul>
+<li>打图集，将同一画面的图片放入一个图集中，目的是减少DrawCall</li>
+<li>面板中的图片和文字尽量不要交叉，因为这样会产生多余的DrawCall</li>
+<li>取消勾选不必要的射线检测，UI组件上的</li>
+<li>减少透明图片的重叠使用等等</li>
+</ul>
+</li>
+<li><p>内存上</p>
+<ul>
+<li>大图尽量使用9宫格缩放，让美术设计UI面板底图时不要过于复杂，尽量是有规律的纹理和颜色变化</li>
+<li>图片的RGBA通道分离等等</li>
+</ul>
+</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>基础知识4</title>
+    <url>/2025/03/02/Passage/Note4/</url>
+    <content><![CDATA[<h1 id="C"><a href="#C" class="headerlink" title="C#"></a>C#</h1><h2 id="1-字符串中-string-str-null、string-str-“”、string-str-string-Empty-的区别"><a href="#1-字符串中-string-str-null、string-str-“”、string-str-string-Empty-的区别" class="headerlink" title="1. 字符串中 string str &#x3D; null、string str &#x3D; “”、string str &#x3D; string.Empty 的区别"></a>1. 字符串中 string str &#x3D; null、string str &#x3D; “”、string str &#x3D; string.Empty 的区别</h2><ul>
+<li><p>string str &#x3D; null:</p>
+<ul>
+<li>str 是一个空引用，不指向任何对象。</li>
+<li>对 str 进行操作（如调用方法或访问属性）会抛出 NullReferenceException 异常。</li>
+</ul>
+</li>
+<li><p>string str &#x3D; “”:</p>
+<ul>
+<li>str 是一个空字符串，指向一个长度为 0 的字符串对象。</li>
+<li>可以对 str 进行操作，如调用字符串方法（如 Length），不会抛出异常。</li>
+</ul>
+</li>
+<li><p>string str &#x3D; string.Empty:</p>
+<ul>
+<li>string.Empty 是 “” 的等价形式，表示一个空字符串。</li>
+<li>与 “” 相同，str 指向一个长度为 0 的字符串对象，操作时不会抛出异常。</li>
+</ul>
+</li>
+</ul>
+<p>总结:</p>
+<ul>
+<li>null 表示没有对象引用。</li>
+<li>“” 和 string.Empty 表示空字符串对象，两者在功能上相同，但 string.Empty 更具可读性。</li>
+</ul>
+<p>补充：</p>
+<ul>
+<li>str &#x3D; null 在堆中没有分配内存地址</li>
+<li>str &#x3D; “” 和 string.Empty 一样都是在堆内存中分配了空间，里面存储的是空字符串</li>
+<li>string.Empty是一个静态只读变量</li>
+</ul>
+<h2 id="2-C-重载运算符-和-以及-Object-Equals-的意义"><a href="#2-C-重载运算符-和-以及-Object-Equals-的意义" class="headerlink" title="2. C# 重载运算符 &#x3D;&#x3D; 和 !&#x3D; 以及 Object.Equals 的意义"></a>2. C# 重载运算符 &#x3D;&#x3D; 和 !&#x3D; 以及 Object.Equals 的意义</h2><ul>
+<li><p>重载 &#x3D;&#x3D; 和 !&#x3D;:</p>
+<ul>
+<li>允许自定义类型的相等性比较逻辑。</li>
+<li>默认情况下，&#x3D;&#x3D; 和 !&#x3D; 比较引用类型的引用地址，值类型的值。</li>
+<li>重载后可以根据业务逻辑定义相等性规则。</li>
+</ul>
+</li>
+<li><p>重写 Object.Equals:</p>
+<ul>
+<li>Equals 是 Object 类的虚方法，用于比较两个对象是否相等。</li>
+<li>重写 Equals 可以自定义对象的相等性逻辑。</li>
+<li>通常与 GetHashCode 一起重写，以确保对象在哈希表等数据结构中行为一致。</li>
+</ul>
+</li>
+</ul>
+<p>意义:</p>
+<ul>
+<li>提供灵活的相等性比较方式，适应不同业务场景。</li>
+<li>确保对象在集合（如 Dictionary、HashSet）中正确工作。</li>
+</ul>
+<p>补充：<br>为了判断两个对象的非引用地址相等，我们可以选择 使用 重载运算符 &#x3D;&#x3D; 和 !&#x3D; 或者重写Equals方法，来自定义判断两个对象是否相等，如果想保留原有的引用地址相等判断，那么一般我们选择重写Equals方法</p>
+<h2 id="3-开发时如何选择-string-和-StringBuilder"><a href="#3-开发时如何选择-string-和-StringBuilder" class="headerlink" title="3. 开发时如何选择 string 和 StringBuilder"></a>3. 开发时如何选择 string 和 StringBuilder</h2><ul>
+<li><p>string:</p>
+<ul>
+<li>不可变，每次修改都会创建新对象。</li>
+<li>适合少量字符串操作或字符串内容不频繁变化的场景。</li>
+<li>优点：线程安全，易于使用。</li>
+</ul>
+</li>
+<li><p>StringBuilder:</p>
+<ul>
+<li>可变，内部维护一个字符缓冲区，修改时不会创建新对象。</li>
+<li>适合频繁修改字符串的场景（如拼接大量字符串）。</li>
+<li>优点：性能高，减少内存分配和垃圾回收压力。</li>
+</ul>
+</li>
+</ul>
+<p>选择建议:</p>
+<ul>
+<li>少量字符串操作或字符串内容固定时，使用 string。</li>
+<li>频繁修改字符串（如循环拼接）时，使用 StringBuilder。</li>
+</ul>
+<p>补充：<br>string在每次拼接时都会产生垃圾，而StringBuilder在拼接时，是在原空间中进行修改，不会产生垃圾，会自动帮助我们扩容，所以当字符串需要频繁修改拼接时，我们使用StringBuilder</p>
+<h2 id="4-NET-跨语言原理"><a href="#4-NET-跨语言原理" class="headerlink" title="4. .NET 跨语言原理"></a>4. .NET 跨语言原理</h2><ul>
+<li><p>CLI（Common Language Infrastructure）:</p>
+<ul>
+<li>.NET 提供了一套通用的语言基础设施，包括 CTS（通用类型系统）和 CLS（公共语言规范）。</li>
+<li>CTS 定义了所有 .NET 语言共享的类型系统，确保不同语言之间的类型兼容。</li>
+<li>CLS 定义了语言互操作的标准，符合 CLS 的语言可以无缝交互。</li>
+</ul>
+</li>
+<li><p>中间语言（IL）:</p>
+<ul>
+<li>.NET 编译器将源代码编译为中间语言（IL），而不是直接编译为机器码。</li>
+<li>IL 是与平台无关的中间代码，可以在任何支持 .NET 的平台上运行。</li>
+</ul>
+</li>
+<li><p>CLR（Common Language Runtime）:</p>
+<ul>
+<li>CLR 负责将 IL 编译为机器码并执行。</li>
+<li>提供内存管理、异常处理、安全性等功能。</li>
+</ul>
+</li>
+</ul>
+<p>总结:</p>
+<ul>
+<li>通过 CTS、CLS 和 IL，.NET 实现了跨语言互操作性。</li>
+</ul>
+<p>补充：<br>.Net制定了了CLI公共语言基础结构的规则，只要是按照该规则设计的语言在进行.Net相关开发时，编译器会将源代码（C#、VB等等）编译为CIL通用中间代码。也就是说不管什么语言进行开发，最终都会统一规范变为中间代码，最终通过CLR（公共语言运行时或者称为.Net虚拟）将中间代码翻译为对应操作系统的原生代码（机器码）在操作系统（Windows）上运行</p>
+<h2 id="5-NET-跨平台原理"><a href="#5-NET-跨平台原理" class="headerlink" title="5. .NET 跨平台原理"></a>5. .NET 跨平台原理</h2><ul>
+<li><p>.NET Core &#x2F; .NET 5+:</p>
+<ul>
+<li>.NET Core 和 .NET 5 及以上版本是跨平台的实现。</li>
+<li>通过重新设计运行时和基础库，支持 Windows、Linux 和 macOS。</li>
+</ul>
+</li>
+<li><p>运行时（Runtime）:</p>
+<ul>
+<li>不同平台有各自的运行时实现（如 Windows 上的 CoreCLR，Linux 上的 Mono）。</li>
+<li>运行时负责将 IL 编译为平台特定的机器码。</li>
+</ul>
+</li>
+<li><p>基础类库（BCL）:</p>
+<ul>
+<li>.NET 提供了一套跨平台的基础类库，封装了平台差异。</li>
+<li>开发者可以使用统一的 API 编写跨平台代码。</li>
+</ul>
+</li>
+<li><p>自包含部署:</p>
+<ul>
+<li>.NET 支持将应用和运行时打包在一起，无需目标平台安装 .NET 运行时。</li>
+</ul>
+</li>
+</ul>
+<p>总结:</p>
+<ul>
+<li>通过运行时和基础类库的跨平台实现，.NET 可以在多个操作系统上运行。</li>
+</ul>
+<p>补充：<br>由于.Net Framework中利用CLI和CLR实现了跨语言，CLR主要起到一个翻译、运行、管理中间代码的作用<br>.Net Core和Mono就是利用了CLR的这一特点，为不同操作系统实现对应CLR（公共语言运行时或.Net虚拟机）<br>那么不同操作系统对应的CLR就会将IL中间代码翻译为对应系统可以执行的原生代码（机器码），达到跨平台的目的</p>
+<h1 id="Unity"><a href="#Unity" class="headerlink" title="Unity"></a>Unity</h1><h2 id="1-Unity中的Destroy和DestroyImmediate的区别是什么？"><a href="#1-Unity中的Destroy和DestroyImmediate的区别是什么？" class="headerlink" title="1. Unity中的Destroy和DestroyImmediate的区别是什么？"></a>1. Unity中的Destroy和DestroyImmediate的区别是什么？</h2><ul>
+<li><p>Destroy:</p>
+<ul>
+<li>延迟销毁：Destroy不会立即销毁对象，而是将对象标记为待销毁，等到当前帧结束后才会真正销毁。</li>
+<li>安全：由于是延迟销毁，不会立即影响当前帧的逻辑执行，因此更安全。</li>
+<li>适用场景：适用于大多数情况，尤其是在游戏运行时销毁对象。</li>
+</ul>
+</li>
+<li><p>DestroyImmediate:</p>
+<ul>
+<li>立即销毁：DestroyImmediate会立即销毁对象，不会等待当前帧结束。</li>
+<li>风险：由于是立即销毁，可能会影响当前帧的逻辑执行，尤其是在复杂的场景中，可能会导致不可预见的错误。</li>
+<li>适用场景：通常用于编辑器脚本中，或者在确保不会影响当前逻辑的情况下使用。</li>
+</ul>
+</li>
+</ul>
+<p>补充：</p>
+<ul>
+<li><p>Destroy方法<br>可以指定删除的延迟时间，如果第二个参数不填写，最快也会在下一帧前完成删除。也就是如果Destroy对象后马上判空，该对象不会为空。<br>实际的对象销毁操作始终延迟到当前更新循环结束，但始终在渲染前完成</p>
+</li>
+<li><p>DestroyImmediate方法会立即销毁删除对象</p>
+</li>
+</ul>
+<h2 id="2-第一次执行GameObject-Instantiate时可能出现明显的卡顿，如何解决该问题？"><a href="#2-第一次执行GameObject-Instantiate时可能出现明显的卡顿，如何解决该问题？" class="headerlink" title="2. 第一次执行GameObject.Instantiate时可能出现明显的卡顿，如何解决该问题？"></a>2. 第一次执行GameObject.Instantiate时可能出现明显的卡顿，如何解决该问题？</h2><ul>
+<li>原因：第一次实例化对象时，Unity需要加载和初始化相关资源（如材质、纹理、网格等），这会导致卡顿。</li>
+</ul>
+<p>解决方案：</p>
+<ul>
+<li>预加载（Preloading）：在游戏启动时或场景加载时，提前实例化并隐藏这些对象，然后在需要时激活它们。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">GameObject prefab = Resources.Load&lt;GameObject&gt;(<span class="string">&quot;PrefabName&quot;</span>);</span><br><span class="line">GameObject instance = Instantiate(prefab);</span><br><span class="line">instance.SetActive(<span class="literal">false</span>); <span class="comment">// 预加载并隐藏</span></span><br></pre></td></tr></table></figure></li>
+<li>对象池（Object Pooling）：使用对象池技术，预先创建多个对象并存储在池中，使用时从池中取出，用完后放回池中，避免频繁的实例化和销毁。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ObjectPool</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> GameObject prefab;</span><br><span class="line">    <span class="keyword">private</span> Queue&lt;GameObject&gt; pool = <span class="keyword">new</span> Queue&lt;GameObject&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> GameObject <span class="title">GetObject</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (pool.Count &gt; <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            GameObject obj = pool.Dequeue();</span><br><span class="line">            obj.SetActive(<span class="literal">true</span>);</span><br><span class="line">            <span class="keyword">return</span> obj;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> Instantiate(prefab);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ReturnObject</span>(<span class="params">GameObject obj</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        obj.SetActive(<span class="literal">false</span>);</span><br><span class="line">        pool.Enqueue(obj);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>异步加载：使用Addressables或AssetBundles进行异步加载，避免主线程阻塞。</li>
+</ul>
+<p>补充：</p>
+<p>我们可以通过Unity自带的性能分析工具Profiler分析实例化时造成卡顿的原因</p>
+<ul>
+<li><p>程序上，一般我们可以从以下3个方面去优化它</p>
+<ul>
+<li>相关资源加载：如果是由于资源加载带来的卡顿，我们可以在进入场景时进行资源预加载，总体思路就是将较大资源提前或者分帧加载</li>
+<li>脚本初始化：实例化对象时，会同步执行它身上挂载所有脚本的初始化工作，我们可以策略性的改变一些初始化逻辑，尽量不要再Awake和Start中做较复杂的逻辑，或者将复杂逻辑提前或者分帧处理</li>
+<li>对于会频繁使用的对象，我们可以使用缓存池</li>
+</ul>
+</li>
+<li><p>美术上</p>
+<ul>
+<li>不能只追求好的美术效果，而不考虑资源的消耗，要根据项目的实际情况，来设定模型的骨骼数、面数以及贴图的数量和大小上限。</li>
+<li>在制作粒子特效时，粒子数、粒子面积、贴图等都要尽量少和小。</li>
+<li>美术上要遵循：用最少的资源做出做好的效果，不能一味的用性能去换效果，最终会得不偿失</li>
+</ul>
+<h2 id="3-Lua如何实现面向对象的三大特性？"><a href="#3-Lua如何实现面向对象的三大特性？" class="headerlink" title="3. Lua如何实现面向对象的三大特性？"></a>3. Lua如何实现面向对象的三大特性？</h2><p>Lua本身没有内置的面向对象支持，但可以通过表（table）和元表（metatable）来模拟面向对象的三大特性：</p>
+</li>
+<li><p>封装：使用表来表示对象，将数据和函数封装在表中。</p>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="keyword">local</span> obj = &#123;</span><br><span class="line">    value = <span class="number">10</span>,</span><br><span class="line">    getValue = <span class="function"><span class="keyword">function</span><span class="params">(self)</span></span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">self</span>.value</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>继承：通过设置元表来实现继承。</p>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="keyword">local</span> parent = &#123; value = <span class="number">10</span> &#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">parent:getValue</span><span class="params">()</span></span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">self</span>.value</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> child = &#123; value = <span class="number">20</span> &#125;</span><br><span class="line"><span class="built_in">setmetatable</span>(child, &#123; <span class="built_in">__index</span> = parent &#125;)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(child:getValue()) <span class="comment">-- 输出 20</span></span><br></pre></td></tr></table></figure></li>
+<li><p>多态：通过重写父类方法来实现多态。</p>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="keyword">local</span> parent = &#123; value = <span class="number">10</span> &#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">parent:getValue</span><span class="params">()</span></span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">self</span>.value</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> child = &#123; value = <span class="number">20</span> &#125;</span><br><span class="line"><span class="built_in">setmetatable</span>(child, &#123; <span class="built_in">__index</span> = parent &#125;)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">child:getValue</span><span class="params">()</span></span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">self</span>.value * <span class="number">2</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(child:getValue()) <span class="comment">-- 输出 40</span></span><br></pre></td></tr></table></figure>
+<p>补充：<br>面向对象三大特性</p>
+</li>
+<li><p>封装：利用table进行封装</p>
+</li>
+<li><p>继承：利用元表和__index模拟继承关系，设置子类的元表为父类，父类的__index为父类自己，当子类身上找不到对应属性和方法时，会查找元表的__index中的内容，也就是会查找父类中的内容，通过这种方式来模拟继承</p>
+</li>
+<li><p>多态：子类自己去实现带：的同名方法即可</p>
+</li>
+</ul>
+<h2 id="4-Unity使用IL2CPP打包时，我们应该注意什么？如何避免（可以举例说明）？"><a href="#4-Unity使用IL2CPP打包时，我们应该注意什么？如何避免（可以举例说明）？" class="headerlink" title="4. Unity使用IL2CPP打包时，我们应该注意什么？如何避免（可以举例说明）？"></a>4. Unity使用IL2CPP打包时，我们应该注意什么？如何避免（可以举例说明）？</h2><ul>
+<li>注意事项：<ul>
+<li>代码兼容性：IL2CPP会将C#代码转换为C++代码，某些C#特性（如反射、动态类型）可能不被完全支持。</li>
+<li>性能开销：IL2CPP会增加构建时间和包体大小，尤其是在处理大量代码时。</li>
+<li>平台限制：IL2CPP主要用于iOS、WebGL等平台，某些平台可能不支持。</li>
+</ul>
+</li>
+</ul>
+<p>如何避免问题：</p>
+<ul>
+<li>减少反射使用：尽量避免使用反射，尤其是在性能敏感的地方。可以使用代码生成工具（如Roslyn）来替代反射。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 避免使用反射</span></span><br><span class="line"><span class="keyword">var</span> method = <span class="keyword">typeof</span>(MyClass).GetMethod(<span class="string">&quot;MyMethod&quot;</span>);</span><br><span class="line">method.Invoke(myInstance, <span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用委托或直接调用</span></span><br><span class="line">myInstance.MyMethod();</span><br></pre></td></tr></table></figure></li>
+<li>优化代码结构：减少动态类型的使用，尽量使用静态类型和接口。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 避免使用dynamic</span></span><br><span class="line"><span class="built_in">dynamic</span> obj = GetObject();</span><br><span class="line">obj.DoSomething();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用接口或基类</span></span><br><span class="line">IMyInterface obj = GetObject() <span class="keyword">as</span> IMyInterface;</span><br><span class="line">obj.DoSomething();</span><br></pre></td></tr></table></figure></li>
+<li>提前测试：在开发过程中尽早使用IL2CPP进行测试，确保代码在不同平台上的兼容性。</li>
+<li>使用[Preserve]属性：确保某些代码在IL2CPP优化过程中不会被移除。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">[<span class="meta">UnityEngine.Scripting.Preserve</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">MyMethod</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 确保该方法不会被IL2CPP优化掉</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>补充：<br>使用IL2CPP打包时，最可能出现的问题就是代码裁剪，IL2CPP会自动将它认为不会使用的代码裁剪掉，比如我们在使用Lua开发时，其实会用到很多UnityEngine或者我们自己写的C#代码，但是这些代码并不会在引擎中直接使用，都是在Lua中使用的，此时最容易出现的问题就是代码裁剪，导致打包后出现异常和报错。</p>
+<p>要避免IL2CPP的裁剪有3种方式，我们可以组合使用</p>
+<ol>
+<li>设置打包时的裁剪等级</li>
+<li>通过xml文件配置明确规定哪些内容不裁剪</li>
+<li>在静态方法中显示调用不想被裁剪的内容</li>
+</ol>
+]]></content>
+  </entry>
+  <entry>
+    <title>基础知识6</title>
+    <url>/2025/03/02/Passage/Note7/</url>
+    <content><![CDATA[<h1 id="C"><a href="#C" class="headerlink" title="C#"></a>C#</h1><h2 id="1-C-中如何让一个类不能再被其他类所继承？"><a href="#1-C-中如何让一个类不能再被其他类所继承？" class="headerlink" title="1. C#中如何让一个类不能再被其他类所继承？"></a>1. C#中如何让一个类不能再被其他类所继承？</h2><p>在C#中，可以通过将类声明为 sealed 来阻止其他类继承它。sealed 关键字用于修饰类，表示该类不能被继承。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">sealed</span> <span class="keyword">class</span> <span class="title">MyClass</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 类成员</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-C-中使用泛型的好处是什么？"><a href="#2-C-中使用泛型的好处是什么？" class="headerlink" title="2. C#中使用泛型的好处是什么？"></a>2. C#中使用泛型的好处是什么？</h2><p>使用泛型的主要好处包括：</p>
+<ul>
+<li>类型安全：泛型允许在编译时进行类型检查，减少了运行时类型转换的错误。</li>
+<li>代码复用：泛型允许编写可以处理多种数据类型的通用代码，减少了代码重复。</li>
+<li>性能提升：泛型避免了装箱和拆箱操作（对于值类型），提高了性能。</li>
+<li>更好的可读性和可维护性：泛型代码通常更简洁、更易于理解和维护。</li>
+</ul>
+<p>补充：</p>
+<ol>
+<li>可以为不同类型对象的相同行为进行通用处理，提升代码复用率</li>
+<li>避免装箱拆箱，提升性能</li>
+</ol>
+<h2 id="3-C-中元组对于我们的作用是什么？"><a href="#3-C-中元组对于我们的作用是什么？" class="headerlink" title="3. C#中元组对于我们的作用是什么？"></a>3. C#中元组对于我们的作用是什么？</h2><p>元组（Tuple）在C#中的作用是：</p>
+<ul>
+<li>轻量级数据结构：元组允许将多个不同类型的值组合成一个简单的数据结构，而不需要定义一个完整的类或结构体。</li>
+<li>临时数据存储：元组适用于需要临时存储和传递多个值的场景，尤其是在方法返回值中。</li>
+<li>简化代码：元组可以减少代码量，避免定义过多的临时类或结构体。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> person = (Name: <span class="string">&quot;John&quot;</span>, Age: <span class="number">30</span>);</span><br><span class="line">Console.WriteLine(<span class="string">$&quot;Name: <span class="subst">&#123;person.Name&#125;</span>, Age: <span class="subst">&#123;person.Age&#125;</span>&quot;</span>);</span><br></pre></td></tr></table></figure>
+补充：<br>可以在不用写数据结构类的情况下<br>利用元组处理多返回值，或者临时数据的集合</li>
+</ul>
+<h2 id="4-请说明Thread、ThreadPool、Task分别是什么？并简单说明彼此的区别"><a href="#4-请说明Thread、ThreadPool、Task分别是什么？并简单说明彼此的区别" class="headerlink" title="4. 请说明Thread、ThreadPool、Task分别是什么？并简单说明彼此的区别"></a>4. 请说明Thread、ThreadPool、Task分别是什么？并简单说明彼此的区别</h2><ul>
+<li>Thread：Thread 是C#中用于创建和管理线程的类。每个 Thread 对象代表一个独立的执行线程。Thread 提供了对线程的精细控制，但创建和销毁线程的开销较大。</li>
+<li>ThreadPool：ThreadPool 是一个线程池，它管理一组预先创建的线程，用于执行多个任务。ThreadPool 减少了线程创建和销毁的开销，适合执行大量短时间的任务。但 ThreadPool 不提供对线程的精细控制。</li>
+<li>Task：Task 是C#中用于表示异步操作的类。Task 是基于 ThreadPool 的，但它提供了更高层次的抽象，支持任务并行、任务组合、取消、异常处理等功能。Task 是推荐的方式来实现异步编程。</li>
+</ul>
+<p>区别：</p>
+<ul>
+<li>Thread 提供了对线程的精细控制，但开销较大。</li>
+<li>ThreadPool 减少了线程创建和销毁的开销，适合短时间任务。</li>
+<li>Task 提供了更高层次的抽象，适合异步编程和任务并行。</li>
+</ul>
+<p>补充：<br>Thread是线程，可以使用他开启线程处理复杂逻辑，避免主线程卡顿<br>ThreadPool是线程池，他是C#为线程实现的缓存池，主要用于减少线程的创建，减少GC触发<br>Task是任务，他是基于线程池的优化，让我们可以更方便的控制线程</p>
+<h2 id="5-请简述GC（垃圾回收）产生的原因，并至少说出避免GC发生的三种方式？"><a href="#5-请简述GC（垃圾回收）产生的原因，并至少说出避免GC发生的三种方式？" class="headerlink" title="5. 请简述GC（垃圾回收）产生的原因，并至少说出避免GC发生的三种方式？"></a>5. 请简述GC（垃圾回收）产生的原因，并至少说出避免GC发生的三种方式？</h2><p>GC（垃圾回收）产生的原因：<br>GC的主要作用是自动管理内存，回收不再使用的对象所占用的内存，防止内存泄漏。当对象不再被引用时，GC会将其标记为垃圾并在适当的时候回收内存。</p>
+<ul>
+<li><p>避免GC发生的三种方式：</p>
+<ol>
+<li>对象池（Object Pooling）：通过重用对象而不是频繁创建和销毁对象，减少GC的压力。</li>
+<li>减少临时对象：避免在频繁执行的代码路径中创建大量临时对象，例如在循环中创建字符串或集合。</li>
+<li>使用值类型：在适当的情况下使用值类型（如 struct）而不是引用类型（如 class），因为值类型分配在栈上，不会触发GC。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 示例：使用对象池</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ObjectPool</span>&lt;<span class="title">T</span>&gt; <span class="keyword">where</span> <span class="title">T</span> : <span class="title">new</span>()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> Queue&lt;T&gt; _pool = <span class="keyword">new</span> Queue&lt;T&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">Get</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (_pool.Count &gt; <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> _pool.Dequeue();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> T();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Return</span>(<span class="params">T item</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _pool.Enqueue(item);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+补充：</li>
+</ol>
+</li>
+<li><p>GC产生的原因是 避免堆内存溢出而产生的回收机制<br>当不再使用的堆内存占用达到一定上限时，将会进行垃圾回收</p>
+</li>
+<li><p>避免方式：</p>
+<ol>
+<li>尽量减少new对象，尽量复用对象（可使用缓存池）</li>
+<li>用StringBuilder替换String，避免字符串拼接时产生垃圾</li>
+<li>公共对象用静态声明</li>
+</ol>
+</li>
+</ul>
+<h1 id="Unity"><a href="#Unity" class="headerlink" title="Unity"></a>Unity</h1><h2 id="1-Unity中动态加载资源的方式有哪些？"><a href="#1-Unity中动态加载资源的方式有哪些？" class="headerlink" title="1. Unity中动态加载资源的方式有哪些？"></a>1. Unity中动态加载资源的方式有哪些？</h2><p>在Unity中，动态加载资源的方式主要有以下几种：</p>
+<ul>
+<li><p>Resources.Load：从 Resources 文件夹中加载资源。这种方式适合小规模资源加载，但资源必须放在 Resources 文件夹中，打包时会被全部包含在游戏中。</p>
+  <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">GameObject prefab = Resources.Load&lt;GameObject&gt;(<span class="string">&quot;Prefabs/MyPrefab&quot;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><p>AssetBundle：将资源打包成 AssetBundle，运行时动态加载。这种方式适合大规模资源管理，可以减少初始包体大小，支持热更新。</p>
+  <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">AssetBundle bundle = AssetBundle.LoadFromFile(<span class="string">&quot;path/to/assetbundle&quot;</span>);</span><br><span class="line">GameObject prefab = bundle.LoadAsset&lt;GameObject&gt;(<span class="string">&quot;MyPrefab&quot;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><p>Addressables：Unity 的 Addressable Asset System 提供了一种更灵活的资源管理方式，支持按需加载和卸载资源，适合大型项目。</p>
+  <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">Addressables.LoadAssetAsync&lt;GameObject&gt;(<span class="string">&quot;MyPrefab&quot;</span>).Completed += OnLoadDone;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>WWW 或 UnityWebRequest：从网络或本地路径加载资源，适合加载远程资源或动态下载内容。</p>
+  <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">UnityWebRequest request = UnityWebRequest.Get(<span class="string">&quot;http://example.com/myasset&quot;</span>);</span><br><span class="line"><span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line">AssetBundle bundle = DownloadHandlerAssetBundle.GetContent(request);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="2-Unity中的光照贴图的作用是什么？"><a href="#2-Unity中的光照贴图的作用是什么？" class="headerlink" title="2. Unity中的光照贴图的作用是什么？"></a>2. Unity中的光照贴图的作用是什么？</h2><p>光照贴图（Lightmap）的作用是预计算场景中的光照信息并将其存储为纹理，从而在运行时实现高质量的光照效果，而不需要实时计算光照。光照贴图的主要优点包括：</p>
+<ul>
+<li>提升性能：光照信息是预计算的，运行时不需要实时计算光照，减少了GPU和CPU的负担。</li>
+<li>高质量光照：可以生成复杂的光照效果，如全局光照（GI）、阴影、间接光照等。</li>
+<li>适用于静态物体：光照贴图通常用于静态物体，动态物体则需要使用实时光照。</li>
+</ul>
+<p>光照贴图通过烘焙（Bake）生成，存储在场景中，运行时直接使用。</p>
+<p>补充：<br>在移动平台上（或配置较低的设备上）使用实时光源是非常消耗性能的<br>我们可以使用光照贴图，预先将环境光烘焙到贴图上，可以减少性能消耗</p>
+<h2 id="3-Unity场景中有两个点连成了一条线，想要旋转这条线，应该怎么做？"><a href="#3-Unity场景中有两个点连成了一条线，想要旋转这条线，应该怎么做？" class="headerlink" title="3. Unity场景中有两个点连成了一条线，想要旋转这条线，应该怎么做？"></a>3. Unity场景中有两个点连成了一条线，想要旋转这条线，应该怎么做？</h2><p>在Unity中，可以通过以下步骤旋转一条由两个点组成的线：</p>
+<ol>
+<li>确定线的中心点：计算两个点的中心位置。</li>
+<li>创建旋转矩阵或使用Quaternion：根据旋转角度和旋转轴创建旋转矩阵或四元数。</li>
+<li>应用旋转：将旋转应用到两个点的位置。</li>
+</ol>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">RotateLine</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> Vector3 pointA = <span class="keyword">new</span> Vector3(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">public</span> Vector3 pointB = <span class="keyword">new</span> Vector3(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">float</span> angle = <span class="number">45f</span>; <span class="comment">// 旋转角度</span></span><br><span class="line">    <span class="keyword">public</span> Vector3 axis = Vector3.forward; <span class="comment">// 旋转轴</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Update</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 计算中心点</span></span><br><span class="line">        Vector3 center = (pointA + pointB) / <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 计算旋转四元数</span></span><br><span class="line">        Quaternion rotation = Quaternion.AngleAxis(angle, axis);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将点相对于中心点旋转</span></span><br><span class="line">        pointA = center + rotation * (pointA - center);</span><br><span class="line">        pointB = center + rotation * (pointB - center);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 绘制线</span></span><br><span class="line">        Debug.DrawLine(pointA, pointB, Color.red);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>补充：<br>两点相减得到一条向量，向量乘以四元数即可</p>
+<h2 id="4-LOD（多细节层次）和-MipMap（纹理图）的作用是什么？"><a href="#4-LOD（多细节层次）和-MipMap（纹理图）的作用是什么？" class="headerlink" title="4. LOD（多细节层次）和 MipMap（纹理图）的作用是什么？"></a>4. LOD（多细节层次）和 MipMap（纹理图）的作用是什么？</h2><ul>
+<li><p>LOD（Level of Detail）：</p>
+<ul>
+<li>作用：根据物体与摄像机的距离，动态切换不同细节层次的模型，以优化性能。</li>
+<li>应用场景：适用于3D模型，当物体远离摄像机时，使用低多边形模型；当物体靠近摄像机时，使用高多边形模型。</li>
+<li>优点：减少渲染负担，提高帧率。</li>
+</ul>
+</li>
+<li><p>MipMap：</p>
+<ul>
+<li>作用：为纹理生成一系列逐渐缩小的版本，根据物体与摄像机的距离自动选择合适的纹理级别。</li>
+<li>应用场景：适用于纹理，当纹理在屏幕上显示较小时，使用低分辨率版本；当纹理显示较大时，使用高分辨率版本。</li>
+<li>优点：减少纹理锯齿（Aliasing），提高渲染质量，同时优化性能。</li>
+</ul>
+</li>
+</ul>
+<p>补充：<br>优化游戏性能<br>从不同距离渲染对象时，使用的是质量不同的模型(LOD)和贴图(Mipmap)。（一般情况是越远面数越低，图片越小）</p>
+<h2 id="5-游戏开发中，客户端和服务端交互数据，程序中常用方式是什么？"><a href="#5-游戏开发中，客户端和服务端交互数据，程序中常用方式是什么？" class="headerlink" title="5. 游戏开发中，客户端和服务端交互数据，程序中常用方式是什么？"></a>5. 游戏开发中，客户端和服务端交互数据，程序中常用方式是什么？</h2><p>在游戏开发中，客户端和服务端交互数据的常用方式包括：</p>
+<ol>
+<li>HTTP&#x2F;HTTPS 请求：<ul>
+<li>使用 RESTful API 或自定义 API 进行数据交互。</li>
+<li>适合非实时交互，如登录、排行榜、商城等。</li>
+<li>示例：使用 UnityWebRequest 发送 HTTP 请求。 <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">UnityWebRequest request = UnityWebRequest.Get(<span class="string">&quot;http://example.com/api/data&quot;</span>);</span><br><span class="line"><span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"><span class="built_in">string</span> response = request.downloadHandler.text;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li>WebSocket：</li>
+</ol>
+<ul>
+<li>提供全双工通信，适合实时交互，如聊天、多人游戏同步等。</li>
+<li>示例：使用第三方库（如 WebSocketSharp）实现 WebSocket 通信。  <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">WebSocket ws = <span class="keyword">new</span> WebSocket(<span class="string">&quot;ws://example.com/socket&quot;</span>);</span><br><span class="line">ws.OnMessage += (sender, e) =&gt; Debug.Log(<span class="string">&quot;Message: &quot;</span> + e.Data);</span><br><span class="line">ws.Connect();</span><br><span class="line">ws.Send(<span class="string">&quot;Hello Server&quot;</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="3">
+<li>TCP&#x2F;UDP 套接字：</li>
+</ol>
+<ul>
+<li>使用底层套接字进行高效的数据传输，适合实时性要求高的游戏（如FPS、MOBA）。</li>
+<li>TCP 提供可靠的数据传输，UDP 提供低延迟但不保证可靠性。</li>
+<li>示例：使用 System.Net.Sockets 实现 TCP 通信。  <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">TcpClient client = <span class="keyword">new</span> TcpClient(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">12345</span>);</span><br><span class="line">NetworkStream stream = client.GetStream();</span><br><span class="line"><span class="built_in">byte</span>[] data = Encoding.UTF8.GetBytes(<span class="string">&quot;Hello Server&quot;</span>);</span><br><span class="line">stream.Write(data, <span class="number">0</span>, data.Length);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="4">
+<li>RPC（远程过程调用）：</li>
+</ol>
+<ul>
+<li>在游戏引擎（如 Unity 的 Mirror 或 Photon）中，使用 RPC 机制调用远程方法。适合多人游戏中的状态同步和事件触发。  <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">[<span class="meta">ClientRpc</span>]</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">RpcSendMessage</span>(<span class="params"><span class="built_in">string</span> message</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    Debug.Log(<span class="string">&quot;Received: &quot;</span> + message);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+补充：</li>
+<li>消息数据：Socket或HTTP</li>
+<li>文件数据：FTP或HTTP</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>基础知识5</title>
+    <url>/2025/03/02/Passage/Note6/</url>
+    <content><![CDATA[<h1 id="C"><a href="#C" class="headerlink" title="C#"></a>C#</h1><h1 id="1-C-中如何让自定义容器类能够使用for循环遍历？（通过-类对象-索引-的形式遍历）"><a href="#1-C-中如何让自定义容器类能够使用for循环遍历？（通过-类对象-索引-的形式遍历）" class="headerlink" title="1.C#中如何让自定义容器类能够使用for循环遍历？（通过 类对象[索引] 的形式遍历）"></a>1.C#中如何让自定义容器类能够使用for循环遍历？（通过 类对象[索引] 的形式遍历）</h1><p>要让自定义容器类支持 for 循环遍历（通过索引访问），需要实现索引器（Indexer）。索引器允许类实例像数组一样通过索引访问元素。</p>
+<p>实现步骤：</p>
+<ol>
+<li>定义一个索引器，使用 this 关键字。</li>
+<li>在索引器中实现 get 和 set 访问器。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MyContainer</span>&lt;<span class="title">T</span>&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> T[] _items;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyContainer</span>(<span class="params"><span class="built_in">int</span> capacity</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _items = <span class="keyword">new</span> T[capacity];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实现索引器</span></span><br><span class="line">    <span class="keyword">public</span> T <span class="keyword">this</span>[<span class="built_in">int</span> index]</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (index &lt; <span class="number">0</span> || index &gt;= _items.Length)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfRangeException();</span><br><span class="line">            <span class="keyword">return</span> _items[index];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">set</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (index &lt; <span class="number">0</span> || index &gt;= _items.Length)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfRangeException();</span><br><span class="line">            _items[index] = <span class="keyword">value</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> Length =&gt; _items.Length;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用示例</span></span><br><span class="line">MyContainer&lt;<span class="built_in">int</span>&gt; container = <span class="keyword">new</span> MyContainer&lt;<span class="built_in">int</span>&gt;(<span class="number">5</span>);</span><br><span class="line">container[<span class="number">0</span>] = <span class="number">10</span>;</span><br><span class="line">container[<span class="number">1</span>] = <span class="number">20</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; container.Length; i++)</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(container[i]); <span class="comment">// 输出 10, 20, 0, 0, 0</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+补充：<br>通过在类中实现索引器实现</li>
+</ol>
+<h1 id="2-C-中如何让自定义容器类能够使用-foreach-循环遍历？"><a href="#2-C-中如何让自定义容器类能够使用-foreach-循环遍历？" class="headerlink" title="2. C# 中如何让自定义容器类能够使用 foreach 循环遍历？"></a>2. C# 中如何让自定义容器类能够使用 foreach 循环遍历？</h1><p>要让自定义容器类支持 foreach 循环遍历，需要实现 IEnumerable 接口，并提供 GetEnumerator 方法。</p>
+<p>实现步骤：</p>
+<ol>
+<li>实现 IEnumerable 接口。</li>
+<li>实现 GetEnumerator 方法，返回一个枚举器（Enumerator）。</li>
+<li>枚举器需要实现 IEnumerator 接口，包括 Current、MoveNext 和 Reset 方法。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MyContainer</span>&lt;<span class="title">T</span>&gt; : <span class="title">IEnumerable</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> T[] _items;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyContainer</span>(<span class="params"><span class="built_in">int</span> capacity</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _items = <span class="keyword">new</span> T[capacity];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> T <span class="keyword">this</span>[<span class="built_in">int</span> index]</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span> =&gt; _items[index];</span><br><span class="line">        <span class="keyword">set</span> =&gt; _items[index] = <span class="keyword">value</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> Length =&gt; _items.Length;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实现 IEnumerable 接口</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IEnumerator <span class="title">GetEnumerator</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> MyEnumerator&lt;T&gt;(_items);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 自定义枚举器</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">class</span> <span class="title">MyEnumerator</span>&lt;<span class="title">T</span>&gt; : <span class="title">IEnumerator</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> T[] _items;</span><br><span class="line">        <span class="keyword">private</span> <span class="built_in">int</span> _index = <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">MyEnumerator</span>(<span class="params">T[] items</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            _items = items;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">object</span> Current</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">get</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span> (_index &lt; <span class="number">0</span> || _index &gt;= _items.Length)</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> InvalidOperationException();</span><br><span class="line">                <span class="keyword">return</span> _items[_index];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="built_in">bool</span> <span class="title">MoveNext</span>()</span></span><br><span class="line">        &#123;</span><br><span class="line">            _index++;</span><br><span class="line">            <span class="keyword">return</span> _index &lt; _items.Length;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Reset</span>()</span></span><br><span class="line">        &#123;</span><br><span class="line">            _index = <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用示例</span></span><br><span class="line">MyContainer&lt;<span class="built_in">int</span>&gt; container = <span class="keyword">new</span> MyContainer&lt;<span class="built_in">int</span>&gt;(<span class="number">5</span>);</span><br><span class="line">container[<span class="number">0</span>] = <span class="number">10</span>;</span><br><span class="line">container[<span class="number">1</span>] = <span class="number">20</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> (<span class="built_in">int</span> item <span class="keyword">in</span> container)</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(item); <span class="comment">// 输出 10, 20, 0, 0, 0</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+补充：<br>通过为该类实现迭代器可以让其使用foreach遍历</li>
+</ol>
+<ul>
+<li>传统方式：<br>继承IEnumerator、IEnumerable两个接口<br>实现其中的 <ol>
+<li>GetEnumerator方法</li>
+<li>Current属性</li>
+<li>MoveNext方法</li>
+</ol>
+</li>
+<li>语法糖方式：<br>利用yield return语法糖，实现GetEnumerator方法即可完成迭代器的实现</li>
+</ul>
+<h2 id="3-C-中接口的作用是什么？"><a href="#3-C-中接口的作用是什么？" class="headerlink" title="3. C# 中接口的作用是什么？"></a>3. C# 中接口的作用是什么？</h2><p>接口的作用：</p>
+<ul>
+<li><p>定义契约：</p>
+<ul>
+<li>接口定义了一组方法、属性或事件的签名，要求实现类必须实现这些成员。</li>
+<li>它提供了一种标准化的方式，确保不同类具有相同的行为。</li>
+</ul>
+</li>
+<li><p>实现多态：</p>
+<ul>
+<li>接口允许不同的类实现相同的接口，从而可以通过接口类型调用这些类的实例。</li>
+<li>例如，IEnumerable 接口可以让数组、列表、字典等不同类型的集合支持 foreach 循环。</li>
+</ul>
+</li>
+<li><p>解耦和扩展性：</p>
+<ul>
+<li>通过接口，可以将实现与定义分离，降低代码的耦合度。</li>
+<li>新增功能时，只需实现新的接口，而不需要修改现有代码。</li>
+</ul>
+</li>
+<li><p>支持依赖注入：</p>
+<ul>
+<li>接口是依赖注入（DI）的核心，通过接口可以将具体实现注入到需要的地方，便于测试和维护。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">ILogger</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Log</span>(<span class="params"><span class="built_in">string</span> message</span>)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ConsoleLogger</span> : <span class="title">ILogger</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Log</span>(<span class="params"><span class="built_in">string</span> message</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(message);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">FileLogger</span> : <span class="title">ILogger</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Log</span>(<span class="params"><span class="built_in">string</span> message</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        System.IO.File.AppendAllText(<span class="string">&quot;log.txt&quot;</span>, message);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用接口</span></span><br><span class="line">ILogger logger = <span class="keyword">new</span> ConsoleLogger();</span><br><span class="line">logger.Log(<span class="string">&quot;Hello, Interface!&quot;</span>);</span><br></pre></td></tr></table></figure>
+补充：<br>用于建立行为的继承关系，而不是对象<br>不同对象，有相同行为时，我们可以利用接口对不同对象的行为进行整合</li>
+</ul>
+</li>
+</ul>
+<h2 id="4-Unity-引擎中哪些功能使用了-C-的反射功能？"><a href="#4-Unity-引擎中哪些功能使用了-C-的反射功能？" class="headerlink" title="4. Unity 引擎中哪些功能使用了 C# 的反射功能？"></a>4. Unity 引擎中哪些功能使用了 C# 的反射功能？</h2><p>Unity 中使用反射的功能：</p>
+<ol>
+<li><p>序列化与反序列化：</p>
+<ul>
+<li>Unity 使用反射来序列化和反序列化场景、预制体和脚本数据。</li>
+<li>例如，SerializeField 和 Serializable 属性通过反射访问私有字段或自定义类型。</li>
+</ul>
+</li>
+<li><p>Inspector 面板：</p>
+<ul>
+<li>Unity 的 Inspector 面板通过反射动态显示脚本的公共字段和属性。</li>
+<li>例如，public 变量会自动显示在 Inspector 中。</li>
+</ul>
+</li>
+<li><p>事件系统：</p>
+<ul>
+<li>Unity 的事件系统（如 UnityEvent）使用反射来绑定和调用方法。</li>
+<li>例如，在 Inspector 中为按钮绑定事件时，Unity 会通过反射找到对应的方法。</li>
+</ul>
+</li>
+<li><p>自定义编辑器工具：</p>
+<ul>
+<li>Unity 编辑器扩展（如自定义 Inspector 或窗口）使用反射来访问和修改脚本数据。</li>
+<li>例如，EditorGUILayout.PropertyField 通过反射显示和编辑序列化属性。</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.Reflection;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ReflectionExample</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 使用反射获取私有字段</span></span><br><span class="line">        FieldInfo fieldInfo = <span class="keyword">typeof</span>(MyClass).GetField(<span class="string">&quot;_privateField&quot;</span>, BindingFlags.NonPublic | BindingFlags.Instance);</span><br><span class="line">        MyClass obj = <span class="keyword">new</span> MyClass();</span><br><span class="line">        fieldInfo.SetValue(obj, <span class="number">42</span>);</span><br><span class="line">        Debug.Log(fieldInfo.GetValue(obj)); <span class="comment">// 输出 42</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MyClass</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">int</span> _privateField;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>补充：</p>
+<ol>
+<li>Inspector窗口中显示的内容</li>
+<li>预设体文件</li>
+<li>场景文件</li>
+<li>Unity中的各种特性</li>
+</ol>
+<h1 id="Unity"><a href="#Unity" class="headerlink" title="Unity"></a>Unity</h1><h2 id="1-Unity-中-Awake-和-Start-两个生命周期函数，分别在什么时候被调用？"><a href="#1-Unity-中-Awake-和-Start-两个生命周期函数，分别在什么时候被调用？" class="headerlink" title="1. Unity 中 Awake 和 Start 两个生命周期函数，分别在什么时候被调用？"></a>1. Unity 中 Awake 和 Start 两个生命周期函数，分别在什么时候被调用？</h2><p>Awake：</p>
+<ul>
+<li><p>调用时机：在脚本实例化时立即调用，无论脚本是否启用（enabled 为 true 或 false）。</p>
+</li>
+<li><p>特点：</p>
+<ul>
+<li>在脚本生命周期中只调用一次。</li>
+<li>适合用于初始化变量或引用其他对象。</li>
+</ul>
+</li>
+</ul>
+<p>Start：</p>
+<ul>
+<li><p>调用时机：在脚本启用后（enabled 为 true），且在第一次 Update 之前调用。</p>
+</li>
+<li><p>特点：</p>
+<ul>
+<li>在脚本生命周期中只调用一次。</li>
+<li>适合用于初始化依赖于其他对象的内容。</li>
+</ul>
+</li>
+</ul>
+<p>总结：<br>Awake：脚本实例化时调用，适合初始化。<br>Start：脚本启用后调用，适合依赖其他对象的初始化。</p>
+<p>补充：</p>
+<ul>
+<li>Awake：运行时<br>当脚本被动态添加到对象上时立即被调用。当对象被实例化时，依附它的脚本会立即调用Awake，它类似构造函数</li>
+<li>Start：第一次Update之前被调用</li>
+</ul>
+<h2 id="2-Unity-场景上有多个对象，都分别挂载了-n-个脚本。我们如何控制不同脚本间生命周期函数-Awake-的执行先后顺序？"><a href="#2-Unity-场景上有多个对象，都分别挂载了-n-个脚本。我们如何控制不同脚本间生命周期函数-Awake-的执行先后顺序？" class="headerlink" title="2. Unity 场景上有多个对象，都分别挂载了 n 个脚本。我们如何控制不同脚本间生命周期函数 Awake 的执行先后顺序？"></a>2. Unity 场景上有多个对象，都分别挂载了 n 个脚本。我们如何控制不同脚本间生命周期函数 Awake 的执行先后顺序？</h2><p>Unity 默认不保证 Awake 的执行顺序，但可以通过以下方法控制：</p>
+<ul>
+<li><p>方法 1：脚本执行顺序设置</p>
+<ol>
+<li>打开 Project Settings → Script Execution Order。</li>
+<li>添加需要控制的脚本，并设置它们的执行顺序（数值越小，优先级越高）。</li>
+<li>Unity 会按照设置的顺序调用 Awake。</li>
+</ol>
+</li>
+<li><p>方法 2：手动控制初始化</p>
+<ul>
+<li>在某个脚本的 Awake 中手动调用其他脚本的初始化方法。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ScriptA</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Awake</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 手动调用 ScriptB 的初始化方法</span></span><br><span class="line">        FindObjectOfType&lt;ScriptB&gt;().Initialize();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ScriptB</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Initialize</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 初始化逻辑</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>方法 3：使用依赖注入</p>
+<ul>
+<li>通过设计模式（如单例模式或服务定位器）确保脚本按需初始化。</li>
+</ul>
+</li>
+</ul>
+<p>补充：</p>
+<ol>
+<li>可以通过选中脚本文件，点击Inspector窗口右上角的Execution Order（执行顺序）按钮 </li>
+<li>可以打开Project Setting窗口，选择Script Execution Order选项</li>
+</ol>
+<p>通过这两种方式我们可以打开脚本执行顺序窗口<br>在其中我们可以自己设置自定义脚本的执行顺序</p>
+<h2 id="3-想要在-Unity-中使用指针，我们需要进行哪些操作？"><a href="#3-想要在-Unity-中使用指针，我们需要进行哪些操作？" class="headerlink" title="3. 想要在 Unity 中使用指针，我们需要进行哪些操作？"></a>3. 想要在 Unity 中使用指针，我们需要进行哪些操作？</h2><p>在 Unity 中使用指针需要启用 不安全代码（Unsafe Code），并使用 unsafe 关键字。</p>
+<p>步骤：</p>
+<ol>
+<li><p>启用不安全代码：</p>
+<ul>
+<li>打开 Player Settings → Other Settings。</li>
+<li>勾选 Allow ‘unsafe’ code。</li>
+</ul>
+</li>
+<li><p>使用 unsafe 关键字：</p>
+<ul>
+<li>在代码中使用 unsafe 块或标记方法为 unsafe。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">unsafe</span> <span class="keyword">void</span> <span class="title">UsePointer</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">int</span> <span class="keyword">value</span> = <span class="number">10</span>;</span><br><span class="line">    <span class="built_in">int</span>* pointer = &amp;<span class="keyword">value</span>;</span><br><span class="line">    Debug.Log(*pointer); <span class="comment">// 输出 10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>编译：</p>
+<ul>
+<li>确保项目编译时支持不安全代码。</li>
+</ul>
+</li>
+</ol>
+<h2 id="4-Unity-中的协同程序中-yield-return-不同的内容，代表的含义不同。请说明下面这些-yield-return-的含义："><a href="#4-Unity-中的协同程序中-yield-return-不同的内容，代表的含义不同。请说明下面这些-yield-return-的含义：" class="headerlink" title="4. Unity 中的协同程序中 yield return 不同的内容，代表的含义不同。请说明下面这些 yield return 的含义："></a>4. Unity 中的协同程序中 yield return 不同的内容，代表的含义不同。请说明下面这些 yield return 的含义：</h2><ol>
+<li><p>yield return 数字;</p>
+<ul>
+<li>含义：暂停协同程序，等待指定帧数后继续执行。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="number">5</span>; <span class="comment">// 等待 5 帧后继续执行</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>yield return null;</p>
+<ul>
+<li>含义：暂停协同程序，等待下一帧继续执行。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="literal">null</span>; <span class="comment">// 等待下一帧</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>yield return new WaitForSeconds(数字);</p>
+<ul>
+<li>含义：暂停协同程序，等待指定的秒数后继续执行。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="keyword">new</span> <span class="title">WaitForSeconds</span>(<span class="params"><span class="number">2</span></span>)</span>; <span class="comment">// 等待 2 秒</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>yield return new WaitForFixedUpdate();</p>
+<ul>
+<li>含义：暂停协同程序，等待下一次 FixedUpdate 调用后继续执行。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="keyword">new</span> <span class="title">WaitForFixedUpdate</span>()</span>; <span class="comment">// 等待 FixedUpdate</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>yield return new WaitForEndOfFrame();</p>
+<ul>
+<li>含义：暂停协同程序，等待当前帧结束后继续执行。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="keyword">new</span> <span class="title">WaitForEndOfFrame</span>()</span>; <span class="comment">// 等待帧结束</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>yield break;</p>
+<ul>
+<li>含义：立即终止协同程序。<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">yield</span> <span class="keyword">break</span>; <span class="comment">// 终止协同程序</span></span><br></pre></td></tr></table></figure>
+补充：</li>
+</ul>
+</li>
+<li><p>yield return 数字; 下一帧执行</p>
+</li>
+<li><p>yield return null;  下一帧执行</p>
+</li>
+<li><p>yield return new WaitForSeconds(数字); 等待指定秒后执行</p>
+</li>
+<li><p>yield return new WaitForFixedUpdate(); 等待下一个固定物理帧更新时执行</p>
+</li>
+<li><p>yield return new WaitForEndOfFrame(); 等待摄像机和GUI渲染完成后执行</p>
+</li>
+<li><p>yield break; 跳出协程</p>
+</li>
+</ol>
+<h2 id="5-使用-Unity-协同程序进行异步加载时，底层是否会使用多线程？"><a href="#5-使用-Unity-协同程序进行异步加载时，底层是否会使用多线程？" class="headerlink" title="5. 使用 Unity 协同程序进行异步加载时，底层是否会使用多线程？"></a>5. 使用 Unity 协同程序进行异步加载时，底层是否会使用多线程？</h2><p>不会。</p>
+<ul>
+<li>原因：<ul>
+<li>Unity 的协同程序是基于单线程的，它通过 yield 关键字将任务分割成多个步骤，在主线程中按帧执行。</li>
+<li>协同程序的本质是迭代器（Iterator），通过 IEnumerator 实现暂停和恢复。</li>
+</ul>
+</li>
+</ul>
+<p>补充：<br>可能会。<br>协同程序的原理是分时分步完成指定逻辑，在其中的某一步骤中，是可以使用多线程来完成某些加载操作的，多线程加载完成后，再进入协同程序的下一步继续执行</p>
+]]></content>
   </entry>
 </search>

@@ -1,0 +1,363 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>基础知识6 | 忘歸人</title><meta name="author" content="Megumin"><meta name="copyright" content="Megumin"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="C#1. C#中如何让一个类不能再被其他类所继承？在C#中，可以通过将类声明为 sealed 来阻止其他类继承它。sealed 关键字用于修饰类，表示该类不能被继承。 1234public sealed class MyClass&#123;    &#x2F;&#x2F; 类成员&#125; 2. C#中使用泛型的好处是什么？使用泛型的主要好处包括：  类型安全：泛型允许在编译时进行类型检查，减少了运行时类型转换的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基础知识6">
+<meta property="og:url" content="https://megumin.github.io.git/2025/03/02/Passage/Note7/index.html">
+<meta property="og:site_name" content="忘歸人">
+<meta property="og:description" content="C#1. C#中如何让一个类不能再被其他类所继承？在C#中，可以通过将类声明为 sealed 来阻止其他类继承它。sealed 关键字用于修饰类，表示该类不能被继承。 1234public sealed class MyClass&#123;    &#x2F;&#x2F; 类成员&#125; 2. C#中使用泛型的好处是什么？使用泛型的主要好处包括：  类型安全：泛型允许在编译时进行类型检查，减少了运行时类型转换的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://megumin.github.io.git/img/xiaoyuan2.jpg">
+<meta property="article:published_time" content="2025-03-02T14:00:00.000Z">
+<meta property="article:modified_time" content="2025-03-02T14:19:31.711Z">
+<meta property="article:author" content="Megumin">
+<meta property="article:tag" content="めぐみん">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://megumin.github.io.git/img/xiaoyuan2.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://megumin.github.io.git/2025/03/02/Passage/Note7/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":600,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '基础知识6',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/chuyin.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/makima.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 時間軸</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-heartbeat"></i><span> 清單</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音樂</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 電影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/xiaoyuan2.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">忘歸人</span></a><a class="nav-page-title" href="/"><span class="site-name">基础知识6</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 時間軸</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-heartbeat"></i><span> 清單</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音樂</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 電影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">基础知识6</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-03-02T14:00:00.000Z" title="发表于 2025-03-02 22:00:00">2025-03-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-03-02T14:19:31.711Z" title="更新于 2025-03-02 22:19:31">2025-03-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="C"><a href="#C" class="headerlink" title="C#"></a>C#</h1><h2 id="1-C-中如何让一个类不能再被其他类所继承？"><a href="#1-C-中如何让一个类不能再被其他类所继承？" class="headerlink" title="1. C#中如何让一个类不能再被其他类所继承？"></a>1. C#中如何让一个类不能再被其他类所继承？</h2><p>在C#中，可以通过将类声明为 sealed 来阻止其他类继承它。sealed 关键字用于修饰类，表示该类不能被继承。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">sealed</span> <span class="keyword">class</span> <span class="title">MyClass</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 类成员</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-C-中使用泛型的好处是什么？"><a href="#2-C-中使用泛型的好处是什么？" class="headerlink" title="2. C#中使用泛型的好处是什么？"></a>2. C#中使用泛型的好处是什么？</h2><p>使用泛型的主要好处包括：</p>
+<ul>
+<li>类型安全：泛型允许在编译时进行类型检查，减少了运行时类型转换的错误。</li>
+<li>代码复用：泛型允许编写可以处理多种数据类型的通用代码，减少了代码重复。</li>
+<li>性能提升：泛型避免了装箱和拆箱操作（对于值类型），提高了性能。</li>
+<li>更好的可读性和可维护性：泛型代码通常更简洁、更易于理解和维护。</li>
+</ul>
+<p>补充：</p>
+<ol>
+<li>可以为不同类型对象的相同行为进行通用处理，提升代码复用率</li>
+<li>避免装箱拆箱，提升性能</li>
+</ol>
+<h2 id="3-C-中元组对于我们的作用是什么？"><a href="#3-C-中元组对于我们的作用是什么？" class="headerlink" title="3. C#中元组对于我们的作用是什么？"></a>3. C#中元组对于我们的作用是什么？</h2><p>元组（Tuple）在C#中的作用是：</p>
+<ul>
+<li>轻量级数据结构：元组允许将多个不同类型的值组合成一个简单的数据结构，而不需要定义一个完整的类或结构体。</li>
+<li>临时数据存储：元组适用于需要临时存储和传递多个值的场景，尤其是在方法返回值中。</li>
+<li>简化代码：元组可以减少代码量，避免定义过多的临时类或结构体。<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> person = (Name: <span class="string">&quot;John&quot;</span>, Age: <span class="number">30</span>);</span><br><span class="line">Console.WriteLine(<span class="string">$&quot;Name: <span class="subst">&#123;person.Name&#125;</span>, Age: <span class="subst">&#123;person.Age&#125;</span>&quot;</span>);</span><br></pre></td></tr></table></figure>
+补充：<br>可以在不用写数据结构类的情况下<br>利用元组处理多返回值，或者临时数据的集合</li>
+</ul>
+<h2 id="4-请说明Thread、ThreadPool、Task分别是什么？并简单说明彼此的区别"><a href="#4-请说明Thread、ThreadPool、Task分别是什么？并简单说明彼此的区别" class="headerlink" title="4. 请说明Thread、ThreadPool、Task分别是什么？并简单说明彼此的区别"></a>4. 请说明Thread、ThreadPool、Task分别是什么？并简单说明彼此的区别</h2><ul>
+<li>Thread：Thread 是C#中用于创建和管理线程的类。每个 Thread 对象代表一个独立的执行线程。Thread 提供了对线程的精细控制，但创建和销毁线程的开销较大。</li>
+<li>ThreadPool：ThreadPool 是一个线程池，它管理一组预先创建的线程，用于执行多个任务。ThreadPool 减少了线程创建和销毁的开销，适合执行大量短时间的任务。但 ThreadPool 不提供对线程的精细控制。</li>
+<li>Task：Task 是C#中用于表示异步操作的类。Task 是基于 ThreadPool 的，但它提供了更高层次的抽象，支持任务并行、任务组合、取消、异常处理等功能。Task 是推荐的方式来实现异步编程。</li>
+</ul>
+<p>区别：</p>
+<ul>
+<li>Thread 提供了对线程的精细控制，但开销较大。</li>
+<li>ThreadPool 减少了线程创建和销毁的开销，适合短时间任务。</li>
+<li>Task 提供了更高层次的抽象，适合异步编程和任务并行。</li>
+</ul>
+<p>补充：<br>Thread是线程，可以使用他开启线程处理复杂逻辑，避免主线程卡顿<br>ThreadPool是线程池，他是C#为线程实现的缓存池，主要用于减少线程的创建，减少GC触发<br>Task是任务，他是基于线程池的优化，让我们可以更方便的控制线程</p>
+<h2 id="5-请简述GC（垃圾回收）产生的原因，并至少说出避免GC发生的三种方式？"><a href="#5-请简述GC（垃圾回收）产生的原因，并至少说出避免GC发生的三种方式？" class="headerlink" title="5. 请简述GC（垃圾回收）产生的原因，并至少说出避免GC发生的三种方式？"></a>5. 请简述GC（垃圾回收）产生的原因，并至少说出避免GC发生的三种方式？</h2><p>GC（垃圾回收）产生的原因：<br>GC的主要作用是自动管理内存，回收不再使用的对象所占用的内存，防止内存泄漏。当对象不再被引用时，GC会将其标记为垃圾并在适当的时候回收内存。</p>
+<ul>
+<li><p>避免GC发生的三种方式：</p>
+<ol>
+<li>对象池（Object Pooling）：通过重用对象而不是频繁创建和销毁对象，减少GC的压力。</li>
+<li>减少临时对象：避免在频繁执行的代码路径中创建大量临时对象，例如在循环中创建字符串或集合。</li>
+<li>使用值类型：在适当的情况下使用值类型（如 struct）而不是引用类型（如 class），因为值类型分配在栈上，不会触发GC。<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 示例：使用对象池</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ObjectPool</span>&lt;<span class="title">T</span>&gt; <span class="keyword">where</span> <span class="title">T</span> : <span class="title">new</span>()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> Queue&lt;T&gt; _pool = <span class="keyword">new</span> Queue&lt;T&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">Get</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (_pool.Count &gt; <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> _pool.Dequeue();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> T();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Return</span>(<span class="params">T item</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _pool.Enqueue(item);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+补充：</li>
+</ol>
+</li>
+<li><p>GC产生的原因是 避免堆内存溢出而产生的回收机制<br>当不再使用的堆内存占用达到一定上限时，将会进行垃圾回收</p>
+</li>
+<li><p>避免方式：</p>
+<ol>
+<li>尽量减少new对象，尽量复用对象（可使用缓存池）</li>
+<li>用StringBuilder替换String，避免字符串拼接时产生垃圾</li>
+<li>公共对象用静态声明</li>
+</ol>
+</li>
+</ul>
+<h1 id="Unity"><a href="#Unity" class="headerlink" title="Unity"></a>Unity</h1><h2 id="1-Unity中动态加载资源的方式有哪些？"><a href="#1-Unity中动态加载资源的方式有哪些？" class="headerlink" title="1. Unity中动态加载资源的方式有哪些？"></a>1. Unity中动态加载资源的方式有哪些？</h2><p>在Unity中，动态加载资源的方式主要有以下几种：</p>
+<ul>
+<li><p>Resources.Load：从 Resources 文件夹中加载资源。这种方式适合小规模资源加载，但资源必须放在 Resources 文件夹中，打包时会被全部包含在游戏中。</p>
+  <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GameObject prefab = Resources.Load&lt;GameObject&gt;(<span class="string">&quot;Prefabs/MyPrefab&quot;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><p>AssetBundle：将资源打包成 AssetBundle，运行时动态加载。这种方式适合大规模资源管理，可以减少初始包体大小，支持热更新。</p>
+  <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">AssetBundle bundle = AssetBundle.LoadFromFile(<span class="string">&quot;path/to/assetbundle&quot;</span>);</span><br><span class="line">GameObject prefab = bundle.LoadAsset&lt;GameObject&gt;(<span class="string">&quot;MyPrefab&quot;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><p>Addressables：Unity 的 Addressable Asset System 提供了一种更灵活的资源管理方式，支持按需加载和卸载资源，适合大型项目。</p>
+  <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Addressables.LoadAssetAsync&lt;GameObject&gt;(<span class="string">&quot;MyPrefab&quot;</span>).Completed += OnLoadDone;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>WWW 或 UnityWebRequest：从网络或本地路径加载资源，适合加载远程资源或动态下载内容。</p>
+  <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">UnityWebRequest request = UnityWebRequest.Get(<span class="string">&quot;http://example.com/myasset&quot;</span>);</span><br><span class="line"><span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line">AssetBundle bundle = DownloadHandlerAssetBundle.GetContent(request);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="2-Unity中的光照贴图的作用是什么？"><a href="#2-Unity中的光照贴图的作用是什么？" class="headerlink" title="2. Unity中的光照贴图的作用是什么？"></a>2. Unity中的光照贴图的作用是什么？</h2><p>光照贴图（Lightmap）的作用是预计算场景中的光照信息并将其存储为纹理，从而在运行时实现高质量的光照效果，而不需要实时计算光照。光照贴图的主要优点包括：</p>
+<ul>
+<li>提升性能：光照信息是预计算的，运行时不需要实时计算光照，减少了GPU和CPU的负担。</li>
+<li>高质量光照：可以生成复杂的光照效果，如全局光照（GI）、阴影、间接光照等。</li>
+<li>适用于静态物体：光照贴图通常用于静态物体，动态物体则需要使用实时光照。</li>
+</ul>
+<p>光照贴图通过烘焙（Bake）生成，存储在场景中，运行时直接使用。</p>
+<p>补充：<br>在移动平台上（或配置较低的设备上）使用实时光源是非常消耗性能的<br>我们可以使用光照贴图，预先将环境光烘焙到贴图上，可以减少性能消耗</p>
+<h2 id="3-Unity场景中有两个点连成了一条线，想要旋转这条线，应该怎么做？"><a href="#3-Unity场景中有两个点连成了一条线，想要旋转这条线，应该怎么做？" class="headerlink" title="3. Unity场景中有两个点连成了一条线，想要旋转这条线，应该怎么做？"></a>3. Unity场景中有两个点连成了一条线，想要旋转这条线，应该怎么做？</h2><p>在Unity中，可以通过以下步骤旋转一条由两个点组成的线：</p>
+<ol>
+<li>确定线的中心点：计算两个点的中心位置。</li>
+<li>创建旋转矩阵或使用Quaternion：根据旋转角度和旋转轴创建旋转矩阵或四元数。</li>
+<li>应用旋转：将旋转应用到两个点的位置。</li>
+</ol>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">RotateLine</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> Vector3 pointA = <span class="keyword">new</span> Vector3(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">public</span> Vector3 pointB = <span class="keyword">new</span> Vector3(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">float</span> angle = <span class="number">45f</span>; <span class="comment">// 旋转角度</span></span><br><span class="line">    <span class="keyword">public</span> Vector3 axis = Vector3.forward; <span class="comment">// 旋转轴</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Update</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 计算中心点</span></span><br><span class="line">        Vector3 center = (pointA + pointB) / <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 计算旋转四元数</span></span><br><span class="line">        Quaternion rotation = Quaternion.AngleAxis(angle, axis);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将点相对于中心点旋转</span></span><br><span class="line">        pointA = center + rotation * (pointA - center);</span><br><span class="line">        pointB = center + rotation * (pointB - center);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 绘制线</span></span><br><span class="line">        Debug.DrawLine(pointA, pointB, Color.red);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>补充：<br>两点相减得到一条向量，向量乘以四元数即可</p>
+<h2 id="4-LOD（多细节层次）和-MipMap（纹理图）的作用是什么？"><a href="#4-LOD（多细节层次）和-MipMap（纹理图）的作用是什么？" class="headerlink" title="4. LOD（多细节层次）和 MipMap（纹理图）的作用是什么？"></a>4. LOD（多细节层次）和 MipMap（纹理图）的作用是什么？</h2><ul>
+<li><p>LOD（Level of Detail）：</p>
+<ul>
+<li>作用：根据物体与摄像机的距离，动态切换不同细节层次的模型，以优化性能。</li>
+<li>应用场景：适用于3D模型，当物体远离摄像机时，使用低多边形模型；当物体靠近摄像机时，使用高多边形模型。</li>
+<li>优点：减少渲染负担，提高帧率。</li>
+</ul>
+</li>
+<li><p>MipMap：</p>
+<ul>
+<li>作用：为纹理生成一系列逐渐缩小的版本，根据物体与摄像机的距离自动选择合适的纹理级别。</li>
+<li>应用场景：适用于纹理，当纹理在屏幕上显示较小时，使用低分辨率版本；当纹理显示较大时，使用高分辨率版本。</li>
+<li>优点：减少纹理锯齿（Aliasing），提高渲染质量，同时优化性能。</li>
+</ul>
+</li>
+</ul>
+<p>补充：<br>优化游戏性能<br>从不同距离渲染对象时，使用的是质量不同的模型(LOD)和贴图(Mipmap)。（一般情况是越远面数越低，图片越小）</p>
+<h2 id="5-游戏开发中，客户端和服务端交互数据，程序中常用方式是什么？"><a href="#5-游戏开发中，客户端和服务端交互数据，程序中常用方式是什么？" class="headerlink" title="5. 游戏开发中，客户端和服务端交互数据，程序中常用方式是什么？"></a>5. 游戏开发中，客户端和服务端交互数据，程序中常用方式是什么？</h2><p>在游戏开发中，客户端和服务端交互数据的常用方式包括：</p>
+<ol>
+<li>HTTP&#x2F;HTTPS 请求：<ul>
+<li>使用 RESTful API 或自定义 API 进行数据交互。</li>
+<li>适合非实时交互，如登录、排行榜、商城等。</li>
+<li>示例：使用 UnityWebRequest 发送 HTTP 请求。 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">UnityWebRequest request = UnityWebRequest.Get(<span class="string">&quot;http://example.com/api/data&quot;</span>);</span><br><span class="line"><span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"><span class="built_in">string</span> response = request.downloadHandler.text;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li>WebSocket：</li>
+</ol>
+<ul>
+<li>提供全双工通信，适合实时交互，如聊天、多人游戏同步等。</li>
+<li>示例：使用第三方库（如 WebSocketSharp）实现 WebSocket 通信。  <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">WebSocket ws = <span class="keyword">new</span> WebSocket(<span class="string">&quot;ws://example.com/socket&quot;</span>);</span><br><span class="line">ws.OnMessage += (sender, e) =&gt; Debug.Log(<span class="string">&quot;Message: &quot;</span> + e.Data);</span><br><span class="line">ws.Connect();</span><br><span class="line">ws.Send(<span class="string">&quot;Hello Server&quot;</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="3">
+<li>TCP&#x2F;UDP 套接字：</li>
+</ol>
+<ul>
+<li>使用底层套接字进行高效的数据传输，适合实时性要求高的游戏（如FPS、MOBA）。</li>
+<li>TCP 提供可靠的数据传输，UDP 提供低延迟但不保证可靠性。</li>
+<li>示例：使用 System.Net.Sockets 实现 TCP 通信。  <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">TcpClient client = <span class="keyword">new</span> TcpClient(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">12345</span>);</span><br><span class="line">NetworkStream stream = client.GetStream();</span><br><span class="line"><span class="built_in">byte</span>[] data = Encoding.UTF8.GetBytes(<span class="string">&quot;Hello Server&quot;</span>);</span><br><span class="line">stream.Write(data, <span class="number">0</span>, data.Length);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="4">
+<li>RPC（远程过程调用）：</li>
+</ol>
+<ul>
+<li>在游戏引擎（如 Unity 的 Mirror 或 Photon）中，使用 RPC 机制调用远程方法。适合多人游戏中的状态同步和事件触发。  <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">ClientRpc</span>]</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">RpcSendMessage</span>(<span class="params"><span class="built_in">string</span> message</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    Debug.Log(<span class="string">&quot;Received: &quot;</span> + message);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+补充：</li>
+<li>消息数据：Socket或HTTP</li>
+<li>文件数据：FTP或HTTP</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://Megumin.github.io.git">Megumin</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://megumin.github.io.git/2025/03/02/Passage/Note7/">https://megumin.github.io.git/2025/03/02/Passage/Note7/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://Megumin.github.io.git" target="_blank">忘歸人</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/xiaoyuan2.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/03/02/Passage/Note4/" title="基础知识4"><img class="cover" src="/img/huiyuan1.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">基础知识4</div></div><div class="info-2"><div class="info-item-1">C#1. 字符串中 string str &#x3D; null、string str &#x3D; “”、string str &#x3D; string.Empty 的区别 string str &#x3D; null:  str 是一个空引用，不指向任何对象。 对 str 进行操作（如调用方法或访问属性）会抛出 NullReferenceException 异常。   string str &#x3D; “”:  str 是一个空字符串，指向一个长度为 0 的字符串对象。 可以对 str 进行操作，如调用字符串方法（如 Length），不会抛出异常。   string str &#x3D; string.Empty:  string.Empty 是 “” 的等价形式，表示一个空字符串。 与 “” 相同，str 指向一个长度为 0 的字符串对象，操作时不会抛出异常。    总结:  null 表示没有对象引用。 “” 和 string.Empty 表示空字符串对象，两者在功能上相同，但 string.Empty 更具可读性。  补充：  str &#x3D; null...</div></div></div></a><a class="pagination-related" href="/2025/03/02/Passage/Note6/" title="基础知识5"><img class="cover" src="/img/xiaoyuan.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">基础知识5</div></div><div class="info-2"><div class="info-item-1">C#1.C#中如何让自定义容器类能够使用for循环遍历？（通过 类对象[索引] 的形式遍历）要让自定义容器类支持 for 循环遍历（通过索引访问），需要实现索引器（Indexer）。索引器允许类实例像数组一样通过索引访问元素。 实现步骤：  定义一个索引器，使用 this 关键字。 在索引器中实现 get 和 set 访问器。1234567891011121314151617181920212223242526272829303132333435363738public class MyContainer&lt;T&gt;&#123;    private T[] _items;    public MyContainer(int capacity)    &#123;        _items = new T[capacity];    &#125;    // 实现索引器    public T this[int index]    &#123;        get        &#123;            if (index &lt; 0 || index...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/makima.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Megumin</div><div class="author-info-description">黒より黒く闇より暗き漆黒に我が深紅の混淆を望みたもう。覚醒のとき来たれり。無謬の境界に落ちし理。無行の歪みとなりて現出せよ！踊れ踊れ踊れ、我が力の奔流に望むは崩壊なり。並ぶ者なき崩壊なり。万象等しく灰塵に帰し、深淵より来たれ！これが人類最大の威力の攻撃手段、これこそが究極の攻撃魔法、エクスプロージョン！</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Megumin-1204" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:1725603185@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#C"><span class="toc-number">1.</span> <span class="toc-text">C#</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-C-%E4%B8%AD%E5%A6%82%E4%BD%95%E8%AE%A9%E4%B8%80%E4%B8%AA%E7%B1%BB%E4%B8%8D%E8%83%BD%E5%86%8D%E8%A2%AB%E5%85%B6%E4%BB%96%E7%B1%BB%E6%89%80%E7%BB%A7%E6%89%BF%EF%BC%9F"><span class="toc-number">1.1.</span> <span class="toc-text">1. C#中如何让一个类不能再被其他类所继承？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-C-%E4%B8%AD%E4%BD%BF%E7%94%A8%E6%B3%9B%E5%9E%8B%E7%9A%84%E5%A5%BD%E5%A4%84%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.2.</span> <span class="toc-text">2. C#中使用泛型的好处是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-C-%E4%B8%AD%E5%85%83%E7%BB%84%E5%AF%B9%E4%BA%8E%E6%88%91%E4%BB%AC%E7%9A%84%E4%BD%9C%E7%94%A8%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.3.</span> <span class="toc-text">3. C#中元组对于我们的作用是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%AF%B7%E8%AF%B4%E6%98%8EThread%E3%80%81ThreadPool%E3%80%81Task%E5%88%86%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F%E5%B9%B6%E7%AE%80%E5%8D%95%E8%AF%B4%E6%98%8E%E5%BD%BC%E6%AD%A4%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">1.4.</span> <span class="toc-text">4. 请说明Thread、ThreadPool、Task分别是什么？并简单说明彼此的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E8%AF%B7%E7%AE%80%E8%BF%B0GC%EF%BC%88%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%EF%BC%89%E4%BA%A7%E7%94%9F%E7%9A%84%E5%8E%9F%E5%9B%A0%EF%BC%8C%E5%B9%B6%E8%87%B3%E5%B0%91%E8%AF%B4%E5%87%BA%E9%81%BF%E5%85%8DGC%E5%8F%91%E7%94%9F%E7%9A%84%E4%B8%89%E7%A7%8D%E6%96%B9%E5%BC%8F%EF%BC%9F"><span class="toc-number">1.5.</span> <span class="toc-text">5. 请简述GC（垃圾回收）产生的原因，并至少说出避免GC发生的三种方式？</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Unity"><span class="toc-number">2.</span> <span class="toc-text">Unity</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Unity%E4%B8%AD%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E8%B5%84%E6%BA%90%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="toc-number">2.1.</span> <span class="toc-text">1. Unity中动态加载资源的方式有哪些？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Unity%E4%B8%AD%E7%9A%84%E5%85%89%E7%85%A7%E8%B4%B4%E5%9B%BE%E7%9A%84%E4%BD%9C%E7%94%A8%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">2.2.</span> <span class="toc-text">2. Unity中的光照贴图的作用是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Unity%E5%9C%BA%E6%99%AF%E4%B8%AD%E6%9C%89%E4%B8%A4%E4%B8%AA%E7%82%B9%E8%BF%9E%E6%88%90%E4%BA%86%E4%B8%80%E6%9D%A1%E7%BA%BF%EF%BC%8C%E6%83%B3%E8%A6%81%E6%97%8B%E8%BD%AC%E8%BF%99%E6%9D%A1%E7%BA%BF%EF%BC%8C%E5%BA%94%E8%AF%A5%E6%80%8E%E4%B9%88%E5%81%9A%EF%BC%9F"><span class="toc-number">2.3.</span> <span class="toc-text">3. Unity场景中有两个点连成了一条线，想要旋转这条线，应该怎么做？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-LOD%EF%BC%88%E5%A4%9A%E7%BB%86%E8%8A%82%E5%B1%82%E6%AC%A1%EF%BC%89%E5%92%8C-MipMap%EF%BC%88%E7%BA%B9%E7%90%86%E5%9B%BE%EF%BC%89%E7%9A%84%E4%BD%9C%E7%94%A8%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">2.4.</span> <span class="toc-text">4. LOD（多细节层次）和 MipMap（纹理图）的作用是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B8%AD%EF%BC%8C%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%92%8C%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%BA%A4%E4%BA%92%E6%95%B0%E6%8D%AE%EF%BC%8C%E7%A8%8B%E5%BA%8F%E4%B8%AD%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">2.5.</span> <span class="toc-text">5. 游戏开发中，客户端和服务端交互数据，程序中常用方式是什么？</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/03/02/Passage/Note1/" title="基础知识1"><img src="/img/heita1.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基础知识1"/></a><div class="content"><a class="title" href="/2025/03/02/Passage/Note1/" title="基础知识1">基础知识1</a><time datetime="2025-03-02T14:00:00.000Z" title="发表于 2025-03-02 22:00:00">2025-03-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/02/Passage/Note2/" title="基础知识2"><img src="/img/liuying2.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基础知识2"/></a><div class="content"><a class="title" href="/2025/03/02/Passage/Note2/" title="基础知识2">基础知识2</a><time datetime="2025-03-02T14:00:00.000Z" title="发表于 2025-03-02 22:00:00">2025-03-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/02/Passage/Note5/" title="基础知识5"><img src="/img/kon.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基础知识5"/></a><div class="content"><a class="title" href="/2025/03/02/Passage/Note5/" title="基础知识5">基础知识5</a><time datetime="2025-03-02T14:00:00.000Z" title="发表于 2025-03-02 22:00:00">2025-03-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/02/Passage/Note3/" title="基础知识3"><img src="/img/liuying3.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基础知识3"/></a><div class="content"><a class="title" href="/2025/03/02/Passage/Note3/" title="基础知识3">基础知识3</a><time datetime="2025-03-02T14:00:00.000Z" title="发表于 2025-03-02 22:00:00">2025-03-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/02/Passage/Note4/" title="基础知识4"><img src="/img/huiyuan1.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基础知识4"/></a><div class="content"><a class="title" href="/2025/03/02/Passage/Note4/" title="基础知识4">基础知识4</a><time datetime="2025-03-02T14:00:00.000Z" title="发表于 2025-03-02 22:00:00">2025-03-02</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/xiaoyuan2.jpg);"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Megumin</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script>(() => {
+  const panguFn = () => {
+    if (typeof pangu === 'object') pangu.autoSpacingPage()
+    else {
+      btf.getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+        .then(() => {
+          pangu.autoSpacingPage()
+        })
+    }
+  }
+
+  const panguInit = () => {
+    if (false){
+      GLOBAL_CONFIG_SITE.isPost && panguFn()
+    } else {
+      panguFn()
+    }
+  }
+
+  btf.addGlobalFn('pjaxComplete', panguInit, 'pangu')
+  document.addEventListener('DOMContentLoaded', panguInit)
+})()</script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="12967630832" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true" data-loop="all" data-preload="auto" data-volume="0.4"> </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
