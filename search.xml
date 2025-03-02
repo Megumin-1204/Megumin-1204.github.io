@@ -1265,7 +1265,7 @@
 ]]></content>
   </entry>
   <entry>
-    <title>基础知识6</title>
+    <title>基础知识7</title>
     <url>/2025/03/02/Passage/Note7/</url>
     <content><![CDATA[<h1 id="C"><a href="#C" class="headerlink" title="C#"></a>C#</h1><h2 id="1-C-中如何让一个类不能再被其他类所继承？"><a href="#1-C-中如何让一个类不能再被其他类所继承？" class="headerlink" title="1. C#中如何让一个类不能再被其他类所继承？"></a>1. C#中如何让一个类不能再被其他类所继承？</h2><p>在C#中，可以通过将类声明为 sealed 来阻止其他类继承它。sealed 关键字用于修饰类，表示该类不能被继承。</p>
 <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">sealed</span> <span class="keyword">class</span> <span class="title">MyClass</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 类成员</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -1400,7 +1400,7 @@
 ]]></content>
   </entry>
   <entry>
-    <title>基础知识5</title>
+    <title>基础知识6</title>
     <url>/2025/03/02/Passage/Note6/</url>
     <content><![CDATA[<h1 id="C"><a href="#C" class="headerlink" title="C#"></a>C#</h1><h1 id="1-C-中如何让自定义容器类能够使用for循环遍历？（通过-类对象-索引-的形式遍历）"><a href="#1-C-中如何让自定义容器类能够使用for循环遍历？（通过-类对象-索引-的形式遍历）" class="headerlink" title="1.C#中如何让自定义容器类能够使用for循环遍历？（通过 类对象[索引] 的形式遍历）"></a>1.C#中如何让自定义容器类能够使用for循环遍历？（通过 类对象[索引] 的形式遍历）</h1><p>要让自定义容器类支持 for 循环遍历（通过索引访问），需要实现索引器（Indexer）。索引器允许类实例像数组一样通过索引访问元素。</p>
 <p>实现步骤：</p>
