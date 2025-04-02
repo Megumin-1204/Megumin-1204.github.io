@@ -1618,4 +1618,62 @@
 <p>补充：<br>可能会。<br>协同程序的原理是分时分步完成指定逻辑，在其中的某一步骤中，是可以使用多线程来完成某些加载操作的，多线程加载完成后，再进入协同程序的下一步继续执行</p>
 ]]></content>
   </entry>
+  <entry>
+    <title>Lua中的require与package.loaded</title>
+    <url>/2025/04/02/Passage/LuaRequireAndPackageLoaded/</url>
+    <content><![CDATA[<h1 id="Lua中的require与package-loaded"><a href="#Lua中的require与package-loaded" class="headerlink" title="Lua中的require与package.loaded"></a>Lua中的require与package.loaded</h1><ul>
+<li>在 Lua 中，require 和 package.loaded 是模块加载机制的两个核心组成部分。它们共同管理 Lua 模块的加载、缓存和复用。以下是它们的详细关系和用法：</li>
+</ul>
+<h2 id="1-require-的作用"><a href="#1-require-的作用" class="headerlink" title="1. require 的作用"></a>1. require 的作用</h2><p>require 是 Lua 中用于加载模块的函数。它的核心逻辑如下：</p>
+<ul>
+<li><p>检查缓存：先检查 package.loaded 表中是否已有该模块的缓存。</p>
+</li>
+<li><p>加载模块：若未缓存，则按路径查找并加载模块文件（.lua 或 C 扩展模块）。</p>
+</li>
+<li><p>执行模块：执行模块代码，并将返回值存入 package.loaded。</p>
+</li>
+<li><p>返回模块：最终返回 package.loaded 中缓存的值。</p>
+</li>
+</ul>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="keyword">local</span> my_module = <span class="built_in">require</span>(<span class="string">&quot;my_module&quot;</span>) <span class="comment">-- 加载模块</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-package-loaded-的作用"><a href="#2-package-loaded-的作用" class="headerlink" title="2. package.loaded 的作用"></a>2. package.loaded 的作用</h2><p>package.loaded 是一个全局表（table），用于存储所有已加载的模块。它的键是模块名（字符串），值是对应的模块返回值。例如：</p>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="built_in">package</span>.<span class="built_in">loaded</span>[<span class="string">&quot;my_module&quot;</span>]) <span class="comment">-- 输出模块的返回值（通常是表或函数）</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-require-与-package-loaded-的关系"><a href="#3-require-与-package-loaded-的关系" class="headerlink" title="3. require 与 package.loaded 的关系"></a>3. require 与 package.loaded 的关系</h2><ul>
+<li>缓存机制：<br>require 在加载模块前会先检查 package.loaded[模块名]。如果存在值，直接返回该值，跳过加载过程。</li>
+</ul>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="comment">-- 第一次加载</span></span><br><span class="line"><span class="keyword">local</span> mod1 = <span class="built_in">require</span>(<span class="string">&quot;my_module&quot;</span>) <span class="comment">-- 加载并执行代码，存入 package.loaded[&quot;my_module&quot;]</span></span><br><span class="line"><span class="comment">-- 第二次加载</span></span><br><span class="line"><span class="keyword">local</span> mod2 = <span class="built_in">require</span>(<span class="string">&quot;my_module&quot;</span>) <span class="comment">-- 直接返回 package.loaded[&quot;my_module&quot;]，不再执行代码</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>强制重新加载：<br>如果想强制重新加载模块（例如开发时修改了模块代码），可以手动清除缓存：<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="built_in">package</span>.<span class="built_in">loaded</span>[<span class="string">&quot;my_module&quot;</span>] = <span class="literal">nil</span></span><br><span class="line"><span class="keyword">local</span> <span class="built_in">mod</span> = <span class="built_in">require</span>(<span class="string">&quot;my_module&quot;</span>) <span class="comment">-- 重新加载</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="4-模块的返回值"><a href="#4-模块的返回值" class="headerlink" title="4. 模块的返回值"></a>4. 模块的返回值</h2><p>Lua 模块通常返回一个表（包含函数、变量等），但 require 的实际行为如下：</p>
+<ul>
+<li>如果模块显式返回值：<br>package.loaded[模块名] 会存储该返回值。<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="comment">-- my_module.lua</span></span><br><span class="line"><span class="keyword">return</span> &#123; version = <span class="string">&quot;1.0&quot;</span> &#125; <span class="comment">-- 返回一个表</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>如果模块没有返回值：<br>package.loaded[模块名] 默认会被设为 true。</p>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="comment">-- my_module.lua</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;This module has no return value&quot;</span>) <span class="comment">-- 无返回值</span></span><br><span class="line"><span class="comment">-- 此时 package.loaded[&quot;my_module&quot;] 为 true</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="5-使用场景"><a href="#5-使用场景" class="headerlink" title="5. 使用场景"></a>5. 使用场景</h2><p>(1) 模块热重载<br>在开发过程中，通过清除 package.loaded 缓存实现模块热更新：</p>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="built_in">package</span>.<span class="built_in">loaded</span>[<span class="string">&quot;my_module&quot;</span>] = <span class="literal">nil</span></span><br><span class="line"><span class="keyword">local</span> <span class="built_in">mod</span> = <span class="built_in">require</span>(<span class="string">&quot;my_module&quot;</span>) <span class="comment">-- 重新加载最新代码</span></span><br></pre></td></tr></table></figure>
+<p>(2) 避免重复加载<br>通过缓存机制提高性能，确保模块代码只执行一次。</p>
+<p>(3) 动态控制模块行为<br>手动修改 package.loaded 可以伪造或替换模块：</p>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="built_in">package</span>.<span class="built_in">loaded</span>[<span class="string">&quot;my_module&quot;</span>] = &#123; fake = <span class="literal">true</span> &#125; <span class="comment">-- 伪造模块</span></span><br><span class="line"><span class="keyword">local</span> <span class="built_in">mod</span> = <span class="built_in">require</span>(<span class="string">&quot;my_module&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">mod</span>.fake) <span class="comment">-- 输出 true</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="6-注意事项"><a href="#6-注意事项" class="headerlink" title="6. 注意事项"></a>6. 注意事项</h2><ul>
+<li>路径配置：<br>require 依赖 package.path（Lua 模块路径）和 package.cpath（C 扩展模块路径）。若模块找不到，需检查路径配置。<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="built_in">package</span>.<span class="built_in">path</span>) <span class="comment">-- 查看当前 Lua 模块搜索路径</span></span><br></pre></td></tr></table></figure></li>
+<li>循环依赖：<br>模块间的循环依赖可能导致 package.loaded 缓存未完成的对象，需谨慎设计模块结构。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>require	机制</p>
+<ul>
+<li>作用：加载模块，依赖 package.loaded 缓存	</li>
+<li>关键点：优先检查缓存，避免重复加载</li>
+</ul>
+<p>package.loaded	机制</p>
+<ul>
+<li>作用：存储已加载模块的返回值	</li>
+<li>关键点：可通过修改它控制模块加载行为</li>
+</ul>
+]]></content>
+  </entry>
 </search>

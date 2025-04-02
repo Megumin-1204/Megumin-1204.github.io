@@ -1,0 +1,286 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Lua中的require与package.loaded | 忘歸人</title><meta name="author" content="Megumin"><meta name="copyright" content="Megumin"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Lua中的require与package.loaded 在 Lua 中，require 和 package.loaded 是模块加载机制的两个核心组成部分。它们共同管理 Lua 模块的加载、缓存和复用。以下是它们的详细关系和用法：  1. require 的作用require 是 Lua 中用于加载模块的函数。它的核心逻辑如下：  检查缓存：先检查 package.loaded 表中是否已有该模块">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lua中的require与package.loaded">
+<meta property="og:url" content="https://megumin.github.io.git/2025/04/02/Passage/LuaRequireAndPackageLoaded/index.html">
+<meta property="og:site_name" content="忘歸人">
+<meta property="og:description" content="Lua中的require与package.loaded 在 Lua 中，require 和 package.loaded 是模块加载机制的两个核心组成部分。它们共同管理 Lua 模块的加载、缓存和复用。以下是它们的详细关系和用法：  1. require 的作用require 是 Lua 中用于加载模块的函数。它的核心逻辑如下：  检查缓存：先检查 package.loaded 表中是否已有该模块">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://megumin.github.io.git/img/heita1.jpg">
+<meta property="article:published_time" content="2025-04-02T15:45:00.000Z">
+<meta property="article:modified_time" content="2025-04-02T15:48:13.295Z">
+<meta property="article:author" content="Megumin">
+<meta property="article:tag" content="めぐみん">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://megumin.github.io.git/img/heita1.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://megumin.github.io.git/2025/04/02/Passage/LuaRequireAndPackageLoaded/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":600,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Lua中的require与package.loaded',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/chuyin.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/makima.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">9</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 時間軸</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-heartbeat"></i><span> 清單</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音樂</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 電影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/heita1.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">忘歸人</span></a><a class="nav-page-title" href="/"><span class="site-name">Lua中的require与package.loaded</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 時間軸</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-heartbeat"></i><span> 清單</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音樂</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 電影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Lua中的require与package.loaded</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-02T15:45:00.000Z" title="发表于 2025-04-02 23:45:00">2025-04-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-04-02T15:48:13.295Z" title="更新于 2025-04-02 23:48:13">2025-04-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="Lua中的require与package-loaded"><a href="#Lua中的require与package-loaded" class="headerlink" title="Lua中的require与package.loaded"></a>Lua中的require与package.loaded</h1><ul>
+<li>在 Lua 中，require 和 package.loaded 是模块加载机制的两个核心组成部分。它们共同管理 Lua 模块的加载、缓存和复用。以下是它们的详细关系和用法：</li>
+</ul>
+<h2 id="1-require-的作用"><a href="#1-require-的作用" class="headerlink" title="1. require 的作用"></a>1. require 的作用</h2><p>require 是 Lua 中用于加载模块的函数。它的核心逻辑如下：</p>
+<ul>
+<li><p>检查缓存：先检查 package.loaded 表中是否已有该模块的缓存。</p>
+</li>
+<li><p>加载模块：若未缓存，则按路径查找并加载模块文件（.lua 或 C 扩展模块）。</p>
+</li>
+<li><p>执行模块：执行模块代码，并将返回值存入 package.loaded。</p>
+</li>
+<li><p>返回模块：最终返回 package.loaded 中缓存的值。</p>
+</li>
+</ul>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">local</span> my_module = <span class="built_in">require</span>(<span class="string">&quot;my_module&quot;</span>) <span class="comment">-- 加载模块</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-package-loaded-的作用"><a href="#2-package-loaded-的作用" class="headerlink" title="2. package.loaded 的作用"></a>2. package.loaded 的作用</h2><p>package.loaded 是一个全局表（table），用于存储所有已加载的模块。它的键是模块名（字符串），值是对应的模块返回值。例如：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="built_in">package</span>.<span class="built_in">loaded</span>[<span class="string">&quot;my_module&quot;</span>]) <span class="comment">-- 输出模块的返回值（通常是表或函数）</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-require-与-package-loaded-的关系"><a href="#3-require-与-package-loaded-的关系" class="headerlink" title="3. require 与 package.loaded 的关系"></a>3. require 与 package.loaded 的关系</h2><ul>
+<li>缓存机制：<br>require 在加载模块前会先检查 package.loaded[模块名]。如果存在值，直接返回该值，跳过加载过程。</li>
+</ul>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 第一次加载</span></span><br><span class="line"><span class="keyword">local</span> mod1 = <span class="built_in">require</span>(<span class="string">&quot;my_module&quot;</span>) <span class="comment">-- 加载并执行代码，存入 package.loaded[&quot;my_module&quot;]</span></span><br><span class="line"><span class="comment">-- 第二次加载</span></span><br><span class="line"><span class="keyword">local</span> mod2 = <span class="built_in">require</span>(<span class="string">&quot;my_module&quot;</span>) <span class="comment">-- 直接返回 package.loaded[&quot;my_module&quot;]，不再执行代码</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>强制重新加载：<br>如果想强制重新加载模块（例如开发时修改了模块代码），可以手动清除缓存：<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">package</span>.<span class="built_in">loaded</span>[<span class="string">&quot;my_module&quot;</span>] = <span class="literal">nil</span></span><br><span class="line"><span class="keyword">local</span> <span class="built_in">mod</span> = <span class="built_in">require</span>(<span class="string">&quot;my_module&quot;</span>) <span class="comment">-- 重新加载</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="4-模块的返回值"><a href="#4-模块的返回值" class="headerlink" title="4. 模块的返回值"></a>4. 模块的返回值</h2><p>Lua 模块通常返回一个表（包含函数、变量等），但 require 的实际行为如下：</p>
+<ul>
+<li>如果模块显式返回值：<br>package.loaded[模块名] 会存储该返回值。<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- my_module.lua</span></span><br><span class="line"><span class="keyword">return</span> &#123; version = <span class="string">&quot;1.0&quot;</span> &#125; <span class="comment">-- 返回一个表</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>如果模块没有返回值：<br>package.loaded[模块名] 默认会被设为 true。</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- my_module.lua</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;This module has no return value&quot;</span>) <span class="comment">-- 无返回值</span></span><br><span class="line"><span class="comment">-- 此时 package.loaded[&quot;my_module&quot;] 为 true</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="5-使用场景"><a href="#5-使用场景" class="headerlink" title="5. 使用场景"></a>5. 使用场景</h2><p>(1) 模块热重载<br>在开发过程中，通过清除 package.loaded 缓存实现模块热更新：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">package</span>.<span class="built_in">loaded</span>[<span class="string">&quot;my_module&quot;</span>] = <span class="literal">nil</span></span><br><span class="line"><span class="keyword">local</span> <span class="built_in">mod</span> = <span class="built_in">require</span>(<span class="string">&quot;my_module&quot;</span>) <span class="comment">-- 重新加载最新代码</span></span><br></pre></td></tr></table></figure>
+<p>(2) 避免重复加载<br>通过缓存机制提高性能，确保模块代码只执行一次。</p>
+<p>(3) 动态控制模块行为<br>手动修改 package.loaded 可以伪造或替换模块：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">package</span>.<span class="built_in">loaded</span>[<span class="string">&quot;my_module&quot;</span>] = &#123; fake = <span class="literal">true</span> &#125; <span class="comment">-- 伪造模块</span></span><br><span class="line"><span class="keyword">local</span> <span class="built_in">mod</span> = <span class="built_in">require</span>(<span class="string">&quot;my_module&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">mod</span>.fake) <span class="comment">-- 输出 true</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="6-注意事项"><a href="#6-注意事项" class="headerlink" title="6. 注意事项"></a>6. 注意事项</h2><ul>
+<li>路径配置：<br>require 依赖 package.path（Lua 模块路径）和 package.cpath（C 扩展模块路径）。若模块找不到，需检查路径配置。<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="built_in">package</span>.<span class="built_in">path</span>) <span class="comment">-- 查看当前 Lua 模块搜索路径</span></span><br></pre></td></tr></table></figure></li>
+<li>循环依赖：<br>模块间的循环依赖可能导致 package.loaded 缓存未完成的对象，需谨慎设计模块结构。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>require	机制</p>
+<ul>
+<li>作用：加载模块，依赖 package.loaded 缓存	</li>
+<li>关键点：优先检查缓存，避免重复加载</li>
+</ul>
+<p>package.loaded	机制</p>
+<ul>
+<li>作用：存储已加载模块的返回值	</li>
+<li>关键点：可通过修改它控制模块加载行为</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://Megumin.github.io.git">Megumin</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://megumin.github.io.git/2025/04/02/Passage/LuaRequireAndPackageLoaded/">https://megumin.github.io.git/2025/04/02/Passage/LuaRequireAndPackageLoaded/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://Megumin.github.io.git" target="_blank">忘歸人</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/heita1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/03/02/Passage/Note7/" title="基础知识7"><img class="cover" src="/img/xiaoyuan2.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">基础知识7</div></div><div class="info-2"><div class="info-item-1">C#1. C#中如何让一个类不能再被其他类所继承？在C#中，可以通过将类声明为 sealed 来阻止其他类继承它。sealed 关键字用于修饰类，表示该类不能被继承。 1234public sealed class MyClass&#123;    // 类成员&#125; 2. C#中使用泛型的好处是什么？使用泛型的主要好处包括：  类型安全：泛型允许在编译时进行类型检查，减少了运行时类型转换的错误。 代码复用：泛型允许编写可以处理多种数据类型的通用代码，减少了代码重复。 性能提升：泛型避免了装箱和拆箱操作（对于值类型），提高了性能。 更好的可读性和可维护性：泛型代码通常更简洁、更易于理解和维护。  补充：  可以为不同类型对象的相同行为进行通用处理，提升代码复用率 避免装箱拆箱，提升性能  3....</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/makima.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Megumin</div><div class="author-info-description">黒より黒く闇より暗き漆黒に我が深紅の混淆を望みたもう。覚醒のとき来たれり。無謬の境界に落ちし理。無行の歪みとなりて現出せよ！踊れ踊れ踊れ、我が力の奔流に望むは崩壊なり。並ぶ者なき崩壊なり。万象等しく灰塵に帰し、深淵より来たれ！これが人類最大の威力の攻撃手段、これこそが究極の攻撃魔法、エクスプロージョン！</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">9</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Megumin-1204" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:1725603185@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Lua%E4%B8%AD%E7%9A%84require%E4%B8%8Epackage-loaded"><span class="toc-number">1.</span> <span class="toc-text">Lua中的require与package.loaded</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-require-%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-number">1.1.</span> <span class="toc-text">1. require 的作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-package-loaded-%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-number">1.2.</span> <span class="toc-text">2. package.loaded 的作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-require-%E4%B8%8E-package-loaded-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">1.3.</span> <span class="toc-text">3. require 与 package.loaded 的关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%A8%A1%E5%9D%97%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="toc-number">1.4.</span> <span class="toc-text">4. 模块的返回值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.5.</span> <span class="toc-text">5. 使用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">1.6.</span> <span class="toc-text">6. 注意事项</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.7.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/04/02/Passage/LuaRequireAndPackageLoaded/" title="Lua中的require与package.loaded"><img src="/img/heita1.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Lua中的require与package.loaded"/></a><div class="content"><a class="title" href="/2025/04/02/Passage/LuaRequireAndPackageLoaded/" title="Lua中的require与package.loaded">Lua中的require与package.loaded</a><time datetime="2025-04-02T15:45:00.000Z" title="发表于 2025-04-02 23:45:00">2025-04-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/02/Passage/Note7/" title="基础知识7"><img src="/img/xiaoyuan2.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基础知识7"/></a><div class="content"><a class="title" href="/2025/03/02/Passage/Note7/" title="基础知识7">基础知识7</a><time datetime="2025-03-02T14:00:06.000Z" title="发表于 2025-03-02 22:00:06">2025-03-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/02/Passage/Note6/" title="基础知识6"><img src="/img/xiaoyuan.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基础知识6"/></a><div class="content"><a class="title" href="/2025/03/02/Passage/Note6/" title="基础知识6">基础知识6</a><time datetime="2025-03-02T14:00:05.000Z" title="发表于 2025-03-02 22:00:05">2025-03-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/02/Passage/Note5/" title="基础知识5"><img src="/img/kon.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基础知识5"/></a><div class="content"><a class="title" href="/2025/03/02/Passage/Note5/" title="基础知识5">基础知识5</a><time datetime="2025-03-02T14:00:04.000Z" title="发表于 2025-03-02 22:00:04">2025-03-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/02/Passage/Note4/" title="基础知识4"><img src="/img/huiyuan1.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基础知识4"/></a><div class="content"><a class="title" href="/2025/03/02/Passage/Note4/" title="基础知识4">基础知识4</a><time datetime="2025-03-02T14:00:03.000Z" title="发表于 2025-03-02 22:00:03">2025-03-02</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/heita1.jpg);"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Megumin</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script>(() => {
+  const panguFn = () => {
+    if (typeof pangu === 'object') pangu.autoSpacingPage()
+    else {
+      btf.getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+        .then(() => {
+          pangu.autoSpacingPage()
+        })
+    }
+  }
+
+  const panguInit = () => {
+    if (false){
+      GLOBAL_CONFIG_SITE.isPost && panguFn()
+    } else {
+      panguFn()
+    }
+  }
+
+  btf.addGlobalFn('pjaxComplete', panguInit, 'pangu')
+  document.addEventListener('DOMContentLoaded', panguInit)
+})()</script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="12967630832" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true" data-loop="all" data-preload="auto" data-volume="0.4"> </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
