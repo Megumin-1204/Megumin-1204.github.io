@@ -1,0 +1,539 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>设计模式深度解析 - 经典模式在游戏开发中的优雅应用 | UE探偵の開発室</title><meta name="author" content="Megumin"><meta name="copyright" content="Megumin"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一、概述：GoF 设计模式与游戏开发的交汇1994 年，四人组（Gang of Four）出版的《设计模式：可复用面向对象软件的基础》定义了 23 种经典模式，分为三大类：    分类 核心理念 模式    创建型 将对象创建与使用解耦 单例、工厂方法、抽象工厂、建造者、原型、对象池   结构型 通过组合构建更大结构 适配器、桥接、组合、装饰器、外观、享元、代理   行为型 对象间职责分配与算法封">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式深度解析 - 经典模式在游戏开发中的优雅应用">
+<meta property="og:url" content="https://megumin-1204.github.io/2026/06/03/design-patterns-game-dev/index.html">
+<meta property="og:site_name" content="UE探偵の開発室">
+<meta property="og:description" content="一、概述：GoF 设计模式与游戏开发的交汇1994 年，四人组（Gang of Four）出版的《设计模式：可复用面向对象软件的基础》定义了 23 种经典模式，分为三大类：    分类 核心理念 模式    创建型 将对象创建与使用解耦 单例、工厂方法、抽象工厂、建造者、原型、对象池   结构型 通过组合构建更大结构 适配器、桥接、组合、装饰器、外观、享元、代理   行为型 对象间职责分配与算法封">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://picsum.photos/seed/anime8/800/400">
+<meta property="article:published_time" content="2026-06-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-06-03T08:40:16.618Z">
+<meta property="article:author" content="Megumin">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="代码规范">
+<meta property="article:tag" content="架构设计">
+<meta property="article:tag" content="游戏开发">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://picsum.photos/seed/anime8/800/400"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "设计模式深度解析 - 经典模式在游戏开发中的优雅应用",
+  "url": "https://megumin-1204.github.io/2026/06/03/design-patterns-game-dev/",
+  "image": "https://picsum.photos/seed/anime8/800/400",
+  "datePublished": "2026-06-02T16:00:00.000Z",
+  "dateModified": "2026-06-03T08:40:16.618Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Megumin",
+      "url": "https://megumin-1204.github.io/about/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/"><link rel="canonical" href="https://megumin-1204.github.io/2026/06/03/design-patterns-game-dev/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!undefined && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Megumin","link":"链接: ","source":"来源: UE探偵の開発室","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '设计模式深度解析 - 经典模式在游戏开发中的优雅应用',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div class="bg-animation" id="web_bg" style="background-color: #f7f4f0;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://q1.qlogo.cn/g?b=qq&amp;nk=10000&amp;s=640" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404/400/200'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">10</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">27</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-code"></i><span> 技术专栏</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/UE-C++/"><i class="fa-fw fas fa-microchip"></i><span> UE C++</span></a></li><li><a class="site-page child" href="/categories/Lua/"><i class="fa-fw fas fa-feather"></i><span> Lua</span></a></li><li><a class="site-page child" href="/categories/slua-unreal/"><i class="fa-fw fas fa-puzzle-piece"></i><span> slua-unreal</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(https://picsum.photos/seed/anime8/800/400);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">UE探偵の開発室</span></a><a class="nav-page-title" href="/"><span class="site-name">设计模式深度解析 - 经典模式在游戏开发中的优雅应用</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-code"></i><span> 技术专栏</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/UE-C++/"><i class="fa-fw fas fa-microchip"></i><span> UE C++</span></a></li><li><a class="site-page child" href="/categories/Lua/"><i class="fa-fw fas fa-feather"></i><span> Lua</span></a></li><li><a class="site-page child" href="/categories/slua-unreal/"><i class="fa-fw fas fa-puzzle-piece"></i><span> slua-unreal</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">设计模式深度解析 - 经典模式在游戏开发中的优雅应用</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-06-02T16:00:00.000Z" title="发表于 2026-06-03 00:00:00">2026-06-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-06-03T08:40:16.618Z" title="更新于 2026-06-03 16:40:16">2026-06-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">4.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>17分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="一、概述：GoF-设计模式与游戏开发的交汇"><a href="#一、概述：GoF-设计模式与游戏开发的交汇" class="headerlink" title="一、概述：GoF 设计模式与游戏开发的交汇"></a>一、概述：GoF 设计模式与游戏开发的交汇</h2><p>1994 年，四人组（Gang of Four）出版的《设计模式：可复用面向对象软件的基础》定义了 23 种经典模式，分为三大类：</p>
+<table>
+<thead>
+<tr>
+<th>分类</th>
+<th>核心理念</th>
+<th>模式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>创建型</strong></td>
+<td>将对象创建与使用解耦</td>
+<td>单例、工厂方法、抽象工厂、建造者、原型、对象池</td>
+</tr>
+<tr>
+<td><strong>结构型</strong></td>
+<td>通过组合构建更大结构</td>
+<td>适配器、桥接、组合、装饰器、外观、享元、代理</td>
+</tr>
+<tr>
+<td><strong>行为型</strong></td>
+<td>对象间职责分配与算法封装</td>
+<td>观察者、策略、状态、命令、模板方法、迭代器、责任链、中介者、备忘录、访问者、解释器</td>
+</tr>
+</tbody></table>
+<p>游戏开发对设计模式的诉求与常规企业应用有本质不同：</p>
+<ol>
+<li><strong>性能敏感</strong>：每帧 16ms（60FPS）的预算下，对象的创建&#x2F;销毁成本不能忽视。</li>
+<li><strong>实体复杂度高</strong>：一个 BOSS 可能同时拥有 60+ 种 Buff 效果、20 段行为树、3 个阶段状态。</li>
+<li><strong>状态多变</strong>：从主菜单到关卡内到结算界面，每一帧的上下文都在切换。</li>
+<li><strong>多用组合少用继承</strong>：传统 OOP 的深继承链在游戏实体上容易形成「钻石继承」灾难。</li>
+</ol>
+<p>这些特殊性使得部分 GoF 模式在游戏开发中「身价倍增」（如组件模式、状态模式），而另一些则很少用到（如解释器模式）。</p>
+<hr>
+<h2 id="二、创建型模式"><a href="#二、创建型模式" class="headerlink" title="二、创建型模式"></a>二、创建型模式</h2><h3 id="2-1-工厂模式：AI-与技能的动态创建"><a href="#2-1-工厂模式：AI-与技能的动态创建" class="headerlink" title="2.1 工厂模式：AI 与技能的动态创建"></a>2.1 工厂模式：AI 与技能的动态创建</h3><p>工厂模式隐藏对象创建细节，让调用者只依赖抽象接口。在游戏开发中，工厂模式最常见的三类应用：</p>
+<h4 id="技能工厂"><a href="#技能工厂" class="headerlink" title="技能工厂"></a>技能工厂</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">SkillFactory</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">static</span> TUniquePtr&lt;SkillBase&gt; <span class="title">Create</span><span class="params">(ESkillID id, AActor* owner)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">switch</span> (id) &#123;</span><br><span class="line">        <span class="keyword">case</span> ESkillID::Fireball:</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">MakeUnique</span>&lt;FireballSkill&gt;(owner, <span class="number">50.0f</span>, <span class="number">3.0f</span>);</span><br><span class="line">        <span class="keyword">case</span> ESkillID::Heal:</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">MakeUnique</span>&lt;HealSkill&gt;(owner, <span class="number">30.0f</span>);</span><br><span class="line">        <span class="keyword">case</span> ESkillID::Teleport:</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">MakeUnique</span>&lt;TeleportSkill&gt;(owner, <span class="number">800.0f</span>);</span><br><span class="line">        <span class="keyword">default</span>: <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>优点在于：新增技能只需修改工厂内部 switch，调用方代码零改动。如果配合 <strong>DataTable</strong> 驱动（UE 中每个技能一行配置），甚至连工厂代码都无需修改，真正实现数据驱动的技能系统。</p>
+<h4 id="AI-行为工厂"><a href="#AI-行为工厂" class="headerlink" title="AI 行为工厂"></a>AI 行为工厂</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 根据角色类型生成不同的 AI 控制器</span></span><br><span class="line"><span class="function">TUniquePtr&lt;AIControllerBase&gt; <span class="title">AIControllerFactory::Create</span><span class="params">(EAIType type)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">switch</span> (type) &#123;</span><br><span class="line">    <span class="keyword">case</span> EAIType::MeleeGrunt:</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">MakeUnique</span>&lt;MeleeAIController&gt;();</span><br><span class="line">    <span class="keyword">case</span> EAIType::RangedSniper:</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">MakeUnique</span>&lt;SniperAIController&gt;();</span><br><span class="line">    <span class="keyword">case</span> EAIType::BossDragon:</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">MakeUnique</span>&lt;DragonBossAIController&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="敌人波次工厂"><a href="#敌人波次工厂" class="headerlink" title="敌人波次工厂"></a>敌人波次工厂</h4><p>将敌人生成逻辑封装为 <code>EnemyWaveFactory</code>，通过 JSON&#x2F;CSV 配置文件定义每一波敌人的组合、刷新间隔、难度系数，运行时由工厂解析并生成实体。</p>
+<h3 id="2-2-对象池模式：高频创建的性能救星"><a href="#2-2-对象池模式：高频创建的性能救星" class="headerlink" title="2.2 对象池模式：高频创建的性能救星"></a>2.2 对象池模式：高频创建的性能救星</h3><p>游戏中最频繁的创建&#x2F;销毁操作集中在：<strong>子弹、粒子特效、音效实例、场景中的小道具</strong>。如果每发子弹都用 <code>new/delete</code>（C++）或 <code>Instantiate/Destroy</code>（Unity），GC 压力和内存碎片会迅速拖垮帧率。</p>
+<p>对象池的核心机制：<strong>预创建 + 激活&#x2F;休眠 + 复用</strong>。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">BulletPool</span> : <span class="title">MonoBehaviour</span> &#123;</span><br><span class="line">    [<span class="meta">SerializeField</span>] <span class="keyword">private</span> GameObject bulletPrefab;</span><br><span class="line">    [<span class="meta">SerializeField</span>] <span class="keyword">private</span> <span class="built_in">int</span> poolSize = <span class="number">50</span>;</span><br><span class="line">    <span class="keyword">private</span> Stack&lt;Bullet&gt; available = <span class="keyword">new</span>();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Awake</span>()</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; poolSize; i++) &#123;</span><br><span class="line">            <span class="keyword">var</span> bullet = Instantiate(bulletPrefab).GetComponent&lt;Bullet&gt;();</span><br><span class="line">            bullet.gameObject.SetActive(<span class="literal">false</span>);</span><br><span class="line">            available.Push(bullet);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Bullet <span class="title">Get</span>(<span class="params">Vector3 pos, Quaternion rot</span>)</span> &#123;</span><br><span class="line">        <span class="keyword">var</span> bullet = available.Count &gt; <span class="number">0</span> ? available.Pop() : InstantiateNew();</span><br><span class="line">        bullet.transform.SetPositionAndRotation(pos, rot);</span><br><span class="line">        bullet.gameObject.SetActive(<span class="literal">true</span>);</span><br><span class="line">        <span class="keyword">return</span> bullet;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Return</span>(<span class="params">Bullet bullet</span>)</span> &#123;</span><br><span class="line">        bullet.gameObject.SetActive(<span class="literal">false</span>);</span><br><span class="line">        available.Push(bullet);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>实现要点</strong>：</p>
+<ul>
+<li>为每种频繁创建的类型维护独立池（避免类型转换开销）。</li>
+<li>池耗尽时的策略：扩容（动态分配）或复用最早激活的（LRU）。</li>
+<li>UE 中 <code>UObjectPool</code> 和 <code>UActorPool</code> 已内置此模式，应优先使用引擎方案而非手写。</li>
+</ul>
+<h3 id="2-3-单例模式：GameInstance-的正确与错误用法"><a href="#2-3-单例模式：GameInstance-的正确与错误用法" class="headerlink" title="2.3 单例模式：GameInstance 的正确与错误用法"></a>2.3 单例模式：GameInstance 的正确与错误用法</h3><p>单例是游戏开发中最常用的模式，也是最容易被滥用的模式。</p>
+<p><strong>正确的使用场景：</strong></p>
+<table>
+<thead>
+<tr>
+<th>引擎</th>
+<th>单例载体</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Unity</td>
+<td><code>[RuntimeInitializeOnLoadMethod]</code> + 静态类</td>
+<td>全局音频管理器、存档管理</td>
+</tr>
+<tr>
+<td>Unreal</td>
+<td><code>UGameInstanceSubsystem</code></td>
+<td>全局配置、成就追踪、跨关卡数据</td>
+</tr>
+<tr>
+<td>Unreal</td>
+<td><code>UWorldSubsystem</code></td>
+<td>世界级服务（AI 管理器、环境查询）</td>
+</tr>
+</tbody></table>
+<p><strong>滥用警告：</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ❌ 反模式：将一切塞进 GameInstance</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">UMyGameInstance</span> : <span class="keyword">public</span> UGameInstance &#123;</span><br><span class="line">    UPlayerInventory* Inventory;      <span class="comment">// 应该属于 PlayerState</span></span><br><span class="line">    UQuestManager* QuestManager;      <span class="comment">// 应该是 WorldSubsystem</span></span><br><span class="line">    UShopData* ShopConfig;            <span class="comment">// 应该是 DataAsset</span></span><br><span class="line">    UCombatBalancer* Balancer;        <span class="comment">// 应该是 WorldSubsystem</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>单例的代价是<strong>全局状态</strong>，在多人游戏中尤为致命。UE 的 Subsystem 体系提供了生命周期管理（随 World 销毁而清理），比裸单例安全得多。</p>
+<hr>
+<h2 id="三、结构型模式"><a href="#三、结构型模式" class="headerlink" title="三、结构型模式"></a>三、结构型模式</h2><h3 id="3-1-组件模式：UE-Actor-Component-的精髓"><a href="#3-1-组件模式：UE-Actor-Component-的精髓" class="headerlink" title="3.1 组件模式：UE Actor-Component 的精髓"></a>3.1 组件模式：UE Actor-Component 的精髓</h3><p><strong>组件模式</strong>是游戏开发中最重要的结构型模式，甚至超越了 GoF 的原始定义。核心思想：<strong>实体通过组合多个组件定义行为，而非通过继承链</strong>。</p>
+<p>UE 的 Actor-Component 架构是组件模式的典范：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AActor (空壳)</span><br><span class="line">  ├── UStaticMeshComponent       → 可见形状</span><br><span class="line">  ├── UCharacterMovementComponent → 移动逻辑</span><br><span class="line">  ├── UHealthComponent           → 生命值系统</span><br><span class="line">  ├── UInventoryComponent        → 物品管理</span><br><span class="line">  ├── UAIPerceptionComponent     → AI 感知</span><br><span class="line">  └── UAudioComponent            → 音效播放</span><br></pre></td></tr></table></figure>
+
+<p>对比继承方式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">继承方式（灾难）：</span><br><span class="line">ACharacter → AEnemyCharacter → AFlyingEnemy → AFlyingEnemyWithShield → ...</span><br><span class="line">组件方式（灵活）：</span><br><span class="line">ACharacter + FlyingComponent + ShieldComponent + RangedAIComponent</span><br></pre></td></tr></table></figure>
+
+<p>组件模式解决了三大痛点：<strong>钻石继承</strong>、<strong>代码复用困难</strong>、<strong>运行时动态组合</strong>。</p>
+<p><strong>设计要点：</strong></p>
+<ul>
+<li>每个 Component 只负责一个清晰的职责（单一职责原则）。</li>
+<li>Component 之间通过接口通信而非直接引用（如 <code>UHealthComponent</code> 暴露 <code>OnDamaged</code> 委托）。</li>
+<li>避免 Component 的循环依赖——如有必要，引入第三个 Component 做协调。</li>
+</ul>
+<h3 id="3-2-装饰器模式：Buff-Debuff-的动态叠加"><a href="#3-2-装饰器模式：Buff-Debuff-的动态叠加" class="headerlink" title="3.2 装饰器模式：Buff&#x2F;Debuff 的动态叠加"></a>3.2 装饰器模式：Buff&#x2F;Debuff 的动态叠加</h3><p>RPG 和 MOBA 中的 Buff 系统是装饰器模式的经典应用。一个角色可能同时受到：攻击力提升 30%、移速降低 20%、每秒回血 50 点、受到伤害时反弹 15%。这些效果需要<strong>动态叠加和撤销</strong>，且彼此独立。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 基础数值接口</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ICharacterStats</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">float</span> <span class="title">GetAttack</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">float</span> <span class="title">GetSpeed</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">float</span> <span class="title">GetDefense</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体角色</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Character</span> : <span class="keyword">public</span> ICharacterStats &#123;</span><br><span class="line">    <span class="type">float</span> baseAtk, baseSpd, baseDef;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">float</span> <span class="title">GetAttack</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> baseAtk; &#125;</span><br><span class="line">    <span class="function"><span class="type">float</span> <span class="title">GetSpeed</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> baseSpd; &#125;</span><br><span class="line">    <span class="function"><span class="type">float</span> <span class="title">GetDefense</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> baseDef; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Buff 装饰器基类</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">BuffDecorator</span> : <span class="keyword">public</span> ICharacterStats &#123;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    TUniquePtr&lt;ICharacterStats&gt; inner;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">BuffDecorator</span>(TUniquePtr&lt;ICharacterStats&gt; inner) : <span class="built_in">inner</span>(std::<span class="built_in">move</span>(inner)) &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 攻击力 Buff</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AttackBuff</span> : <span class="keyword">public</span> BuffDecorator &#123;</span><br><span class="line">    <span class="type">float</span> multiplier;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">AttackBuff</span>(TUniquePtr&lt;ICharacterStats&gt; inner, <span class="type">float</span> mult)</span><br><span class="line">        : <span class="built_in">BuffDecorator</span>(std::<span class="built_in">move</span>(inner)), <span class="built_in">multiplier</span>(mult) &#123;&#125;</span><br><span class="line">    <span class="function"><span class="type">float</span> <span class="title">GetAttack</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> inner-&gt;<span class="built_in">GetAttack</span>() * multiplier; &#125;</span><br><span class="line">    <span class="function"><span class="type">float</span> <span class="title">GetSpeed</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> inner-&gt;<span class="built_in">GetSpeed</span>(); &#125;</span><br><span class="line">    <span class="function"><span class="type">float</span> <span class="title">GetDefense</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> inner-&gt;<span class="built_in">GetDefense</span>(); &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>使用时像洋葱一样包裹：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> player = <span class="built_in">MakeUnique</span>&lt;Character&gt;(<span class="number">100</span>, <span class="number">10</span>, <span class="number">50</span>);</span><br><span class="line"><span class="keyword">auto</span> withAttackBuff = <span class="built_in">MakeUnique</span>&lt;AttackBuff&gt;(std::<span class="built_in">move</span>(player), <span class="number">1.3f</span>);</span><br><span class="line"><span class="keyword">auto</span> withSpeedDebuff = <span class="built_in">MakeUnique</span>&lt;SpeedDebuff&gt;(std::<span class="built_in">move</span>(withAttackBuff), <span class="number">0.8f</span>);</span><br><span class="line"><span class="comment">// 最终属性：攻击 130，速度 8，防御 50</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>UE 中的实现建议</strong>：Buff 系统的 Decorator 链不适合在 Tick 中全量重新计算（性能开销大），应维护一个 Dirty Flag——仅在有 Buff 添加&#x2F;移除时重新计算，并将结果缓存。</p>
+<h3 id="3-3-外观模式：复杂子系统的简洁入口"><a href="#3-3-外观模式：复杂子系统的简洁入口" class="headerlink" title="3.3 外观模式：复杂子系统的简洁入口"></a>3.3 外观模式：复杂子系统的简洁入口</h3><p>游戏引擎的底层子系统极其复杂（渲染管线、网络同步、音频混音、物理模拟），外观模式将它们封装为<strong>高层 API</strong>，降低业务逻辑层的认知负担。</p>
+<p><strong>网络同步外观：</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">NetworkFacade</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">// 业务层只需调用此方法，内部处理序列化、可靠性选择、带宽优化</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">SyncPlayerState</span><span class="params">(int32 playerId, <span class="type">const</span> FPlayerState&amp; state)</span> </span>&#123;</span><br><span class="line">        RPCQueue.<span class="built_in">Enqueue</span>(EReliability::Unreliable, playerId, <span class="built_in">Serialize</span>(state));</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">BandwidthExceeded</span>()) <span class="built_in">CompressQueue</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 隐藏底层 NetDriver 和 ReplicationGraph 的复杂性</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">RegisterReplicatedActor</span><span class="params">(AActor* actor)</span> </span>&#123;</span><br><span class="line">        NetDriver-&gt;<span class="built_in">GetReplicationGraph</span>()-&gt;<span class="built_in">AddNetworkActor</span>(actor);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>资源加载外观：</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 业务层调用：一行代码完成异步加载 + 缓存 + 引用计数</span></span><br><span class="line"><span class="keyword">auto</span> mesh = ResourceFacade::<span class="built_in">LoadAsync</span>&lt;UStaticMesh&gt;(<span class="built_in">TEXT</span>(<span class="string">&quot;/Game/Props/Barrel&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<p>外观模式在游戏项目中的价值在于<strong>团队分工</strong>：引擎组维护外观背后的子系统，玩法组只通过外观 API 调用，减少跨团队沟通成本。</p>
+<hr>
+<h2 id="四、行为型模式"><a href="#四、行为型模式" class="headerlink" title="四、行为型模式"></a>四、行为型模式</h2><h3 id="4-1-状态模式：角色状态机的优雅实现"><a href="#4-1-状态模式：角色状态机的优雅实现" class="headerlink" title="4.1 状态模式：角色状态机的优雅实现"></a>4.1 状态模式：角色状态机的优雅实现</h3><p>游戏角色是典型的多状态实体：Idle、Move、Attack、Death、HitStun、Dodge。传统的 <code>if-else</code> 或 <code>switch</code> 实现会迅速失控：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ❌ 反模式：每个状态都在同一函数中判断</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">ACharacter::Tick</span><span class="params">(<span class="type">float</span> DeltaTime)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (CurrentState == EState::Idle) &#123; <span class="comment">/* ... */</span> &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (CurrentState == EState::Move) &#123; <span class="comment">/* ... */</span> &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (CurrentState == EState::Attack) &#123; <span class="comment">/* 拳头、踢腿、技能1、技能2 ... */</span> &#125;</span><br><span class="line">    <span class="comment">// 50 个 else if 后，没人敢动这段代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>状态模式将每个状态的逻辑封装为独立类：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ICharacterState</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">Enter</span><span class="params">(ACharacter* owner)</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">Update</span><span class="params">(ACharacter* owner, <span class="type">float</span> dt)</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">Exit</span><span class="params">(ACharacter* owner)</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">ICharacterState</span>() = <span class="keyword">default</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AttackState</span> : <span class="keyword">public</span> ICharacterState &#123;</span><br><span class="line">    <span class="type">float</span> elapsed;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">Enter</span><span class="params">(ACharacter* owner)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        owner-&gt;<span class="built_in">PlayMontage</span>(AttackMontage);</span><br><span class="line">        elapsed = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">Update</span><span class="params">(ACharacter* owner, <span class="type">float</span> dt)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        elapsed += dt;</span><br><span class="line">        <span class="keyword">if</span> (elapsed &gt; owner-&gt;AttackDuration)</span><br><span class="line">            owner-&gt;<span class="built_in">ChangeState</span>(<span class="built_in">MakeShared</span>&lt;IdleState&gt;()); <span class="comment">// 回到待机</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">Exit</span><span class="params">(ACharacter* owner)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        owner-&gt;<span class="built_in">StopMontage</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>UE 中的实践</strong>：使用 <code>UStateTreeComponent</code>（UE5）或传统枚举 + 委托方式。如果状态数超过 8 个且有复杂转换条件，强烈建议用状态模式而非枚举。</p>
+<p><strong>状态转换表</strong>（适用于规则复杂场景）：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义：当前状态 + 触发事件 → 目标状态 + 回调</span></span><br><span class="line">StateTransitionTable[EState::Idle][EEvent::ReceiveDamage] = &#123; EState::HitStun, &amp;OnHit &#125;;</span><br><span class="line">StateTransitionTable[EState::Attack][EEvent::AttackHitLand] = &#123; EState::Idle, &amp;OnComboCheck &#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-观察者模式：游戏事件系统的基石"><a href="#4-2-观察者模式：游戏事件系统的基石" class="headerlink" title="4.2 观察者模式：游戏事件系统的基石"></a>4.2 观察者模式：游戏事件系统的基石</h3><p>观察者模式定义了对象间的一对多依赖关系，在游戏开发中演化为两种主流形式：</p>
+<h4 id="委托（Delegate）-事件（Event）"><a href="#委托（Delegate）-事件（Event）" class="headerlink" title="委托（Delegate）&#x2F; 事件（Event）"></a>委托（Delegate）&#x2F; 事件（Event）</h4><p>UE 的委托系统是最具代表性的观察者实现：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 声明</span></span><br><span class="line"><span class="built_in">DECLARE_MULTICAST_DELEGATE_TwoParams</span>(FOnHealthChanged, <span class="type">float</span>, <span class="type">float</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 发布者</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">UHealthComponent</span> : <span class="keyword">public</span> UActorComponent &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    FOnHealthChanged OnHealthChanged;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">TakeDamage</span><span class="params">(<span class="type">float</span> amount)</span> </span>&#123;</span><br><span class="line">        Health = FMath::<span class="built_in">Max</span>(<span class="number">0</span>, Health - amount);</span><br><span class="line">        OnHealthChanged.<span class="built_in">Broadcast</span>(Health, MaxHealth);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 订阅者</span></span><br><span class="line">HealthComp-&gt;OnHealthChanged.<span class="built_in">AddUObject</span>(<span class="keyword">this</span>, &amp;AEnemy::OnHealthUpdate);</span><br><span class="line">HealthComp-&gt;OnHealthChanged.<span class="built_in">AddDynamic</span>(HUDWidget, &amp;UHealthBar::UpdateBar);</span><br></pre></td></tr></table></figure>
+
+<h4 id="消息总线-EventBus"><a href="#消息总线-EventBus" class="headerlink" title="消息总线 &#x2F; EventBus"></a>消息总线 &#x2F; EventBus</h4><p>对于跨模块、解耦要求高的场景（如成就系统监听「击杀 BOSS」事件发布成就），消息总线降低了直接耦合：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">EventBus</span> &#123;</span><br><span class="line">    TMap&lt;FName, TArray&lt;TFunction&lt;<span class="built_in">void</span>(<span class="type">const</span> FVariant&amp;)&gt;&gt;&gt; listeners;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">Emit</span><span class="params">(FName eventName, <span class="type">const</span> FVariant&amp; data)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; listener : listeners[eventName]) <span class="built_in">listener</span>(data);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用：不产生模块间依赖</span></span><br><span class="line">EventBus::<span class="built_in">Global</span>().<span class="built_in">Emit</span>(<span class="string">&quot;BossKilled&quot;</span>, FBossData&#123; <span class="string">&quot;DragonLord&quot;</span>, <span class="number">15000</span> &#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-命令模式：输入缓冲与回放系统"><a href="#4-3-命令模式：输入缓冲与回放系统" class="headerlink" title="4.3 命令模式：输入缓冲与回放系统"></a>4.3 命令模式：输入缓冲与回放系统</h3><p>命令模式将请求封装为对象，使请求的发送者与执行者解耦。在游戏开发中的三大应用：</p>
+<h4 id="输入缓冲"><a href="#输入缓冲" class="headerlink" title="输入缓冲"></a>输入缓冲</h4><p>格斗游戏中的「预输入」系统：玩家在攻击动画播放期间按下后续按键，命令被缓存并在当前动作结束后执行：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">CommandQueue</span> &#123;</span><br><span class="line">    TQueue&lt;TUniquePtr&lt;ICommand&gt;&gt; buffer;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">Enqueue</span><span class="params">(TUniquePtr&lt;ICommand&gt; cmd)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (buffer.<span class="built_in">Count</span>() &lt; MaxBufferSize) buffer.<span class="built_in">Enqueue</span>(std::<span class="built_in">move</span>(cmd));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">ExecuteNext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        TUniquePtr&lt;ICommand&gt; cmd;</span><br><span class="line">        <span class="keyword">if</span> (buffer.<span class="built_in">Dequeue</span>(cmd)) cmd-&gt;<span class="built_in">Execute</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="技能队列"><a href="#技能队列" class="headerlink" title="技能队列"></a>技能队列</h4><p>MMORPG 中玩家按下技能热键，技能命令进入队列，GCD（全局冷却）结束后按 FIFO 顺序执行。</p>
+<h4 id="回放系统"><a href="#回放系统" class="headerlink" title="回放系统"></a>回放系统</h4><p>将每一帧的输入命令序列化为时间线，回放时按时间戳重新执行命令队列即可完美复现对局。RTS 和 MOBA 的录像系统均基于此原理。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">FrameCommand</span> &#123;</span><br><span class="line">    int32 frame;</span><br><span class="line">    TUniquePtr&lt;ICommand&gt; command;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 录制</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Record</span><span class="params">(int32 frame, TUniquePtr&lt;ICommand&gt; cmd)</span> </span>&#123;</span><br><span class="line">    timeline.<span class="built_in">Add</span>(&#123; frame, std::<span class="built_in">move</span>(cmd) &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 回放</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Replay</span><span class="params">(int32 currentFrame)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (head &lt; timeline.<span class="built_in">Num</span>() &amp;&amp; timeline[head].frame == currentFrame)</span><br><span class="line">        timeline[head++].command-&gt;<span class="built_in">Execute</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-4-策略模式：AI-行为的动态切换"><a href="#4-4-策略模式：AI-行为的动态切换" class="headerlink" title="4.4 策略模式：AI 行为的动态切换"></a>4.4 策略模式：AI 行为的动态切换</h3><p>AI 的行为不应硬编码在 <code>AAIController</code> 中。策略模式将算法（行为策略）封装为可互换的对象：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">IBehaviorStrategy</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">Execute</span><span class="params">(AEnemy* owner, <span class="type">float</span> dt)</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">IBehaviorStrategy</span>() = <span class="keyword">default</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">PatrolStrategy</span> : <span class="keyword">public</span> IBehaviorStrategy &#123;</span><br><span class="line">    TArray&lt;FVector&gt; waypoints;</span><br><span class="line">    int32 current = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">Execute</span><span class="params">(AEnemy* owner, <span class="type">float</span> dt)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        owner-&gt;<span class="built_in">MoveTo</span>(waypoints[current]);</span><br><span class="line">        <span class="keyword">if</span> (owner-&gt;<span class="built_in">DistanceTo</span>(waypoints[current]) &lt; <span class="number">50.0f</span>)</span><br><span class="line">            current = (current + <span class="number">1</span>) % waypoints.<span class="built_in">Num</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ChaseStrategy</span> : <span class="keyword">public</span> IBehaviorStrategy &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">Execute</span><span class="params">(AEnemy* owner, <span class="type">float</span> dt)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        owner-&gt;<span class="built_in">MoveTo</span>(owner-&gt;Target-&gt;<span class="built_in">GetActorLocation</span>());</span><br><span class="line">        <span class="keyword">if</span> (owner-&gt;<span class="built_in">DistanceTo</span>(owner-&gt;Target) &lt; AttackRange)</span><br><span class="line">            owner-&gt;<span class="built_in">SetStrategy</span>(<span class="built_in">MakeShared</span>&lt;AttackStrategy&gt;());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>策略切换时机</strong>：由 Blackboard（行为树感知数据）或感官系统（视觉锥、听觉范围）触发策略替换。策略模式与状态模式的不同在于：状态模式关注「角色当前在做什么（状态）」，策略模式关注「如何做（算法）」。</p>
+<hr>
+<h2 id="五、Game-Programming-Patterns-补充"><a href="#五、Game-Programming-Patterns-补充" class="headerlink" title="五、Game Programming Patterns 补充"></a>五、Game Programming Patterns 补充</h2><p>Robert Nystrom 在《游戏编程模式》中补充了几种游戏专属模式，与 GoF 模式互补：</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>核心思想</th>
+<th>与传统模式对比</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Game Loop</strong></td>
+<td>固定时间步长的主循环驱动游戏世界</td>
+<td>无对应 GoF 模式，是游戏架构的基础</td>
+</tr>
+<tr>
+<td><strong>Update Method</strong></td>
+<td>每个实体每帧调用 <code>Update()</code></td>
+<td>模板方法模式的游戏化变体</td>
+</tr>
+<tr>
+<td><strong>双缓冲</strong></td>
+<td>渲染到后台缓冲，完成后交换</td>
+<td>代理&#x2F;装饰器模式的特化应用</td>
+</tr>
+<tr>
+<td><strong>空间分区</strong></td>
+<td>按空间区域管理实体，减少 O(n²) 查询</td>
+<td>组合模式 + 策略模式的空间化应用</td>
+</tr>
+<tr>
+<td><strong>脏标记</strong></td>
+<td>仅在需要时重新计算缓存值</td>
+<td>观察者模式的性能优化变体</td>
+</tr>
+</tbody></table>
+<p>这些模式强调了游戏开发的特殊性：<strong>帧率约束下的计算效率优先</strong>。传统 GoF 模式需要根据这一约束进行「游戏化」适配（如装饰器配合脏标记避免每帧重新计算）。</p>
+<hr>
+<h2 id="六、UE-内置模式实现"><a href="#六、UE-内置模式实现" class="headerlink" title="六、UE 内置模式实现"></a>六、UE 内置模式实现</h2><p>Unreal Engine 自身大量使用了设计模式，理解这些内置实现有助于写出更「UE 风格」的代码：</p>
+<table>
+<thead>
+<tr>
+<th>UE 机制</th>
+<th>对应模式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>UGameInstanceSubsystem</code> &#x2F; <code>UWorldSubsystem</code></td>
+<td>单例 + 服务定位器</td>
+<td>框架管理生命周期，比裸单例安全</td>
+</tr>
+<tr>
+<td><code>UActorComponent</code></td>
+<td>组件模式</td>
+<td>Actor-Component 是组件模式在游戏领域的巅峰实现</td>
+</tr>
+<tr>
+<td><strong>GC（垃圾回收）</strong></td>
+<td>享元模式</td>
+<td>TArray 元素通过索引访问而非指针，减少内存碎片</td>
+</tr>
+<tr>
+<td><code>FTickerDelegate</code></td>
+<td>观察者模式</td>
+<td>每帧 Tick 通过委托广播，支持优先级排序</td>
+</tr>
+<tr>
+<td><code>UnrealBuildTool</code></td>
+<td>建造者模式</td>
+<td>ModuleRules 构建编译配置，最终由 Builder 生成项目文件</td>
+</tr>
+<tr>
+<td><code>FObjectInitializer</code></td>
+<td>原型模式</td>
+<td>通过 CDO（Class Default Object）克隆生成新实例</td>
+</tr>
+<tr>
+<td><code>TWeakObjectPtr</code></td>
+<td>代理模式</td>
+<td>代理 GC 管理的指针，安全访问可能已被销毁的对象</td>
+</tr>
+<tr>
+<td><code>DataAsset</code> &#x2F; <code>DataTable</code></td>
+<td>享元模式</td>
+<td>同一数据资产被数百个实例共享</td>
+</tr>
+<tr>
+<td><code>FSlateApplication</code></td>
+<td>外观模式</td>
+<td>统一入口管理输入、渲染、窗口</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="七、实战案例：AI-敌人系统的三模式协同"><a href="#七、实战案例：AI-敌人系统的三模式协同" class="headerlink" title="七、实战案例：AI 敌人系统的三模式协同"></a>七、实战案例：AI 敌人系统的三模式协同</h2><p>用一个完整的 AI 敌人系统展示状态模式、策略模式、观察者模式如何协同工作。</p>
+<h3 id="系统架构"><a href="#系统架构" class="headerlink" title="系统架构"></a>系统架构</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">         ┌──────────────┐</span><br><span class="line">         │  EventBus    │  ← 观察者模式：传播全局事件</span><br><span class="line">         └──────┬───────┘</span><br><span class="line">                │</span><br><span class="line">    ┌───────────┼───────────┐</span><br><span class="line">    ▼           ▼           ▼</span><br><span class="line">┌───────┐  ┌───────┐  ┌──────────┐</span><br><span class="line">│Health │  │AI Per │  │Weapon    │  ← 各 Component 通过委托广播</span><br><span class="line">│Comp   │  │ception│  │Component │</span><br><span class="line">└───┬───┘  └───┬───┘  └────┬─────┘</span><br><span class="line">    │           │           │</span><br><span class="line">    └───────────┼───────────┘</span><br><span class="line">                ▼</span><br><span class="line">     ┌─────────────────────┐</span><br><span class="line">     │ AIController        │</span><br><span class="line">     │  ┌────────────────┐ │</span><br><span class="line">     │  │ StateMachine   │ │  ← 状态模式：Idle/Patrol/Chase/Combat/Retreat</span><br><span class="line">     │  │ (CurrentState) │ │</span><br><span class="line">     │  └───────┬────────┘ │</span><br><span class="line">     │          │ 持有      │</span><br><span class="line">     │  ┌───────▼────────┐ │</span><br><span class="line">     │  │ IBehavior      │ │  ← 策略模式：Melee/Cover/Sniper/Flee</span><br><span class="line">     │  │ Strategy       │ │</span><br><span class="line">     │  └────────────────┘ │</span><br><span class="line">     └─────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// --- 状态模式：状态机 ---</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">UAIStateMachine</span> &#123;</span><br><span class="line">    TSharedPtr&lt;IAIState&gt; currentState;</span><br><span class="line">    TWeakObjectPtr&lt;AAIController&gt; owner;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">Transition</span><span class="params">(TSharedPtr&lt;IAIState&gt; newState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (currentState) currentState-&gt;<span class="built_in">OnExit</span>(owner.<span class="built_in">Get</span>());</span><br><span class="line">        currentState = newState;</span><br><span class="line">        <span class="keyword">if</span> (currentState) currentState-&gt;<span class="built_in">OnEnter</span>(owner.<span class="built_in">Get</span>());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">Tick</span><span class="params">(<span class="type">float</span> dt)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (currentState) currentState-&gt;<span class="built_in">Tick</span>(owner.<span class="built_in">Get</span>(), dt);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// --- 策略模式：战斗行为 ---</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">RangedKitingStrategy</span> : <span class="keyword">public</span> ICombatStrategy &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">Execute</span><span class="params">(AAIController* ai, <span class="type">float</span> dt)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        <span class="keyword">auto</span>* enemy = ai-&gt;<span class="built_in">GetPawn</span>();</span><br><span class="line">        <span class="keyword">auto</span>* target = ai-&gt;<span class="built_in">GetTarget</span>();</span><br><span class="line"></span><br><span class="line">        <span class="type">float</span> dist = FVector::<span class="built_in">Dist</span>(enemy-&gt;<span class="built_in">GetActorLocation</span>(), target-&gt;<span class="built_in">GetActorLocation</span>());</span><br><span class="line">        <span class="keyword">if</span> (dist &lt; KiteDistance) &#123;</span><br><span class="line">            ai-&gt;<span class="built_in">MoveAwayFrom</span>(target);  <span class="comment">// 后撤保持距离</span></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (dist &gt; MaxRange) &#123;</span><br><span class="line">            ai-&gt;<span class="built_in">MoveTo</span>(target);         <span class="comment">// 追击</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            ai-&gt;<span class="built_in">StopMovement</span>();</span><br><span class="line">            ai-&gt;<span class="built_in">FireWeapon</span>();           <span class="comment">// 最佳射程内攻击</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// --- 观察者模式：事件驱动策略切换 ---</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">AEnemyAIController::BeginPlay</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Super::<span class="built_in">BeginPlay</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span>* health = <span class="built_in">GetPawn</span>()-&gt;<span class="built_in">FindComponentByClass</span>&lt;UHealthComponent&gt;();</span><br><span class="line">    <span class="comment">// 血量低于 30% → 切换策略为撤退</span></span><br><span class="line">    health-&gt;OnHealthChanged.<span class="built_in">AddWeakLambda</span>(<span class="keyword">this</span>, [<span class="keyword">this</span>](<span class="type">float</span> current, <span class="type">float</span> max) &#123;</span><br><span class="line">        <span class="keyword">if</span> (current / max &lt; <span class="number">0.3f</span>) &#123;</span><br><span class="line">            stateMachine-&gt;<span class="built_in">Transition</span>(<span class="built_in">MakeShared</span>&lt;RetreatState&gt;());</span><br><span class="line">            combatStrategy = <span class="built_in">MakeShared</span>&lt;FleeStrategy&gt;();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span>* perception = <span class="built_in">FindComponentByClass</span>&lt;UAIPerceptionComponent&gt;();</span><br><span class="line">    <span class="comment">// 发现敌人 → 从巡逻切到追击</span></span><br><span class="line">    perception-&gt;OnTargetPerceptionUpdated.<span class="built_in">AddDynamic</span>(<span class="keyword">this</span>, &amp;AEnemyAIController::OnPerceptionUpdate);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">AEnemyAIController::OnPerceptionUpdate</span><span class="params">(AActor* actor, FAIStimulus stimulus)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (stimulus.<span class="built_in">WasSuccessfullySensed</span>()) &#123;</span><br><span class="line">        <span class="built_in">SetTarget</span>(actor);</span><br><span class="line">        stateMachine-&gt;<span class="built_in">Transition</span>(<span class="built_in">MakeShared</span>&lt;ChaseState&gt;());</span><br><span class="line">        <span class="comment">// 根据距离选择战斗策略</span></span><br><span class="line">        <span class="type">float</span> dist = FVector::<span class="built_in">Dist</span>(<span class="built_in">GetPawn</span>()-&gt;<span class="built_in">GetActorLocation</span>(), actor-&gt;<span class="built_in">GetActorLocation</span>());</span><br><span class="line">        combatStrategy = dist &gt; <span class="number">1500.0f</span></span><br><span class="line">            ? <span class="built_in">MakeShared</span>&lt;SniperStrategy&gt;()   <span class="comment">// 远程狙击</span></span><br><span class="line">            : <span class="built_in">MakeShared</span>&lt;MeleeChargeStrategy&gt;(); <span class="comment">// 近战冲锋</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="三模式的分工总结"><a href="#三模式的分工总结" class="headerlink" title="三模式的分工总结"></a>三模式的分工总结</h3><table>
+<thead>
+<tr>
+<th>模式</th>
+<th>解决的问题</th>
+<th>在本案例中的职责</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>状态模式</strong></td>
+<td>「敌人在做什么」</td>
+<td>管理 Idle→Patrol→Chase→Combat→Retreat 的合法转换</td>
+</tr>
+<tr>
+<td><strong>策略模式</strong></td>
+<td>「如何执行当前行为」</td>
+<td>近战冲锋、远程风筝、抱团、逃跑等具体算法</td>
+</tr>
+<tr>
+<td><strong>观察者模式</strong></td>
+<td>「何时切换行为」</td>
+<td>血量变化触发撤退、感官触发追击、队友信号触发支援</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="八、常见反模式与过度设计陷阱"><a href="#八、常见反模式与过度设计陷阱" class="headerlink" title="八、常见反模式与过度设计陷阱"></a>八、常见反模式与过度设计陷阱</h2><h3 id="8-1-反模式"><a href="#8-1-反模式" class="headerlink" title="8.1 反模式"></a>8.1 反模式</h3><table>
+<thead>
+<tr>
+<th>反模式</th>
+<th>症状</th>
+<th>修复</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>上帝单例</strong></td>
+<td>GameManager 有 3000+ 行，引用一切</td>
+<td>拆分为 Subsystem &#x2F; Service</td>
+</tr>
+<tr>
+<td><strong>链式策略地狱</strong></td>
+<td>每个小差异都新建策略类，最终 50+ 策略</td>
+<td>用参数化替代策略爆炸</td>
+</tr>
+<tr>
+<td><strong>装饰器过深</strong></td>
+<td>Buff 装饰链超过 10 层，每帧计算 100+ 次</td>
+<td>脏标记 + 缓存 + 合并同类 Buff</td>
+</tr>
+<tr>
+<td><strong>观察者泄漏</strong></td>
+<td>委托未解绑，对象销毁后仍收到广播</td>
+<td>使用 Weak Lambda &#x2F; 在 EndPlay 中 RemoveAll</td>
+</tr>
+<tr>
+<td><strong>状态爆炸</strong></td>
+<td>状态数超过 30 个，转换矩阵 N² 规模</td>
+<td>引入层级状态机（HFSM）或行为树</td>
+</tr>
+<tr>
+<td><strong>过度工厂</strong></td>
+<td>为 3 种子弹创建 AbstractFactory + ConcreteFactory × 3</td>
+<td>一个带参数的静态工厂方法足矣</td>
+</tr>
+</tbody></table>
+<h3 id="8-2-过度设计陷阱"><a href="#8-2-过度设计陷阱" class="headerlink" title="8.2 过度设计陷阱"></a>8.2 过度设计陷阱</h3><ol>
+<li><strong>「所有类都必须有接口」</strong>：如果只有一个实现类，接口就是多余的抽象。等第二个实现出现时再提取接口（YAGNI 原则）。</li>
+<li><strong>为简单逻辑引入命令模式</strong>：如果操作只是 <code>player.Jump()</code>，不需要包装成 <code>JumpCommand</code>。命令模式的价值在队列&#x2F;撤销&#x2F;序列化场景才体现。</li>
+<li><strong>强行套用 23 种模式</strong>：实际项目中使用 8-10 种核心模式已足够。组件模式、状态模式、观察者模式、策略模式、命令模式、工厂模式、对象池、单例（Subsystem）覆盖了 90% 的游戏开发需求。</li>
+<li><strong>忽略引擎内置方案</strong>：UE 的 Subsystem、GameplayAbilitySystem、DataAsset 已经内置了大量设计模式。在造轮子之前先查引擎文档。</li>
+</ol>
+<hr>
+<p>设计模式的精髓不在记住 23 个名字，而在于理解每个模式背后的<strong>设计原则</strong>：单一职责、开闭原则、依赖倒置、接口隔离。当你面对一个设计问题时，能从这些原则出发推导出模式化的解决方案，才是真正掌握了设计模式。</p>
+<hr>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li>Gamma, E., Helm, R., Johnson, R., &amp; Vlissides, J. (1994). <em>Design Patterns: Elements of Reusable Object-Oriented Software</em>.</li>
+<li>Nystrom, R. (2014). <em>Game Programming Patterns</em>. Genever Benning.</li>
+<li>Epic Games. <em>Unreal Engine Documentation - Gameplay Architecture</em>. <a target="_blank" rel="noopener" href="https://docs.unrealengine.com/">https://docs.unrealengine.com/</a></li>
+<li>Gregory, J. (2018). <em>Game Engine Architecture</em> (3rd ed.). CRC Press.</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="/about/">Megumin</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://megumin-1204.github.io/2026/06/03/design-patterns-game-dev/">https://megumin-1204.github.io/2026/06/03/design-patterns-game-dev/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://megumin-1204.github.io" target="_blank">UE探偵の開発室</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/C/">C++</a><a class="post-meta__tags" href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/">游戏开发</a><a class="post-meta__tags" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a><a class="post-meta__tags" href="/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a><a class="post-meta__tags" href="/tags/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/">代码规范</a></div><div class="post-share"><div class="social-share" data-image="https://picsum.photos/seed/anime8/800/400" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/03/mvc-mvp-mvvm-game-dev/" title="MVC / MVP / MVVM 架构模式深度解析 - 从 UI 到游戏开发实战"><img class="cover" src="https://picsum.photos/seed/anime7/800/400" onerror="onerror=null;src='https://picsum.photos/seed/anime404b/800/400'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">MVC / MVP / MVVM 架构模式深度解析 - 从 UI 到游戏开发实战</div></div><div class="info-2"><div class="info-item-1">一、概述：三种架构模式的起源与核心问题架构模式的出现，源于软件工程对复杂度管理的永恒追求。当代码库膨胀到数十万行，团队规模扩展到数十人，如果没有一套清晰的代码组织原则，项目便会迅速堕入「大泥球」（Big Ball of Mud）的深渊。 1.1 Smalltalk MVC：架构模式的原点1979 年，Trygve Reenskaug 在 Xerox PARC 为 Smalltalk-80 设计了 Model-View-Controller，这是 GUI 架构模式的鼻祖。其核心思想在当时极具革命性：将用户界面拆分为三个协作对象。  Model：管理数据与业务逻辑，不感知任何 UI 细节。当数据发生变化时，通过 Observer 模式通知 View。 View：负责将 Model 的数据渲染为可视界面，同时将用户输入转发给 Controller。 Controller：接收输入事件，将其翻译为 Model 的操作指令，本质上是「输入解释器」。  Smalltalk MVC 的数据流是闭环的：用户输入 → Controller → Model（数据变更）→ View（观察者通知）→ U...</div></div></div></a><a class="pagination-related" href="/2026/06/03/lua-ue-deep-dive/" title="Lua 深度解析 - 从语言特性到 UE 游戏开发实战"><img class="cover" src="https://picsum.photos/seed/anime6/800/400" onerror="onerror=null;src='https://picsum.photos/seed/anime404b/800/400'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Lua 深度解析 - 从语言特性到 UE 游戏开发实战</div></div><div class="info-2"><div class="info-item-1">1. Lua 语言概述Lua 是一门轻量级、可嵌入的脚本语言，由巴西 PUC-Rio 大学设计，自 1993 年诞生以来已在游戏行业深耕近三十年。它的核心设计哲学是「提供机制而非策略」——语言本身只提供少量但强大的原语，把架构决策留给使用者。 在 UE 游戏开发中，Lua 的价值体现在三个维度：  热更新：C++ 编译耗时长、打包流程重，Lua 脚本可以绕过 App Store 审核直接推送逻辑更新，是国内手游的刚需。 快速迭代：策划调整数值、修复线上 Bug 无需重新出包，开发-测试-上线周期从天级压缩到分钟级。 策划可配：技能表、掉落表、关卡配置等数据驱动内容用 Lua table 表达比 JSON&#x2F;XML 更灵活，支持内嵌逻辑。  主流 UE Lua 方案包括 slua-unreal、UnLua、puerts 等，本文以 slua-unreal 为主要参考，兼顾通用 Lua 原理。 2. 核心语言特性2.1 Table — 万能的唯一数据结构Lua 只有一种数据结构：table。它同时扮演数组、字典、对象、模块、命名空间等角色： 12345678910111213...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/06/03/ue-gas-deep-dive/" title="UE GAS 深度剖析 - 从原理到实战"><img class="cover" src="https://picsum.photos/seed/anime6/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-03</div><div class="info-item-2">UE GAS 深度剖析 - 从原理到实战</div></div><div class="info-2"><div class="info-item-1">一、GAS 概述与设计哲学Gameplay Ability System（GAS）是 Epic 为 UE 打造的一套数据驱动的技能&#x2F;属性框架，最初为《Paragon》设计，后在《Fortnite》中大规模验证。它的核心设计哲学可以归纳为以下几点：  数据驱动而非硬编码：技能效果、属性修改、冷却时间等均通过 DataAsset 和 GameplayEffect 定义，策划可直接在编辑器中调整数值而无需 C++ 改代码。 网络先行：GAS 从设计第一天就将客户端-服务器同步作为一等公民，AbilitySystemComponent（ASC）内置了完整的 RPC 与属性复制机制。 组合优于继承：通过 GameplayTags 实现技能间的条件判断、互斥与层级管理，避免深层次类继承带来的维护灾难。 可预测性（Prediction）：支持客户端预测，使技能响应”零延迟”，同时服务器权威保证最终一致性。  二、核心组件全景GAS 由五大核心组件组成，它们的分工如下：    组件 职责    AbilitySystemComponent (ASC) 总调度中心，管理 GA 激活、GE...</div></div></div></a><a class="pagination-related" href="/2026/06/02/ue-architecture-design/" title="UE 客户端架构设计 - 从混乱到优雅"><img class="cover" src="https://picsum.photos/seed/uearch/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-02</div><div class="info-item-2">UE 客户端架构设计 - 从混乱到优雅</div></div><div class="info-2"><div class="info-item-1">架构的困境 「混沌から秩序へ」—— 从混沌走向秩序，是每个项目的必经之路。  项目初期，功能少、人少，一切看似美好。当团队扩张到 20+ 人、代码量突破百万行时，如果没有清晰的架构，噩梦就开始了：  C++ 和 Lua 的交互散落在各处 UI 逻辑、战斗逻辑、网络同步纠缠不清 一个改动引发连锁崩溃  双层架构设计我们的核心思路：C++ 层提供能力，Lua 层编排逻辑。 12345678910111213┌─────────────────────────────────────────┐│               Lua 脚本层                  ││  ┌─────────┐ ┌─────────┐ ┌───────────┐  ││  │  UI 模块 │ │ 战斗模块 │ │  任务模块  │  ││  └─────────┘ └─────────┘ └───────────┘  │├─────────────────────────────────────────┤│            slua-unreal 桥接层            │├──...</div></div></div></a><a class="pagination-related" href="/2026/06/03/mvc-mvp-mvvm-game-dev/" title="MVC &#x2F; MVP &#x2F; MVVM 架构模式深度解析 - 从 UI 到游戏开发实战"><img class="cover" src="https://picsum.photos/seed/anime7/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-03</div><div class="info-item-2">MVC &#x2F; MVP &#x2F; MVVM 架构模式深度解析 - 从 UI 到游戏开发实战</div></div><div class="info-2"><div class="info-item-1">一、概述：三种架构模式的起源与核心问题架构模式的出现，源于软件工程对复杂度管理的永恒追求。当代码库膨胀到数十万行，团队规模扩展到数十人，如果没有一套清晰的代码组织原则，项目便会迅速堕入「大泥球」（Big Ball of Mud）的深渊。 1.1 Smalltalk MVC：架构模式的原点1979 年，Trygve Reenskaug 在 Xerox PARC 为 Smalltalk-80 设计了 Model-View-Controller，这是 GUI 架构模式的鼻祖。其核心思想在当时极具革命性：将用户界面拆分为三个协作对象。  Model：管理数据与业务逻辑，不感知任何 UI 细节。当数据发生变化时，通过 Observer 模式通知 View。 View：负责将 Model 的数据渲染为可视界面，同时将用户输入转发给 Controller。 Controller：接收输入事件，将其翻译为 Model 的操作指令，本质上是「输入解释器」。  Smalltalk MVC 的数据流是闭环的：用户输入 → Controller → Model（数据变更）→ View（观察者通知）→ U...</div></div></div></a><a class="pagination-related" href="/2026/06/03/ue-commonui-deep-dive/" title="UE CommonUI 深度解析 - 跨平台 UI 框架从原理到实战"><img class="cover" src="https://picsum.photos/seed/anime7/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-03</div><div class="info-item-2">UE CommonUI 深度解析 - 跨平台 UI 框架从原理到实战</div></div><div class="info-2"><div class="info-item-1">一、CommonUI 概述CommonUI 是 Epic Games 在 UE5 中正式推出的跨平台 UI 开发框架，其前身最早可追溯至 UE4.27 的 Experimental 阶段。官方在开发《Fortnite》跨平台版本时深刻体会到：一套代码同时适配键盘鼠标、手柄和触屏三种输入模式所带来的复杂度呈指数增长。CommonUI 正是这一经验的产物。 1.1 解决的核心问题在传统 UMG 开发流程中，开发者需要手动处理以下问题：  输入模式切换：键盘鼠标与手柄之间的光标显隐、导航方式切换 按钮状态管理：Hover &#x2F; Press &#x2F; Focus &#x2F; Disabled 等状态的样式和音效 焦点导航冲突：手柄 D-Pad 导航与鼠标点击的焦点抢占 跨平台样式：同一套 UI 在 PC 和主机上的视觉差异处理 激活栈管理：多层弹窗时的输入归属和模态控制  CommonUI 将这些共性需求抽象为统一的基类和配置资产，开发者只需继承和配置，无需从零搭建。其设计哲学可概括为三条：输入无关（Input Agnostic）、平台无关（Platform Agnosti...</div></div></div></a><a class="pagination-related" href="/2026/06/03/ue-enhanced-input-deep-dive/" title="UE Enhanced Input 深度解析 - 新一代输入系统从原理到实战"><img class="cover" src="https://picsum.photos/seed/anime8/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-03</div><div class="info-item-2">UE Enhanced Input 深度解析 - 新一代输入系统从原理到实战</div></div><div class="info-2"><div class="info-item-1">UE Enhanced Input 深度解析：新一代输入系统从原理到实战一、概述：Enhanced Input 诞生的背景Unreal Engine 传统的 APlayerController::SetupInputComponent() + BindAction/BindAxis 输入体系，自 UE4 早期沿用至今，在小型项目中尚可应付，但随着项目规模扩大，其设计上的根本缺陷日益凸显：  输入与逻辑强耦合：输入绑定硬编码在 PlayerController 或 Pawn 的 C++ 代码中，修改输入映射需要重新编译，无法在运行时动态调整。 缺乏上下文感知能力：传统输入系统无法根据游戏状态（如战斗&#x2F;驾驶&#x2F;UI 打开）自动切换输入映射，只能通过手动启用&#x2F;禁用 InputComponent，极易出错。 按键重映射困难：玩家自定义按键是当代游戏的标配，传统系统需要开发者自行实现一套按键映射管理层，成本高且易出 bug。 轴输入处理粗糙：BindAxis 只能提供原始轴值，死区处理、平滑滤波、坐标轴重排等需求需要开发者自行实现，重复劳动严重。  Enhanc...</div></div></div></a><a class="pagination-related" href="/2026/06/02/ue-performance-optimization/" title="UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致"><img class="cover" src="https://picsum.photos/seed/ueperf/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-02</div><div class="info-item-2">UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致</div></div><div class="info-2"><div class="info-item-1">性能优化的哲学 「最適化のないコードは、ただの詩だ」—— 不优化的代码，只是一首诗。  UE 客户端开发中，60fps 是必须死守的底线。本文从实际项目出发，分享 C++ 和 Lua 两个层面的优化经验。 C++ 侧优化1. Tick 优化Tick 是 UE 中最常见的性能杀手。每帧执行 1000 个 Actor 的 Tick，即使每个只有 0.1ms，总量也高达 100ms。 优化策略： 1234567891011121314151617181920212223242526272829// ❌ 每个 Actor 单独 Tickvoid AMyActor::Tick(float DeltaTime)&#123;    Super::Tick(DeltaTime);    UpdateBehavior(); // 每帧更新 1000+ 次&#125;// ✅ 集中管理 + 分帧UCLASS()class UBehaviorManager : public UObject&#123;    TArray&lt;TWeakObjectPtr&lt;AMyActor&gt;&gt; Ma...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://q1.qlogo.cn/g?b=qq&amp;nk=10000&amp;s=640" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404/400/200'" alt="avatar"/></div><div class="author-info-name">Megumin</div><div class="author-info-description">UE 客户端开发 | C++ / Lua / slua-unreal</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">10</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">27</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://www.bilibili.com/" target="_blank" title="哔哩哔哩"><i class="fab fa-bilibili" style="color: #FB7299;"></i></a><a class="social-icon" href="mailto:hello@ue.dev" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://discord.com/" target="_blank" title="Discord"><i class="fab fa-discord" style="color: #5865F2;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">🎮 欢迎来到 UE 开发室！<br>这里记录着 UE 客户端开发的技术点滴～</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%A6%82%E8%BF%B0%EF%BC%9AGoF-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B8%8E%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E7%9A%84%E4%BA%A4%E6%B1%87"><span class="toc-number">1.</span> <span class="toc-text">一、概述：GoF 设计模式与游戏开发的交汇</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%88%9B%E5%BB%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">二、创建型模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F%EF%BC%9AAI-%E4%B8%8E%E6%8A%80%E8%83%BD%E7%9A%84%E5%8A%A8%E6%80%81%E5%88%9B%E5%BB%BA"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 工厂模式：AI 与技能的动态创建</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8A%80%E8%83%BD%E5%B7%A5%E5%8E%82"><span class="toc-number">2.1.1.</span> <span class="toc-text">技能工厂</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AI-%E8%A1%8C%E4%B8%BA%E5%B7%A5%E5%8E%82"><span class="toc-number">2.1.2.</span> <span class="toc-text">AI 行为工厂</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%8C%E4%BA%BA%E6%B3%A2%E6%AC%A1%E5%B7%A5%E5%8E%82"><span class="toc-number">2.1.3.</span> <span class="toc-text">敌人波次工厂</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E5%AF%B9%E8%B1%A1%E6%B1%A0%E6%A8%A1%E5%BC%8F%EF%BC%9A%E9%AB%98%E9%A2%91%E5%88%9B%E5%BB%BA%E7%9A%84%E6%80%A7%E8%83%BD%E6%95%91%E6%98%9F"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 对象池模式：高频创建的性能救星</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%EF%BC%9AGameInstance-%E7%9A%84%E6%AD%A3%E7%A1%AE%E4%B8%8E%E9%94%99%E8%AF%AF%E7%94%A8%E6%B3%95"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 单例模式：GameInstance 的正确与错误用法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E7%BB%93%E6%9E%84%E5%9E%8B%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.</span> <span class="toc-text">三、结构型模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E7%BB%84%E4%BB%B6%E6%A8%A1%E5%BC%8F%EF%BC%9AUE-Actor-Component-%E7%9A%84%E7%B2%BE%E9%AB%93"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 组件模式：UE Actor-Component 的精髓</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F%EF%BC%9ABuff-Debuff-%E7%9A%84%E5%8A%A8%E6%80%81%E5%8F%A0%E5%8A%A0"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 装饰器模式：Buff&#x2F;Debuff 的动态叠加</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F%EF%BC%9A%E5%A4%8D%E6%9D%82%E5%AD%90%E7%B3%BB%E7%BB%9F%E7%9A%84%E7%AE%80%E6%B4%81%E5%85%A5%E5%8F%A3"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 外观模式：复杂子系统的简洁入口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E8%A1%8C%E4%B8%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F"><span class="toc-number">4.</span> <span class="toc-text">四、行为型模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F%EF%BC%9A%E8%A7%92%E8%89%B2%E7%8A%B6%E6%80%81%E6%9C%BA%E7%9A%84%E4%BC%98%E9%9B%85%E5%AE%9E%E7%8E%B0"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 状态模式：角色状态机的优雅实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%EF%BC%9A%E6%B8%B8%E6%88%8F%E4%BA%8B%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%9F%BA%E7%9F%B3"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 观察者模式：游戏事件系统的基石</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A7%94%E6%89%98%EF%BC%88Delegate%EF%BC%89-%E4%BA%8B%E4%BB%B6%EF%BC%88Event%EF%BC%89"><span class="toc-number">4.2.1.</span> <span class="toc-text">委托（Delegate）&#x2F; 事件（Event）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B6%88%E6%81%AF%E6%80%BB%E7%BA%BF-EventBus"><span class="toc-number">4.2.2.</span> <span class="toc-text">消息总线 &#x2F; EventBus</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F%EF%BC%9A%E8%BE%93%E5%85%A5%E7%BC%93%E5%86%B2%E4%B8%8E%E5%9B%9E%E6%94%BE%E7%B3%BB%E7%BB%9F"><span class="toc-number">4.3.</span> <span class="toc-text">4.3 命令模式：输入缓冲与回放系统</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E7%BC%93%E5%86%B2"><span class="toc-number">4.3.1.</span> <span class="toc-text">输入缓冲</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8A%80%E8%83%BD%E9%98%9F%E5%88%97"><span class="toc-number">4.3.2.</span> <span class="toc-text">技能队列</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%9E%E6%94%BE%E7%B3%BB%E7%BB%9F"><span class="toc-number">4.3.3.</span> <span class="toc-text">回放系统</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F%EF%BC%9AAI-%E8%A1%8C%E4%B8%BA%E7%9A%84%E5%8A%A8%E6%80%81%E5%88%87%E6%8D%A2"><span class="toc-number">4.4.</span> <span class="toc-text">4.4 策略模式：AI 行为的动态切换</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81Game-Programming-Patterns-%E8%A1%A5%E5%85%85"><span class="toc-number">5.</span> <span class="toc-text">五、Game Programming Patterns 补充</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81UE-%E5%86%85%E7%BD%AE%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0"><span class="toc-number">6.</span> <span class="toc-text">六、UE 内置模式实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B%EF%BC%9AAI-%E6%95%8C%E4%BA%BA%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%B8%89%E6%A8%A1%E5%BC%8F%E5%8D%8F%E5%90%8C"><span class="toc-number">7.</span> <span class="toc-text">七、实战案例：AI 敌人系统的三模式协同</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84"><span class="toc-number">7.1.</span> <span class="toc-text">系统架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-number">7.2.</span> <span class="toc-text">代码实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%88%86%E5%B7%A5%E6%80%BB%E7%BB%93"><span class="toc-number">7.3.</span> <span class="toc-text">三模式的分工总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E5%B8%B8%E8%A7%81%E5%8F%8D%E6%A8%A1%E5%BC%8F%E4%B8%8E%E8%BF%87%E5%BA%A6%E8%AE%BE%E8%AE%A1%E9%99%B7%E9%98%B1"><span class="toc-number">8.</span> <span class="toc-text">八、常见反模式与过度设计陷阱</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E5%8F%8D%E6%A8%A1%E5%BC%8F"><span class="toc-number">8.1.</span> <span class="toc-text">8.1 反模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E8%BF%87%E5%BA%A6%E8%AE%BE%E8%AE%A1%E9%99%B7%E9%98%B1"><span class="toc-number">8.2.</span> <span class="toc-text">8.2 过度设计陷阱</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">9.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/06/02/ue-performance-optimization/" title="UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致"><img src="https://picsum.photos/seed/ueperf/800/400" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404b/800/400'" alt="UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致"/></a><div class="content"><a class="title" href="/2026/06/02/ue-performance-optimization/" title="UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致">UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致</a><time datetime="2026-06-03T08:57:54.331Z" title="更新于 2026-06-03 16:57:54">2026-06-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/02/ue-architecture-design/" title="UE 客户端架构设计 - 从混乱到优雅"><img src="https://picsum.photos/seed/uearch/800/400" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404b/800/400'" alt="UE 客户端架构设计 - 从混乱到优雅"/></a><div class="content"><a class="title" href="/2026/06/02/ue-architecture-design/" title="UE 客户端架构设计 - 从混乱到优雅">UE 客户端架构设计 - 从混乱到优雅</a><time datetime="2026-06-03T08:57:54.328Z" title="更新于 2026-06-03 16:57:54">2026-06-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/02/slua-unreal-guide/" title="slua-unreal 入門 - Lua 与 UE 的完美邂逅"><img src="https://picsum.photos/seed/slua1/800/400" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404b/800/400'" alt="slua-unreal 入門 - Lua 与 UE 的完美邂逅"/></a><div class="content"><a class="title" href="/2026/06/02/slua-unreal-guide/" title="slua-unreal 入門 - Lua 与 UE 的完美邂逅">slua-unreal 入門 - Lua 与 UE 的完美邂逅</a><time datetime="2026-06-03T08:57:54.326Z" title="更新于 2026-06-03 16:57:54">2026-06-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/03/design-patterns-game-dev/" title="设计模式深度解析 - 经典模式在游戏开发中的优雅应用"><img src="https://picsum.photos/seed/anime8/800/400" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404b/800/400'" alt="设计模式深度解析 - 经典模式在游戏开发中的优雅应用"/></a><div class="content"><a class="title" href="/2026/06/03/design-patterns-game-dev/" title="设计模式深度解析 - 经典模式在游戏开发中的优雅应用">设计模式深度解析 - 经典模式在游戏开发中的优雅应用</a><time datetime="2026-06-03T08:40:16.618Z" title="更新于 2026-06-03 16:40:16">2026-06-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/03/mvc-mvp-mvvm-game-dev/" title="MVC / MVP / MVVM 架构模式深度解析 - 从 UI 到游戏开发实战"><img src="https://picsum.photos/seed/anime7/800/400" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404b/800/400'" alt="MVC / MVP / MVVM 架构模式深度解析 - 从 UI 到游戏开发实战"/></a><div class="content"><a class="title" href="/2026/06/03/mvc-mvp-mvvm-game-dev/" title="MVC / MVP / MVVM 架构模式深度解析 - 从 UI 到游戏开发实战">MVC / MVP / MVVM 架构模式深度解析 - 从 UI 到游戏开发实战</a><time datetime="2026-06-03T08:37:40.847Z" title="更新于 2026-06-03 16:37:40">2026-06-03</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By Megumin</span></div><div class="footer_custom_text">「コードは嘘をつかない、ただ世界を創るだけだ」</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/sakura-js@1.1.1/dist/sakura.min.js"></script><script> new Sakura('body', {
+  colors: [
+    { gradientColorStart: 'rgba(255, 183, 197, 0.9)', gradientColorEnd: 'rgba(255, 197, 208, 0.9)', gradientColorDegree: 120 },
+    { gradientColorStart: 'rgba(255,189,189,0.9)', gradientColorEnd: 'rgba(227,170,181,0.8)', gradientColorDegree: 120 },
+    { gradientColorStart: 'rgba(212,152,163,0.8)', gradientColorEnd: 'rgba(242,185,196,0.9)', gradientColorDegree: 120 }
+  ]
+}); </script><div class="aplayer no-destroy" data-id="12967630832" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="true" data-order="random" data-preload="auto" data-autoplay="true" data-mutex="true"></div><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

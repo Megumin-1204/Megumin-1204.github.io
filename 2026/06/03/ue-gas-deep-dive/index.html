@@ -1,0 +1,486 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>UE GAS 深度剖析 - 从原理到实战 | UE探偵の開発室</title><meta name="author" content="Megumin"><meta name="copyright" content="Megumin"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一、GAS 概述与设计哲学Gameplay Ability System（GAS）是 Epic 为 UE 打造的一套数据驱动的技能&#x2F;属性框架，最初为《Paragon》设计，后在《Fortnite》中大规模验证。它的核心设计哲学可以归纳为以下几点：  数据驱动而非硬编码：技能效果、属性修改、冷却时间等均通过 DataAsset 和 GameplayEffect 定义，策划可直接在编辑器中调">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UE GAS 深度剖析 - 从原理到实战">
+<meta property="og:url" content="https://megumin-1204.github.io/2026/06/03/ue-gas-deep-dive/index.html">
+<meta property="og:site_name" content="UE探偵の開発室">
+<meta property="og:description" content="一、GAS 概述与设计哲学Gameplay Ability System（GAS）是 Epic 为 UE 打造的一套数据驱动的技能&#x2F;属性框架，最初为《Paragon》设计，后在《Fortnite》中大规模验证。它的核心设计哲学可以归纳为以下几点：  数据驱动而非硬编码：技能效果、属性修改、冷却时间等均通过 DataAsset 和 GameplayEffect 定义，策划可直接在编辑器中调">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://picsum.photos/seed/anime6/800/400">
+<meta property="article:published_time" content="2026-06-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-06-03T06:43:45.368Z">
+<meta property="article:author" content="Megumin">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="GAS">
+<meta property="article:tag" content="GameplayAbilitySystem">
+<meta property="article:tag" content="UE5">
+<meta property="article:tag" content="架构设计">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://picsum.photos/seed/anime6/800/400"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "UE GAS 深度剖析 - 从原理到实战",
+  "url": "https://megumin-1204.github.io/2026/06/03/ue-gas-deep-dive/",
+  "image": "https://picsum.photos/seed/anime6/800/400",
+  "datePublished": "2026-06-02T16:00:00.000Z",
+  "dateModified": "2026-06-03T06:43:45.368Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Megumin",
+      "url": "https://megumin-1204.github.io/about/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/"><link rel="canonical" href="https://megumin-1204.github.io/2026/06/03/ue-gas-deep-dive/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!undefined && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Megumin","link":"链接: ","source":"来源: UE探偵の開発室","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'UE GAS 深度剖析 - 从原理到实战',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div class="bg-animation" id="web_bg" style="background-color: #f7f4f0;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://q1.qlogo.cn/g?b=qq&amp;nk=10000&amp;s=640" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404/400/200'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">10</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">27</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-code"></i><span> 技术专栏</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/UE-C++/"><i class="fa-fw fas fa-microchip"></i><span> UE C++</span></a></li><li><a class="site-page child" href="/categories/Lua/"><i class="fa-fw fas fa-feather"></i><span> Lua</span></a></li><li><a class="site-page child" href="/categories/slua-unreal/"><i class="fa-fw fas fa-puzzle-piece"></i><span> slua-unreal</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(https://picsum.photos/seed/anime6/800/400);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">UE探偵の開発室</span></a><a class="nav-page-title" href="/"><span class="site-name">UE GAS 深度剖析 - 从原理到实战</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-code"></i><span> 技术专栏</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/UE-C++/"><i class="fa-fw fas fa-microchip"></i><span> UE C++</span></a></li><li><a class="site-page child" href="/categories/Lua/"><i class="fa-fw fas fa-feather"></i><span> Lua</span></a></li><li><a class="site-page child" href="/categories/slua-unreal/"><i class="fa-fw fas fa-puzzle-piece"></i><span> slua-unreal</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">UE GAS 深度剖析 - 从原理到实战</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-06-02T16:00:00.000Z" title="发表于 2026-06-03 00:00:00">2026-06-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-06-03T06:43:45.368Z" title="更新于 2026-06-03 14:43:45">2026-06-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/UE-C/">UE-C++</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>11分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="一、GAS-概述与设计哲学"><a href="#一、GAS-概述与设计哲学" class="headerlink" title="一、GAS 概述与设计哲学"></a>一、GAS 概述与设计哲学</h2><p>Gameplay Ability System（GAS）是 Epic 为 UE 打造的一套<strong>数据驱动</strong>的技能&#x2F;属性框架，最初为《Paragon》设计，后在《Fortnite》中大规模验证。它的核心设计哲学可以归纳为以下几点：</p>
+<ul>
+<li><strong>数据驱动而非硬编码</strong>：技能效果、属性修改、冷却时间等均通过 DataAsset 和 GameplayEffect 定义，策划可直接在编辑器中调整数值而无需 C++ 改代码。</li>
+<li><strong>网络先行</strong>：GAS 从设计第一天就将客户端-服务器同步作为一等公民，<code>AbilitySystemComponent</code>（ASC）内置了完整的 RPC 与属性复制机制。</li>
+<li><strong>组合优于继承</strong>：通过 <code>GameplayTags</code> 实现技能间的条件判断、互斥与层级管理，避免深层次类继承带来的维护灾难。</li>
+<li><strong>可预测性（Prediction）</strong>：支持客户端预测，使技能响应”零延迟”，同时服务器权威保证最终一致性。</li>
+</ul>
+<h2 id="二、核心组件全景"><a href="#二、核心组件全景" class="headerlink" title="二、核心组件全景"></a>二、核心组件全景</h2><p>GAS 由五大核心组件组成，它们的分工如下：</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>职责</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>AbilitySystemComponent (ASC)</strong></td>
+<td>总调度中心，管理 GA 激活、GE 应用、Tag 变化广播、属性复制</td>
+</tr>
+<tr>
+<td><strong>GameplayAbility (GA)</strong></td>
+<td>单个技能的逻辑载体，定义技能的生命周期与行为</td>
+</tr>
+<tr>
+<td><strong>GameplayEffect (GE)</strong></td>
+<td>属性的修改器，实现伤害、治疗、Buff&#x2F;Debuff 等数值效果</td>
+</tr>
+<tr>
+<td><strong>GameplayTags</strong></td>
+<td>层级化的标签系统，用于技能条件判断、状态标记、免疫与屏蔽</td>
+</tr>
+<tr>
+<td><strong>AttributeSet</strong></td>
+<td>属性集合，封装 Health、Mana、Damage 等属性及其网络复制与回调</td>
+</tr>
+</tbody></table>
+<h2 id="三、ASC-的归属策略与网络同步"><a href="#三、ASC-的归属策略与网络同步" class="headerlink" title="三、ASC 的归属策略与网络同步"></a>三、ASC 的归属策略与网络同步</h2><h3 id="3-1-归属-Actor-的选择"><a href="#3-1-归属-Actor-的选择" class="headerlink" title="3.1 归属 Actor 的选择"></a>3.1 归属 Actor 的选择</h3><p>ASC 通常挂载在以下三类 Actor 上，各有优劣：</p>
+<p><strong>方案 A：PlayerState（推荐用于 Player-Controlled 角色）</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在 AMyPlayerState::AMyPlayerState() 中</span></span><br><span class="line">AbilitySystemComponent = <span class="built_in">CreateDefaultSubobject</span>&lt;UAbilitySystemComponent&gt;(<span class="built_in">TEXT</span>(<span class="string">&quot;ASC&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<p>PlayerState 在玩家加入游戏时就创建，贯穿整个对局生命周期，不受角色死亡&#x2F;重生影响。这使得 Buff&#x2F;技能冷却等持久状态不会因角色销毁而丢失。对于多人游戏，这是 Epic 官方推荐的做法。</p>
+<p><strong>方案 B：Character &#x2F; Pawn</strong></p>
+<p>适用场景：AI 敌人、简单的单机项目。缺点是角色死亡时 ASC 随之销毁，需要额外处理状态恢复。</p>
+<p><strong>方案 C：PlayerController</strong></p>
+<p>不推荐。PlayerController 的生命周期与玩家输入绑定，但无法被其他 Actor 方便引用。</p>
+<h3 id="3-2-网络同步要点"><a href="#3-2-网络同步要点" class="headerlink" title="3.2 网络同步要点"></a>3.2 网络同步要点</h3><ul>
+<li>ASC 通过 <code>AActor::ReplicateSubobjects()</code> 显式注册才能同步。</li>
+<li>属性修改通过 <code>DOREPLIFETIME</code> 和 <code>ReplicatedUsing</code> 实现。</li>
+<li><code>GameplayEffect</code> 的应用在服务器上执行后，通过 <code>FActiveGameplayEffectHandle</code> 自动同步到客户端。</li>
+<li><code>GameplayTags</code> 的增删通过 <code>FOnGameplayEffectTagCountChanged</code> 广播，客户端自动感知。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">AMyPlayerState::GetLifetimeReplicatedProps</span><span class="params">(TArray&lt;FLifetimeProperty&gt;&amp; OutLifetimeProps)</span> <span class="type">const</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Super::<span class="built_in">GetLifetimeReplicatedProps</span>(OutLifetimeProps);</span><br><span class="line">    <span class="built_in">DOREPLIFETIME</span>(AMyPlayerState, AbilitySystemComponent);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、GameplayAbility-生命周期与激活机制"><a href="#四、GameplayAbility-生命周期与激活机制" class="headerlink" title="四、GameplayAbility 生命周期与激活机制"></a>四、GameplayAbility 生命周期与激活机制</h2><h3 id="4-1-生命周期"><a href="#4-1-生命周期" class="headerlink" title="4.1 生命周期"></a>4.1 生命周期</h3><p>GA 的生命周期由以下回调串联：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CanActivateAbility → ActivateAbility → (CommitAbility) → EndAbility</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>CanActivateAbility</strong>：检查 Cost（消耗）、Cooldown（冷却）、Tags 阻断条件。返回 false 则激活失败，不消耗资源。</li>
+<li><strong>ActivateAbility</strong>：技能逻辑入口。通常在此处播放 Montage、应用 GE、等待动画通知。</li>
+<li><strong>CommitAbility</strong>：扣除 Cost 并触发 Cooldown GE。</li>
+<li><strong>EndAbility</strong>：技能结束，由 <code>K2_EndAbility()</code> 或动画完成回调触发。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">UGA_FireProjectile::ActivateAbility</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> FGameplayAbilitySpecHandle Handle,</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> FGameplayAbilityActorInfo* ActorInfo,</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> FGameplayAbilityActivationInfo ActivationInfo,</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> FGameplayEventData* TriggerEventData)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">CommitAbility</span>(Handle, ActorInfo, ActivationInfo))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">EndAbility</span>(Handle, ActorInfo, ActivationInfo, <span class="literal">true</span>, <span class="literal">false</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 播放发射动画</span></span><br><span class="line">    <span class="keyword">if</span> (FireMontage)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">PlayMontageAndWait</span>(FireMontage);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 生成投射物（在服务器上）</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">GetWorld</span>()-&gt;<span class="built_in">IsServer</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">SpawnProjectile</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-激活方式"><a href="#4-2-激活方式" class="headerlink" title="4.2 激活方式"></a>4.2 激活方式</h3><table>
+<thead>
+<tr>
+<th>激活方式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Input Tag 绑定</strong></td>
+<td>通过 <code>AbilitySystemComponent::BindAbilityActivationToInputComponent</code> 将 InputAction 绑定到 GA</td>
+</tr>
+<tr>
+<td><strong>GameplayEvent</strong></td>
+<td>通过 <code>UAbilitySystemComponent::TriggerAbilityFromGameplayEvent</code> 事件驱动激活</td>
+</tr>
+<tr>
+<td><strong>代码直接激活</strong></td>
+<td><code>TryActivateAbility</code> 或 <code>TryActivateAbilityByClass</code></td>
+</tr>
+<tr>
+<td><strong>被动技能</strong></td>
+<td>授予后自动激活，通常用于 Buff 监听</td>
+</tr>
+</tbody></table>
+<h3 id="4-3-Cost-与-Cooldown"><a href="#4-3-Cost-与-Cooldown" class="headerlink" title="4.3 Cost 与 Cooldown"></a>4.3 Cost 与 Cooldown</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在 GA 蓝图中设置或 C++ 构造函数中</span></span><br><span class="line">UGameplayEffect* CooldownGE = <span class="built_in">CreateDefaultSubobject</span>&lt;UGameplayEffect&gt;(<span class="built_in">TEXT</span>(<span class="string">&quot;CooldownGE&quot;</span>));</span><br><span class="line">CooldownGE-&gt;DurationPolicy = EGameplayEffectDurationType::HasDuration;</span><br><span class="line"><span class="comment">// Duration 通过 SetByCaller 动态设置</span></span><br></pre></td></tr></table></figure>
+
+<p>Cooldown GE 的核心在于 <code>CooldownTag</code>：当技能激活并 Commit 后，该 Tag 被添加到 Owner 上，同时 Cooldown GE 持续期间该 Tag 存在，<code>CanActivateAbility</code> 通过 <code>ActivationBlockedTags</code> 自动拦截。</p>
+<h2 id="五、GameplayEffect-深度解析"><a href="#五、GameplayEffect-深度解析" class="headerlink" title="五、GameplayEffect 深度解析"></a>五、GameplayEffect 深度解析</h2><h3 id="5-1-Duration-Policy"><a href="#5-1-Duration-Policy" class="headerlink" title="5.1 Duration Policy"></a>5.1 Duration Policy</h3><table>
+<thead>
+<tr>
+<th>Policy</th>
+<th>说明</th>
+<th>典型场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Instant</strong></td>
+<td>立即生效，不持续</td>
+<td>伤害、瞬疗</td>
+</tr>
+<tr>
+<td><strong>Duration</strong></td>
+<td>持续一段时间</td>
+<td>眩晕 Debuff、加速 Buff</td>
+</tr>
+<tr>
+<td><strong>Infinite</strong></td>
+<td>永久持续，需手动移除</td>
+<td>被动光环、装备属性加成</td>
+</tr>
+<tr>
+<td><strong>Periodic</strong></td>
+<td>Duration 的子类，按周期执行</td>
+<td>DOT、HOT</td>
+</tr>
+</tbody></table>
+<h3 id="5-2-Modifier-类型"><a href="#5-2-Modifier-类型" class="headerlink" title="5.2 Modifier 类型"></a>5.2 Modifier 类型</h3><p>每个 GE 可包含多个 <code>FGameplayModifierInfo</code>，每个 Modifier 通过 <code>ModifierOp</code>（Add &#x2F; Multiply &#x2F; Override）和 <code>ModifierMagnitude</code> 定义数值来源：</p>
+<p><strong>ScalableFloat（最常用）</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 通过曲线表（CurveTable）按等级缩放</span></span><br><span class="line">FScalableFloat DamageValue;</span><br><span class="line">DamageValue.Value = <span class="number">25.0f</span>;</span><br><span class="line">DamageValue.Curve.CurveTable = DamageCurveTable;  <span class="comment">// 等级曲线</span></span><br><span class="line">DamageValue.Curve.RowName = <span class="built_in">FName</span>(<span class="string">&quot;Fireball_Damage&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong>AttributeBased</strong></p>
+<p>从 Source 或 Target 的某个属性读取值作为修改量。例如”造成攻击力 150% 的伤害”：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">FAttributeBasedFloat DamageScale;</span><br><span class="line">DamageScale.Coefficient = <span class="number">1.5f</span>;               <span class="comment">// 系数</span></span><br><span class="line">DamageScale.BackingAttribute.AttributeName = <span class="string">&quot;AttackPower&quot;</span>;</span><br><span class="line">DamageScale.AttributeSource = EGameplayEffectAttributeCaptureSource::Source;</span><br></pre></td></tr></table></figure>
+
+<p><strong>CustomCalculationClass</strong></p>
+<p>最灵活但也最复杂的方案。继承 <code>UGameplayModMagnitudeCalculation</code> 实现自定义计算：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">float</span> <span class="title">UMMC_DamageCalculation::CalculateBaseMagnitude_Implementation</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> FGameplayEffectSpec&amp; Spec)</span> <span class="type">const</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 捕获 Source 的 AttackPower</span></span><br><span class="line">    FAggregatorEvaluateParameters EvalParams;</span><br><span class="line">    <span class="type">float</span> AttackPower = <span class="number">0.f</span>;</span><br><span class="line">    Spec.<span class="built_in">AttemptCalculateMagnitudeFromCaptureDefinition</span>(</span><br><span class="line">        AttackPowerDef, EvalParams, AttackPower);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 捕获 Target 的 Armor</span></span><br><span class="line">    <span class="type">float</span> Armor = <span class="number">0.f</span>;</span><br><span class="line">    Spec.<span class="built_in">AttemptCalculateMagnitudeFromCaptureDefinition</span>(</span><br><span class="line">        ArmorDef, EvalParams, Armor);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 护甲减伤公式</span></span><br><span class="line">    <span class="type">const</span> <span class="type">float</span> DamageReduction = Armor / (Armor + <span class="number">100.f</span>);</span><br><span class="line">    <span class="keyword">return</span> AttackPower * (<span class="number">1.f</span> - DamageReduction);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>SetByCaller</strong></p>
+<p>由调用方在创建 <code>FGameplayEffectSpec</code> 时动态传入：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">FGameplayEffectSpecHandle SpecHandle = ASC-&gt;<span class="built_in">MakeOutgoingSpec</span>(</span><br><span class="line">    DamageGE, <span class="number">1.f</span>, ASC-&gt;<span class="built_in">MakeEffectContext</span>());</span><br><span class="line">SpecHandle.Data-&gt;<span class="built_in">SetByCallerTagMagnitude</span>(</span><br><span class="line">    FGameplayTag::<span class="built_in">RequestGameplayTag</span>(<span class="string">&quot;Data.Damage&quot;</span>), <span class="number">42.f</span>);</span><br><span class="line">ASC-&gt;<span class="built_in">ApplyGameplayEffectSpecToSelf</span>(*SpecHandle.Data.<span class="built_in">Get</span>());</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-3-Execution-Calculation"><a href="#5-3-Execution-Calculation" class="headerlink" title="5.3 Execution Calculation"></a>5.3 Execution Calculation</h3><p>当 <code>Modifier</code> 的灵活性不够时（例如需要获取多个属性、遍历 Target 身上的 Tag、执行复杂条件分支），可使用 <code>UGameplayEffectExecutionCalculation</code>。它有权通过 <code>FGameplayEffectCustomExecutionParameters</code> 捕获任意数量的 Source 和 Target 属性：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">UExecCalc_Damage::Execute_Implementation</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> FGameplayEffectCustomExecutionParameters&amp; ExecutionParams,</span></span></span><br><span class="line"><span class="params"><span class="function">    FGameplayEffectCustomExecutionOutput&amp; OutExecutionOutput)</span> <span class="type">const</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 捕获属性</span></span><br><span class="line">    <span class="type">const</span> FGameplayEffectSpec&amp; Spec = ExecutionParams.<span class="built_in">GetOwningSpec</span>();</span><br><span class="line">    FAggregatorEvaluateParameters EvalParams;</span><br><span class="line"></span><br><span class="line">    <span class="type">float</span> Attack = <span class="number">0.f</span>;</span><br><span class="line">    ExecutionParams.<span class="built_in">AttemptCalculateCapturedAttributeMagnitude</span>(</span><br><span class="line">        AttackCaptureDef, EvalParams, Attack);</span><br><span class="line"></span><br><span class="line">    <span class="type">float</span> Defense = <span class="number">0.f</span>;</span><br><span class="line">    ExecutionParams.<span class="built_in">AttemptCalculateCapturedAttributeMagnitude</span>(</span><br><span class="line">        DefenseCaptureDef, EvalParams, Defense);</span><br><span class="line"></span><br><span class="line">    <span class="type">const</span> <span class="type">float</span> FinalDamage = FMath::<span class="built_in">Max</span>(Attack - Defense, <span class="number">0.f</span>);</span><br><span class="line">    OutExecutionOutput.<span class="built_in">AddOutputModifier</span>(</span><br><span class="line">        <span class="built_in">FGameplayModifierEvaluatedData</span>(</span><br><span class="line">            HealthProperty, EGameplayModOp::Additive, -FinalDamage));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="六、GameplayTags-层级管理与-Ability-屏蔽"><a href="#六、GameplayTags-层级管理与-Ability-屏蔽" class="headerlink" title="六、GameplayTags 层级管理与 Ability 屏蔽"></a>六、GameplayTags 层级管理与 Ability 屏蔽</h2><h3 id="6-1-标签层级"><a href="#6-1-标签层级" class="headerlink" title="6.1 标签层级"></a>6.1 标签层级</h3><p>GameplayTags 使用 <code>.</code> 分隔的层级结构，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">State.Dead</span><br><span class="line">State.Stunned</span><br><span class="line">State.Casting</span><br><span class="line">Ability.Skill.Fireball</span><br><span class="line">Ability.Skill.Heal</span><br><span class="line">Effect.Damage.Physical</span><br><span class="line">Effect.Damage.Magical</span><br></pre></td></tr></table></figure>
+
+<p>层级匹配规则：检查 <code>State.Stunned</code> 时，如果调用 <code>MatchesTag(State.Dead)</code> 则返回 false（精确匹配），但可以用 <code>MatchesTagDepth</code> 或 <code>HasAllMatchingGameplayTags</code> 实现前缀匹配。</p>
+<h3 id="6-2-Ability-的标签屏蔽机制"><a href="#6-2-Ability-的标签屏蔽机制" class="headerlink" title="6.2 Ability 的标签屏蔽机制"></a>6.2 Ability 的标签屏蔽机制</h3><p>GA 提供三组核心 Tag 容器：</p>
+<table>
+<thead>
+<tr>
+<th>容器</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>AbilityTags</strong></td>
+<td>该技能拥有的 Tag，激活时添加到 Owner</td>
+</tr>
+<tr>
+<td><strong>CancelAbilitiesWithTag</strong></td>
+<td>激活时取消 Owner 上拥有指定 Tag 的其他技能</td>
+</tr>
+<tr>
+<td><strong>BlockAbilitiesWithTag</strong></td>
+<td>激活期间阻止拥有指定 Tag 的技能激活</td>
+</tr>
+<tr>
+<td><strong>ActivationOwnedTags</strong></td>
+<td>技能激活期间给 Owner 添加的 Tag</td>
+</tr>
+<tr>
+<td><strong>ActivationRequiredTags</strong></td>
+<td>必须拥有的 Tag 才能激活</td>
+</tr>
+<tr>
+<td><strong>ActivationBlockedTags</strong></td>
+<td>存在任一 Tag 则阻止激活</td>
+</tr>
+</tbody></table>
+<p>典型应用——“眩晕时禁止所有技能”：</p>
+<ul>
+<li>眩晕 GA 的 <code>BlockAbilitiesWithTag</code> 设为 <code>Ability</code>（命中所有子标签如 <code>Ability.Skill.Fireball</code>）</li>
+<li>或者在角色被眩晕时手动添加 <code>State.Stunned</code>，各技能的 <code>ActivationBlockedTags</code> 包含 <code>State.Stunned</code></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在眩晕 GE 中</span></span><br><span class="line">CastedGE-&gt;GrantedTags.<span class="built_in">AddTag</span>(FGameplayTag::<span class="built_in">RequestGameplayTag</span>(<span class="string">&quot;State.Stunned&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-3-Tag-变化事件监听"><a href="#6-3-Tag-变化事件监听" class="headerlink" title="6.3 Tag 变化事件监听"></a>6.3 Tag 变化事件监听</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 绑定 Tag 计数变化事件</span></span><br><span class="line">ASC-&gt;<span class="built_in">RegisterGenericGameplayTagEvent</span>().<span class="built_in">AddUObject</span>(</span><br><span class="line">    <span class="keyword">this</span>, &amp;AMyCharacter::OnTagChanged);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">AMyCharacter::OnTagChanged</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> FGameplayTag Tag, int32 NewCount)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (Tag.<span class="built_in">MatchesTag</span>(FGameplayTag::<span class="built_in">RequestGameplayTag</span>(<span class="string">&quot;State.Stunned&quot;</span>)))</span><br><span class="line">    &#123;</span><br><span class="line">        bIsStunned = NewCount &gt; <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="七、AttributeSet-的关键回调"><a href="#七、AttributeSet-的关键回调" class="headerlink" title="七、AttributeSet 的关键回调"></a>七、AttributeSet 的关键回调</h2><h3 id="7-1-PreAttributeChange"><a href="#7-1-PreAttributeChange" class="headerlink" title="7.1 PreAttributeChange"></a>7.1 PreAttributeChange</h3><p>在属性<strong>最终值</strong>即将改变前调用（注意：不是 BaseValue，是 CurrentValue）。这是做 Clamp 的理想位置：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">UMyAttributeSet::PreAttributeChange</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> FGameplayAttribute&amp; Attribute, <span class="type">float</span>&amp; NewValue)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Super::<span class="built_in">PreAttributeChange</span>(Attribute, NewValue);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (Attribute == <span class="built_in">GetHealthAttribute</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        NewValue = FMath::<span class="built_in">Clamp</span>(NewValue, <span class="number">0.f</span>, <span class="built_in">GetMaxHealth</span>());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (Attribute == <span class="built_in">GetManaAttribute</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        NewValue = FMath::<span class="built_in">Clamp</span>(NewValue, <span class="number">0.f</span>, <span class="built_in">GetMaxMana</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-2-PostGameplayEffectExecute"><a href="#7-2-PostGameplayEffectExecute" class="headerlink" title="7.2 PostGameplayEffectExecute"></a>7.2 PostGameplayEffectExecute</h3><p>仅在<strong>Instant GE 执行后</strong>触发（Duration&#x2F;Infinite 不触发此回调）。是处理”受到伤害后死亡检测”等逻辑的首选位置：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">UMyAttributeSet::PostGameplayEffectExecute</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> FGameplayEffectModCallbackData&amp; Data)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Super::<span class="built_in">PostGameplayEffectExecute</span>(Data);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (Data.EvaluatedData.Attribute == <span class="built_in">GetHealthAttribute</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">const</span> <span class="type">float</span> NewHealth = <span class="built_in">GetHealth</span>();</span><br><span class="line">        <span class="keyword">if</span> (NewHealth &lt;= <span class="number">0.f</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 通知 ASC 触发死亡事件</span></span><br><span class="line">            <span class="keyword">if</span> (AActor* Owner = <span class="built_in">GetOwningActor</span>())</span><br><span class="line">            &#123;</span><br><span class="line">                Owner-&gt;<span class="built_in">OnDeath</span>();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>关键区别</strong>：<code>PreAttributeChange</code> 对所有属性变更生效；<code>PostGameplayEffectExecute</code> 仅对 Instant GE 生效。混淆两者是最常见的坑之一。</p>
+</blockquote>
+<h2 id="八、实战：搭建一个角色技能系统"><a href="#八、实战：搭建一个角色技能系统" class="headerlink" title="八、实战：搭建一个角色技能系统"></a>八、实战：搭建一个角色技能系统</h2><p>下面以一个简单的 ARPG 技能系统为例，展示完整流程。</p>
+<h3 id="8-1-属性集定义"><a href="#8-1-属性集定义" class="headerlink" title="8.1 属性集定义"></a>8.1 属性集定义</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">UCLASS</span>()</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">UMyAttributeSet</span> : <span class="keyword">public</span> UAttributeSet</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">GENERATED_BODY</span>()</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">UPROPERTY</span>(BlueprintReadOnly, ReplicatedUsing = OnRep_Health)</span><br><span class="line">    FGameplayAttributeData Health;</span><br><span class="line">    <span class="built_in">ATTRIBUTE_ACCESSORS</span>(UMyAttributeSet, Health)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">UPROPERTY</span>(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth)</span><br><span class="line">    FGameplayAttributeData MaxHealth;</span><br><span class="line">    <span class="built_in">ATTRIBUTE_ACCESSORS</span>(UMyAttributeSet, MaxHealth)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">UPROPERTY</span>(BlueprintReadOnly, ReplicatedUsing = OnRep_Mana)</span><br><span class="line">    FGameplayAttributeData Mana;</span><br><span class="line">    <span class="built_in">ATTRIBUTE_ACCESSORS</span>(UMyAttributeSet, Mana)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">UPROPERTY</span>(BlueprintReadOnly)</span><br><span class="line">    FGameplayAttributeData AttackPower;</span><br><span class="line">    <span class="built_in">ATTRIBUTE_ACCESSORS</span>(UMyAttributeSet, AttackPower)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">UFUNCTION</span>()</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">OnRep_Health</span><span class="params">(<span class="type">const</span> FGameplayAttributeData&amp; Old)</span> </span>&#123; <span class="built_in">GAMEPLAYATTRIBUTE_REPNOTIFY</span>(UMyAttributeSet, Health, Old); &#125;</span><br><span class="line">    <span class="built_in">UFUNCTION</span>()</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">OnRep_MaxHealth</span><span class="params">(<span class="type">const</span> FGameplayAttributeData&amp; Old)</span> </span>&#123; <span class="built_in">GAMEPLAYATTRIBUTE_REPNOTIFY</span>(UMyAttributeSet, MaxHealth, Old); &#125;</span><br><span class="line">    <span class="built_in">UFUNCTION</span>()</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">OnRep_Mana</span><span class="params">(<span class="type">const</span> FGameplayAttributeData&amp; Old)</span> </span>&#123; <span class="built_in">GAMEPLAYATTRIBUTE_REPNOTIFY</span>(UMyAttributeSet, Mana, Old); &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-2-伤害-GE"><a href="#8-2-伤害-GE" class="headerlink" title="8.2 伤害 GE"></a>8.2 伤害 GE</h3><p>创建一个 <code>GE_Damage_Base</code>：</p>
+<ul>
+<li><code>DurationPolicy = Instant</code></li>
+<li>Modifier：Attribute 选 <code>Health</code>，Op 选 <code>Add</code>，Magnitude 选 <code>SetByCaller</code>，DataTag 为 <code>Data.Damage</code></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 造成伤害</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">AMyCharacter::ApplyDamage</span><span class="params">(AActor* Target, <span class="type">float</span> DamageAmount)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    FGameplayEffectSpecHandle Spec = ASC-&gt;<span class="built_in">MakeOutgoingSpec</span>(</span><br><span class="line">        DamageGEClass, <span class="number">1.f</span>, ASC-&gt;<span class="built_in">MakeEffectContext</span>());</span><br><span class="line">    Spec.Data-&gt;<span class="built_in">SetByCallerTagMagnitude</span>(</span><br><span class="line">        FGameplayTag::<span class="built_in">RequestGameplayTag</span>(<span class="string">&quot;Data.Damage&quot;</span>), DamageAmount);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (UAbilitySystemComponent* TargetASC =</span><br><span class="line">        UAbilitySystemComponent::<span class="built_in">GetAbilitySystemComponentFromActor</span>(Target))</span><br><span class="line">    &#123;</span><br><span class="line">        ASC-&gt;<span class="built_in">ApplyGameplayEffectSpecToTarget</span>(</span><br><span class="line">            *Spec.Data.<span class="built_in">Get</span>(), TargetASC);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-3-治疗-GE"><a href="#8-3-治疗-GE" class="headerlink" title="8.3 治疗 GE"></a>8.3 治疗 GE</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// GE_Heal: DurationPolicy = Instant, Modifier Op = Add, Attribute = Health</span></span><br><span class="line"><span class="comment">// Magnitude 使用 SetByCaller (Data.Heal)</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">AMyCharacter::ApplyHeal</span><span class="params">(AActor* Target, <span class="type">float</span> HealAmount)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    FGameplayEffectSpecHandle Spec = ASC-&gt;<span class="built_in">MakeOutgoingSpec</span>(</span><br><span class="line">        HealGEClass, <span class="number">1.f</span>, ASC-&gt;<span class="built_in">MakeEffectContext</span>());</span><br><span class="line">    Spec.Data-&gt;<span class="built_in">SetByCallerTagMagnitude</span>(</span><br><span class="line">        FGameplayTag::<span class="built_in">RequestGameplayTag</span>(<span class="string">&quot;Data.Heal&quot;</span>), HealAmount);</span><br><span class="line">    <span class="comment">// ... ApplyGameplayEffectSpecToTarget</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-4-冷却处理"><a href="#8-4-冷却处理" class="headerlink" title="8.4 冷却处理"></a>8.4 冷却处理</h3><p>在 <code>GA_Fireball</code> 的蓝图中或 C++ 中设置：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在构造函数中</span></span><br><span class="line">UGA_Fireball::<span class="built_in">UGA_Fireball</span>()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 定义冷却 Tag</span></span><br><span class="line">    FGameplayTag CooldownTag = FGameplayTag::<span class="built_in">RequestGameplayTag</span>(<span class="string">&quot;Ability.Cooldown.Fireball&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建冷却 GE 并注册到技能</span></span><br><span class="line">    UGameplayEffect* CooldownGE = <span class="built_in">CreateDefaultSubobject</span>&lt;UGameplayEffect&gt;(<span class="built_in">TEXT</span>(<span class="string">&quot;CooldownGE&quot;</span>));</span><br><span class="line">    CooldownGE-&gt;DurationPolicy = EGameplayEffectDurationType::HasDuration;</span><br><span class="line">    <span class="comment">// Duration 通过 FScalableFloat 或 SetByCaller 设置</span></span><br><span class="line">    CooldownGE-&gt;GrantedTags.<span class="built_in">AddTag</span>(CooldownTag);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将 CooldownGE 与 CooldownTag 绑定</span></span><br><span class="line">    <span class="built_in">GetCooldownGameplayEffect</span>()-&gt;DurationPolicy = EGameplayEffectDurationType::HasDuration;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="九、常见坑点与最佳实践"><a href="#九、常见坑点与最佳实践" class="headerlink" title="九、常见坑点与最佳实践"></a>九、常见坑点与最佳实践</h2><h3 id="9-1-Client-Side-Prediction（预测）"><a href="#9-1-Client-Side-Prediction（预测）" class="headerlink" title="9.1 Client-Side Prediction（预测）"></a>9.1 Client-Side Prediction（预测）</h3><p>GAS 的预测能力开关在 GA 上设置 <code>bEnableServerOnlyNetExecution = false</code>（默认）。但需注意：</p>
+<ul>
+<li><strong>预测仅对本地控制的 Pawn 生效</strong>。AI 和其他玩家不受客户端预测。</li>
+<li>只有 <code>Instant</code> 类型的 GE 和 <code>FGameplayAttributeData</code> 的变化会被预测。</li>
+<li>在 <code>ActivateAbility</code> 中使用 <code>CommitAbility</code> 会触发预测的 Cost&#x2F;Cooldown 回滚——如果服务器拒绝激活，客户端状态自动回退。</li>
+</ul>
+<h3 id="9-2-属性-Clamp-必须在-PreAttributeChange-中处理"><a href="#9-2-属性-Clamp-必须在-PreAttributeChange-中处理" class="headerlink" title="9.2 属性 Clamp 必须在 PreAttributeChange 中处理"></a>9.2 属性 Clamp 必须在 PreAttributeChange 中处理</h3><p>常见错误：在 <code>PostGameplayEffectExecute</code> 中 Clamp Health。这里 Clamp 的值不会自动写回 <code>FGameplayAttributeData</code>——你需要手动调用 <code>SetHealth()</code>。更好的做法是在 <code>PreAttributeChange</code> 中做 Clamp，它对所有修改路径生效。</p>
+<h3 id="9-3-GE-的等级（Level）"><a href="#9-3-GE-的等级（Level）" class="headerlink" title="9.3 GE 的等级（Level）"></a>9.3 GE 的等级（Level）</h3><p><code>FGameplayEffectSpec</code> 的 Level 参数会影响 <code>FScalableFloat</code> 的曲线查表结果。务必在 <code>MakeOutgoingSpec</code> 时传入正确的技能等级：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">MakeOutgoingSpec</span>(DamageGE, AbilityLevel, Context);</span><br></pre></td></tr></table></figure>
+
+<h3 id="9-4-不要滥用-Tick"><a href="#9-4-不要滥用-Tick" class="headerlink" title="9.4 不要滥用 Tick"></a>9.4 不要滥用 Tick</h3><p>GAS 设计鼓励<strong>事件驱动</strong>而非轮询。避免在 Tick 中检查属性变化，而应使用：</p>
+<ul>
+<li><code>GetGameplayAttributeValueChangeDelegate</code> 绑定属性变化</li>
+<li><code>RegisterGenericGameplayTagEvent</code> 监听 Tag 变化</li>
+<li><code>AbilityTask</code> 实现异步等待（如 <code>WaitTargetData</code>、<code>WaitGameplayEvent</code>）</li>
+</ul>
+<h3 id="9-5-ASC-空指针检查"><a href="#9-5-ASC-空指针检查" class="headerlink" title="9.5 ASC 空指针检查"></a>9.5 ASC 空指针检查</h3><p>多玩家环境下，ASC 可能因为网络复制延迟而未就绪。在访问前务必检查：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">UAbilitySystemComponent* ASC = UAbilitySystemComponent::<span class="built_in">GetAbilitySystemComponentFromActor</span>(Actor);</span><br><span class="line"><span class="keyword">if</span> (!ASC)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span>; <span class="comment">// ASC 尚未复制到客户端</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="9-6-Modifier-与-Execution-的选择"><a href="#9-6-Modifier-与-Execution-的选择" class="headerlink" title="9.6 Modifier 与 Execution 的选择"></a>9.6 Modifier 与 Execution 的选择</h3><table>
+<thead>
+<tr>
+<th>需求</th>
+<th>推荐方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>简单的属性加减乘除</td>
+<td>Modifier + ScalableFloat &#x2F; AttributeBased</td>
+</tr>
+<tr>
+<td>需要读取多个 Source+Target 属性</td>
+<td>ExecutionCalculation</td>
+</tr>
+<tr>
+<td>需要动态调用方传值</td>
+<td>SetByCaller Modifier</td>
+</tr>
+<tr>
+<td>需要按等级曲线缩放</td>
+<td>ScalableFloat + CurveTable</td>
+</tr>
+</tbody></table>
+<h2 id="十、总结"><a href="#十、总结" class="headerlink" title="十、总结"></a>十、总结</h2><p>GAS 是一套”上手陡峭但收益极高”的框架。初期需要花时间理解 ASC 归属策略、GE 的 Modifier&#x2F;Execution 体系、GameplayTags 的层级屏蔽逻辑，以及网络预测的工作原理。但一旦掌握，你会发现：</p>
+<ul>
+<li>技能系统从硬编码变为<strong>配置驱动</strong>，迭代效率提升数倍；</li>
+<li>网络同步由框架接管，开发者无需手动编写 RPC；</li>
+<li>预测系统让联机手感接近单机；</li>
+<li>标签系统提供了比 Bool&#x2F;Enum 更灵活、更具扩展性的状态管理方案。</li>
+</ul>
+<p>对于 UE5 的中大型多人项目，GAS 是目前最成熟、最完善的技能框架方案。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/5.0/en-US/gameplay-ability-system-for-unreal-engine/">Epic 官方 GAS 文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/tranek/GASDocumentation">GASDocumentation (GitHub)</a> —— 社区最全面的 GAS 指南</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/EpicGames/UnrealEngine/tree/release/Engine/Plugins/Runtime/GameplayAbilities">Unreal Engine Source: GameplayAbilities Plugin</a></li>
+<li><a target="_blank" rel="noopener" href="https://dev.epicgames.com/community/learning/tutorials/APD/unreal-engine-gameplay-ability-system">UE5 Gameplay Ability System - Official Learning</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="/about/">Megumin</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://megumin-1204.github.io/2026/06/03/ue-gas-deep-dive/">https://megumin-1204.github.io/2026/06/03/ue-gas-deep-dive/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://megumin-1204.github.io" target="_blank">UE探偵の開発室</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/C/">C++</a><a class="post-meta__tags" href="/tags/UE5/">UE5</a><a class="post-meta__tags" href="/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a><a class="post-meta__tags" href="/tags/GAS/">GAS</a><a class="post-meta__tags" href="/tags/GameplayAbilitySystem/">GameplayAbilitySystem</a></div><div class="post-share"><div class="social-share" data-image="https://picsum.photos/seed/anime6/800/400" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/03/ue-enhanced-input-deep-dive/" title="UE Enhanced Input 深度解析 - 新一代输入系统从原理到实战"><img class="cover" src="https://picsum.photos/seed/anime8/800/400" onerror="onerror=null;src='https://picsum.photos/seed/anime404b/800/400'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">UE Enhanced Input 深度解析 - 新一代输入系统从原理到实战</div></div><div class="info-2"><div class="info-item-1">UE Enhanced Input 深度解析：新一代输入系统从原理到实战一、概述：Enhanced Input 诞生的背景Unreal Engine 传统的 APlayerController::SetupInputComponent() + BindAction/BindAxis 输入体系，自 UE4 早期沿用至今，在小型项目中尚可应付，但随着项目规模扩大，其设计上的根本缺陷日益凸显：  输入与逻辑强耦合：输入绑定硬编码在 PlayerController 或 Pawn 的 C++ 代码中，修改输入映射需要重新编译，无法在运行时动态调整。 缺乏上下文感知能力：传统输入系统无法根据游戏状态（如战斗&#x2F;驾驶&#x2F;UI 打开）自动切换输入映射，只能通过手动启用&#x2F;禁用 InputComponent，极易出错。 按键重映射困难：玩家自定义按键是当代游戏的标配，传统系统需要开发者自行实现一套按键映射管理层，成本高且易出 bug。 轴输入处理粗糙：BindAxis 只能提供原始轴值，死区处理、平滑滤波、坐标轴重排等需求需要开发者自行实现，重复劳动严重。  Enhanc...</div></div></div></a><a class="pagination-related" href="/2026/06/03/mvc-mvp-mvvm-game-dev/" title="MVC / MVP / MVVM 架构模式深度解析 - 从 UI 到游戏开发实战"><img class="cover" src="https://picsum.photos/seed/anime7/800/400" onerror="onerror=null;src='https://picsum.photos/seed/anime404b/800/400'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">MVC / MVP / MVVM 架构模式深度解析 - 从 UI 到游戏开发实战</div></div><div class="info-2"><div class="info-item-1">一、概述：三种架构模式的起源与核心问题架构模式的出现，源于软件工程对复杂度管理的永恒追求。当代码库膨胀到数十万行，团队规模扩展到数十人，如果没有一套清晰的代码组织原则，项目便会迅速堕入「大泥球」（Big Ball of Mud）的深渊。 1.1 Smalltalk MVC：架构模式的原点1979 年，Trygve Reenskaug 在 Xerox PARC 为 Smalltalk-80 设计了 Model-View-Controller，这是 GUI 架构模式的鼻祖。其核心思想在当时极具革命性：将用户界面拆分为三个协作对象。  Model：管理数据与业务逻辑，不感知任何 UI 细节。当数据发生变化时，通过 Observer 模式通知 View。 View：负责将 Model 的数据渲染为可视界面，同时将用户输入转发给 Controller。 Controller：接收输入事件，将其翻译为 Model 的操作指令，本质上是「输入解释器」。  Smalltalk MVC 的数据流是闭环的：用户输入 → Controller → Model（数据变更）→ View（观察者通知）→ U...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/06/02/ue-architecture-design/" title="UE 客户端架构设计 - 从混乱到优雅"><img class="cover" src="https://picsum.photos/seed/uearch/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-02</div><div class="info-item-2">UE 客户端架构设计 - 从混乱到优雅</div></div><div class="info-2"><div class="info-item-1">架构的困境 「混沌から秩序へ」—— 从混沌走向秩序，是每个项目的必经之路。  项目初期，功能少、人少，一切看似美好。当团队扩张到 20+ 人、代码量突破百万行时，如果没有清晰的架构，噩梦就开始了：  C++ 和 Lua 的交互散落在各处 UI 逻辑、战斗逻辑、网络同步纠缠不清 一个改动引发连锁崩溃  双层架构设计我们的核心思路：C++ 层提供能力，Lua 层编排逻辑。 12345678910111213┌─────────────────────────────────────────┐│               Lua 脚本层                  ││  ┌─────────┐ ┌─────────┐ ┌───────────┐  ││  │  UI 模块 │ │ 战斗模块 │ │  任务模块  │  ││  └─────────┘ └─────────┘ └───────────┘  │├─────────────────────────────────────────┤│            slua-unreal 桥接层            │├──...</div></div></div></a><a class="pagination-related" href="/2026/06/03/ue-enhanced-input-deep-dive/" title="UE Enhanced Input 深度解析 - 新一代输入系统从原理到实战"><img class="cover" src="https://picsum.photos/seed/anime8/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-03</div><div class="info-item-2">UE Enhanced Input 深度解析 - 新一代输入系统从原理到实战</div></div><div class="info-2"><div class="info-item-1">UE Enhanced Input 深度解析：新一代输入系统从原理到实战一、概述：Enhanced Input 诞生的背景Unreal Engine 传统的 APlayerController::SetupInputComponent() + BindAction/BindAxis 输入体系，自 UE4 早期沿用至今，在小型项目中尚可应付，但随着项目规模扩大，其设计上的根本缺陷日益凸显：  输入与逻辑强耦合：输入绑定硬编码在 PlayerController 或 Pawn 的 C++ 代码中，修改输入映射需要重新编译，无法在运行时动态调整。 缺乏上下文感知能力：传统输入系统无法根据游戏状态（如战斗&#x2F;驾驶&#x2F;UI 打开）自动切换输入映射，只能通过手动启用&#x2F;禁用 InputComponent，极易出错。 按键重映射困难：玩家自定义按键是当代游戏的标配，传统系统需要开发者自行实现一套按键映射管理层，成本高且易出 bug。 轴输入处理粗糙：BindAxis 只能提供原始轴值，死区处理、平滑滤波、坐标轴重排等需求需要开发者自行实现，重复劳动严重。  Enhanc...</div></div></div></a><a class="pagination-related" href="/2026/06/03/cpp-ue-deep-dive/" title="C++ 深度解析 - 现代特性与 UE 引擎开发实战"><img class="cover" src="https://picsum.photos/seed/anime7/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-03</div><div class="info-item-2">C++ 深度解析 - 现代特性与 UE 引擎开发实战</div></div><div class="info-2"><div class="info-item-1">1. C++ 在 UE 中的角色UE5 的核心由约 400 万行 C++ 代码构成。从渲染管线（RHI → RDG → 平台后端）到网络同步（Replication Graph）、从 GAS（Gameplay Ability System）到 Niagara VFX、从 Chaos 物理到 MassEntity 框架——所有性能敏感路径都由 C++ 实现。 蓝图很好，但在以下场景必须回归 C++：  每帧执行的热路径：Tick 中高频调用的逻辑，蓝图虚拟机开销不可忽略。 大规模数据操作：数千个 Actor 的批量处理，C++ 的数据局部性优势碾压蓝图。 底层系统对接：自定义物理查询、渲染 Hook、网络序列化等只有 C++ 能触及。 第三方库集成：Protobuf、RPC 框架、加密库等需要 C++ 桥接。  理解 UE C++ 不仅仅是掌握语言本身，更是理解 UE 在标准 C++ 之上构建的一整套反射、GC、序列化、委托体系。 2. 现代 C++ 特性与 UE 的结合2.1 智能指针UE 实现了自己的一套智能指针体系，与标准库并行存在：    UE 类型 std 对应 用途  ...</div></div></div></a><a class="pagination-related" href="/2026/06/03/design-patterns-game-dev/" title="设计模式深度解析 - 经典模式在游戏开发中的优雅应用"><img class="cover" src="https://picsum.photos/seed/anime8/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-03</div><div class="info-item-2">设计模式深度解析 - 经典模式在游戏开发中的优雅应用</div></div><div class="info-2"><div class="info-item-1">一、概述：GoF 设计模式与游戏开发的交汇1994 年，四人组（Gang of Four）出版的《设计模式：可复用面向对象软件的基础》定义了 23 种经典模式，分为三大类：    分类 核心理念 模式    创建型 将对象创建与使用解耦 单例、工厂方法、抽象工厂、建造者、原型、对象池   结构型 通过组合构建更大结构 适配器、桥接、组合、装饰器、外观、享元、代理   行为型 对象间职责分配与算法封装 观察者、策略、状态、命令、模板方法、迭代器、责任链、中介者、备忘录、访问者、解释器   游戏开发对设计模式的诉求与常规企业应用有本质不同：  性能敏感：每帧 16ms（60FPS）的预算下，对象的创建&#x2F;销毁成本不能忽视。 实体复杂度高：一个 BOSS 可能同时拥有 60+ 种 Buff 效果、20 段行为树、3 个阶段状态。 状态多变：从主菜单到关卡内到结算界面，每一帧的上下文都在切换。 多用组合少用继承：传统 OOP 的深继承链在游戏实体上容易形成「钻石继承」灾难。  这些特殊性使得部分 GoF 模式在游戏开发中「身价倍增」（如组件模式、状态模式），而另一些则很少用到（如...</div></div></div></a><a class="pagination-related" href="/2026/06/02/ue-performance-optimization/" title="UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致"><img class="cover" src="https://picsum.photos/seed/ueperf/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-02</div><div class="info-item-2">UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致</div></div><div class="info-2"><div class="info-item-1">性能优化的哲学 「最適化のないコードは、ただの詩だ」—— 不优化的代码，只是一首诗。  UE 客户端开发中，60fps 是必须死守的底线。本文从实际项目出发，分享 C++ 和 Lua 两个层面的优化经验。 C++ 侧优化1. Tick 优化Tick 是 UE 中最常见的性能杀手。每帧执行 1000 个 Actor 的 Tick，即使每个只有 0.1ms，总量也高达 100ms。 优化策略： 1234567891011121314151617181920212223242526272829// ❌ 每个 Actor 单独 Tickvoid AMyActor::Tick(float DeltaTime)&#123;    Super::Tick(DeltaTime);    UpdateBehavior(); // 每帧更新 1000+ 次&#125;// ✅ 集中管理 + 分帧UCLASS()class UBehaviorManager : public UObject&#123;    TArray&lt;TWeakObjectPtr&lt;AMyActor&gt;&gt; Ma...</div></div></div></a><a class="pagination-related" href="/2026/06/03/ue-commonui-deep-dive/" title="UE CommonUI 深度解析 - 跨平台 UI 框架从原理到实战"><img class="cover" src="https://picsum.photos/seed/anime7/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-03</div><div class="info-item-2">UE CommonUI 深度解析 - 跨平台 UI 框架从原理到实战</div></div><div class="info-2"><div class="info-item-1">一、CommonUI 概述CommonUI 是 Epic Games 在 UE5 中正式推出的跨平台 UI 开发框架，其前身最早可追溯至 UE4.27 的 Experimental 阶段。官方在开发《Fortnite》跨平台版本时深刻体会到：一套代码同时适配键盘鼠标、手柄和触屏三种输入模式所带来的复杂度呈指数增长。CommonUI 正是这一经验的产物。 1.1 解决的核心问题在传统 UMG 开发流程中，开发者需要手动处理以下问题：  输入模式切换：键盘鼠标与手柄之间的光标显隐、导航方式切换 按钮状态管理：Hover &#x2F; Press &#x2F; Focus &#x2F; Disabled 等状态的样式和音效 焦点导航冲突：手柄 D-Pad 导航与鼠标点击的焦点抢占 跨平台样式：同一套 UI 在 PC 和主机上的视觉差异处理 激活栈管理：多层弹窗时的输入归属和模态控制  CommonUI 将这些共性需求抽象为统一的基类和配置资产，开发者只需继承和配置，无需从零搭建。其设计哲学可概括为三条：输入无关（Input Agnostic）、平台无关（Platform Agnosti...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://q1.qlogo.cn/g?b=qq&amp;nk=10000&amp;s=640" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404/400/200'" alt="avatar"/></div><div class="author-info-name">Megumin</div><div class="author-info-description">UE 客户端开发 | C++ / Lua / slua-unreal</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">10</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">27</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://www.bilibili.com/" target="_blank" title="哔哩哔哩"><i class="fab fa-bilibili" style="color: #FB7299;"></i></a><a class="social-icon" href="mailto:hello@ue.dev" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://discord.com/" target="_blank" title="Discord"><i class="fab fa-discord" style="color: #5865F2;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">🎮 欢迎来到 UE 开发室！<br>这里记录着 UE 客户端开发的技术点滴～</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81GAS-%E6%A6%82%E8%BF%B0%E4%B8%8E%E8%AE%BE%E8%AE%A1%E5%93%B2%E5%AD%A6"><span class="toc-number">1.</span> <span class="toc-text">一、GAS 概述与设计哲学</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6%E5%85%A8%E6%99%AF"><span class="toc-number">2.</span> <span class="toc-text">二、核心组件全景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81ASC-%E7%9A%84%E5%BD%92%E5%B1%9E%E7%AD%96%E7%95%A5%E4%B8%8E%E7%BD%91%E7%BB%9C%E5%90%8C%E6%AD%A5"><span class="toc-number">3.</span> <span class="toc-text">三、ASC 的归属策略与网络同步</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%BD%92%E5%B1%9E-Actor-%E7%9A%84%E9%80%89%E6%8B%A9"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 归属 Actor 的选择</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E7%BD%91%E7%BB%9C%E5%90%8C%E6%AD%A5%E8%A6%81%E7%82%B9"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 网络同步要点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81GameplayAbility-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%B8%8E%E6%BF%80%E6%B4%BB%E6%9C%BA%E5%88%B6"><span class="toc-number">4.</span> <span class="toc-text">四、GameplayAbility 生命周期与激活机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 生命周期</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E6%BF%80%E6%B4%BB%E6%96%B9%E5%BC%8F"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 激活方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-Cost-%E4%B8%8E-Cooldown"><span class="toc-number">4.3.</span> <span class="toc-text">4.3 Cost 与 Cooldown</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81GameplayEffect-%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90"><span class="toc-number">5.</span> <span class="toc-text">五、GameplayEffect 深度解析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-Duration-Policy"><span class="toc-number">5.1.</span> <span class="toc-text">5.1 Duration Policy</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-Modifier-%E7%B1%BB%E5%9E%8B"><span class="toc-number">5.2.</span> <span class="toc-text">5.2 Modifier 类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-Execution-Calculation"><span class="toc-number">5.3.</span> <span class="toc-text">5.3 Execution Calculation</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81GameplayTags-%E5%B1%82%E7%BA%A7%E7%AE%A1%E7%90%86%E4%B8%8E-Ability-%E5%B1%8F%E8%94%BD"><span class="toc-number">6.</span> <span class="toc-text">六、GameplayTags 层级管理与 Ability 屏蔽</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E6%A0%87%E7%AD%BE%E5%B1%82%E7%BA%A7"><span class="toc-number">6.1.</span> <span class="toc-text">6.1 标签层级</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-Ability-%E7%9A%84%E6%A0%87%E7%AD%BE%E5%B1%8F%E8%94%BD%E6%9C%BA%E5%88%B6"><span class="toc-number">6.2.</span> <span class="toc-text">6.2 Ability 的标签屏蔽机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-Tag-%E5%8F%98%E5%8C%96%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC"><span class="toc-number">6.3.</span> <span class="toc-text">6.3 Tag 变化事件监听</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81AttributeSet-%E7%9A%84%E5%85%B3%E9%94%AE%E5%9B%9E%E8%B0%83"><span class="toc-number">7.</span> <span class="toc-text">七、AttributeSet 的关键回调</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-PreAttributeChange"><span class="toc-number">7.1.</span> <span class="toc-text">7.1 PreAttributeChange</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-PostGameplayEffectExecute"><span class="toc-number">7.2.</span> <span class="toc-text">7.2 PostGameplayEffectExecute</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E5%AE%9E%E6%88%98%EF%BC%9A%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%A7%92%E8%89%B2%E6%8A%80%E8%83%BD%E7%B3%BB%E7%BB%9F"><span class="toc-number">8.</span> <span class="toc-text">八、实战：搭建一个角色技能系统</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E5%B1%9E%E6%80%A7%E9%9B%86%E5%AE%9A%E4%B9%89"><span class="toc-number">8.1.</span> <span class="toc-text">8.1 属性集定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E4%BC%A4%E5%AE%B3-GE"><span class="toc-number">8.2.</span> <span class="toc-text">8.2 伤害 GE</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E6%B2%BB%E7%96%97-GE"><span class="toc-number">8.3.</span> <span class="toc-text">8.3 治疗 GE</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-%E5%86%B7%E5%8D%B4%E5%A4%84%E7%90%86"><span class="toc-number">8.4.</span> <span class="toc-text">8.4 冷却处理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E5%B8%B8%E8%A7%81%E5%9D%91%E7%82%B9%E4%B8%8E%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="toc-number">9.</span> <span class="toc-text">九、常见坑点与最佳实践</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-Client-Side-Prediction%EF%BC%88%E9%A2%84%E6%B5%8B%EF%BC%89"><span class="toc-number">9.1.</span> <span class="toc-text">9.1 Client-Side Prediction（预测）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-%E5%B1%9E%E6%80%A7-Clamp-%E5%BF%85%E9%A1%BB%E5%9C%A8-PreAttributeChange-%E4%B8%AD%E5%A4%84%E7%90%86"><span class="toc-number">9.2.</span> <span class="toc-text">9.2 属性 Clamp 必须在 PreAttributeChange 中处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-3-GE-%E7%9A%84%E7%AD%89%E7%BA%A7%EF%BC%88Level%EF%BC%89"><span class="toc-number">9.3.</span> <span class="toc-text">9.3 GE 的等级（Level）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-4-%E4%B8%8D%E8%A6%81%E6%BB%A5%E7%94%A8-Tick"><span class="toc-number">9.4.</span> <span class="toc-text">9.4 不要滥用 Tick</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-5-ASC-%E7%A9%BA%E6%8C%87%E9%92%88%E6%A3%80%E6%9F%A5"><span class="toc-number">9.5.</span> <span class="toc-text">9.5 ASC 空指针检查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-6-Modifier-%E4%B8%8E-Execution-%E7%9A%84%E9%80%89%E6%8B%A9"><span class="toc-number">9.6.</span> <span class="toc-text">9.6 Modifier 与 Execution 的选择</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-number">10.</span> <span class="toc-text">十、总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">11.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/06/02/ue-performance-optimization/" title="UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致"><img src="https://picsum.photos/seed/ueperf/800/400" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404b/800/400'" alt="UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致"/></a><div class="content"><a class="title" href="/2026/06/02/ue-performance-optimization/" title="UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致">UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致</a><time datetime="2026-06-03T08:57:54.331Z" title="更新于 2026-06-03 16:57:54">2026-06-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/02/ue-architecture-design/" title="UE 客户端架构设计 - 从混乱到优雅"><img src="https://picsum.photos/seed/uearch/800/400" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404b/800/400'" alt="UE 客户端架构设计 - 从混乱到优雅"/></a><div class="content"><a class="title" href="/2026/06/02/ue-architecture-design/" title="UE 客户端架构设计 - 从混乱到优雅">UE 客户端架构设计 - 从混乱到优雅</a><time datetime="2026-06-03T08:57:54.328Z" title="更新于 2026-06-03 16:57:54">2026-06-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/02/slua-unreal-guide/" title="slua-unreal 入門 - Lua 与 UE 的完美邂逅"><img src="https://picsum.photos/seed/slua1/800/400" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404b/800/400'" alt="slua-unreal 入門 - Lua 与 UE 的完美邂逅"/></a><div class="content"><a class="title" href="/2026/06/02/slua-unreal-guide/" title="slua-unreal 入門 - Lua 与 UE 的完美邂逅">slua-unreal 入門 - Lua 与 UE 的完美邂逅</a><time datetime="2026-06-03T08:57:54.326Z" title="更新于 2026-06-03 16:57:54">2026-06-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/03/design-patterns-game-dev/" title="设计模式深度解析 - 经典模式在游戏开发中的优雅应用"><img src="https://picsum.photos/seed/anime8/800/400" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404b/800/400'" alt="设计模式深度解析 - 经典模式在游戏开发中的优雅应用"/></a><div class="content"><a class="title" href="/2026/06/03/design-patterns-game-dev/" title="设计模式深度解析 - 经典模式在游戏开发中的优雅应用">设计模式深度解析 - 经典模式在游戏开发中的优雅应用</a><time datetime="2026-06-03T08:40:16.618Z" title="更新于 2026-06-03 16:40:16">2026-06-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/03/mvc-mvp-mvvm-game-dev/" title="MVC / MVP / MVVM 架构模式深度解析 - 从 UI 到游戏开发实战"><img src="https://picsum.photos/seed/anime7/800/400" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404b/800/400'" alt="MVC / MVP / MVVM 架构模式深度解析 - 从 UI 到游戏开发实战"/></a><div class="content"><a class="title" href="/2026/06/03/mvc-mvp-mvvm-game-dev/" title="MVC / MVP / MVVM 架构模式深度解析 - 从 UI 到游戏开发实战">MVC / MVP / MVVM 架构模式深度解析 - 从 UI 到游戏开发实战</a><time datetime="2026-06-03T08:37:40.847Z" title="更新于 2026-06-03 16:37:40">2026-06-03</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By Megumin</span></div><div class="footer_custom_text">「コードは嘘をつかない、ただ世界を創るだけだ」</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/sakura-js@1.1.1/dist/sakura.min.js"></script><script> new Sakura('body', {
+  colors: [
+    { gradientColorStart: 'rgba(255, 183, 197, 0.9)', gradientColorEnd: 'rgba(255, 197, 208, 0.9)', gradientColorDegree: 120 },
+    { gradientColorStart: 'rgba(255,189,189,0.9)', gradientColorEnd: 'rgba(227,170,181,0.8)', gradientColorDegree: 120 },
+    { gradientColorStart: 'rgba(212,152,163,0.8)', gradientColorEnd: 'rgba(242,185,196,0.9)', gradientColorDegree: 120 }
+  ]
+}); </script><div class="aplayer no-destroy" data-id="12967630832" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="true" data-order="random" data-preload="auto" data-autoplay="true" data-mutex="true"></div><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,510 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>UE CommonUI 深度解析 - 跨平台 UI 框架从原理到实战 | UE探偵の開発室</title><meta name="author" content="Megumin"><meta name="copyright" content="Megumin"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一、CommonUI 概述CommonUI 是 Epic Games 在 UE5 中正式推出的跨平台 UI 开发框架，其前身最早可追溯至 UE4.27 的 Experimental 阶段。官方在开发《Fortnite》跨平台版本时深刻体会到：一套代码同时适配键盘鼠标、手柄和触屏三种输入模式所带来的复杂度呈指数增长。CommonUI 正是这一经验的产物。 1.1 解决的核心问题在传统 UMG 开发流">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UE CommonUI 深度解析 - 跨平台 UI 框架从原理到实战">
+<meta property="og:url" content="https://megumin-1204.github.io/2026/06/03/ue-commonui-deep-dive/index.html">
+<meta property="og:site_name" content="UE探偵の開発室">
+<meta property="og:description" content="一、CommonUI 概述CommonUI 是 Epic Games 在 UE5 中正式推出的跨平台 UI 开发框架，其前身最早可追溯至 UE4.27 的 Experimental 阶段。官方在开发《Fortnite》跨平台版本时深刻体会到：一套代码同时适配键盘鼠标、手柄和触屏三种输入模式所带来的复杂度呈指数增长。CommonUI 正是这一经验的产物。 1.1 解决的核心问题在传统 UMG 开发流">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://picsum.photos/seed/anime7/800/400">
+<meta property="article:published_time" content="2026-06-03T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-06-03T07:16:18.426Z">
+<meta property="article:author" content="Megumin">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="CommonUI">
+<meta property="article:tag" content="UE5">
+<meta property="article:tag" content="UI框架">
+<meta property="article:tag" content="跨平台">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://picsum.photos/seed/anime7/800/400"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "UE CommonUI 深度解析 - 跨平台 UI 框架从原理到实战",
+  "url": "https://megumin-1204.github.io/2026/06/03/ue-commonui-deep-dive/",
+  "image": "https://picsum.photos/seed/anime7/800/400",
+  "datePublished": "2026-06-03T02:00:00.000Z",
+  "dateModified": "2026-06-03T07:16:18.426Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Megumin",
+      "url": "https://megumin-1204.github.io/about/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/"><link rel="canonical" href="https://megumin-1204.github.io/2026/06/03/ue-commonui-deep-dive/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!undefined && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: Megumin","link":"链接: ","source":"来源: UE探偵の開発室","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'UE CommonUI 深度解析 - 跨平台 UI 框架从原理到实战',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div class="bg-animation" id="web_bg" style="background-color: #f7f4f0;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://q1.qlogo.cn/g?b=qq&amp;nk=10000&amp;s=640" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404/400/200'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">10</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">27</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-code"></i><span> 技术专栏</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/UE-C++/"><i class="fa-fw fas fa-microchip"></i><span> UE C++</span></a></li><li><a class="site-page child" href="/categories/Lua/"><i class="fa-fw fas fa-feather"></i><span> Lua</span></a></li><li><a class="site-page child" href="/categories/slua-unreal/"><i class="fa-fw fas fa-puzzle-piece"></i><span> slua-unreal</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(https://picsum.photos/seed/anime7/800/400);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">UE探偵の開発室</span></a><a class="nav-page-title" href="/"><span class="site-name">UE CommonUI 深度解析 - 跨平台 UI 框架从原理到实战</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-code"></i><span> 技术专栏</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/UE-C++/"><i class="fa-fw fas fa-microchip"></i><span> UE C++</span></a></li><li><a class="site-page child" href="/categories/Lua/"><i class="fa-fw fas fa-feather"></i><span> Lua</span></a></li><li><a class="site-page child" href="/categories/slua-unreal/"><i class="fa-fw fas fa-puzzle-piece"></i><span> slua-unreal</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">UE CommonUI 深度解析 - 跨平台 UI 框架从原理到实战</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-06-03T02:00:00.000Z" title="发表于 2026-06-03 10:00:00">2026-06-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-06-03T07:16:18.426Z" title="更新于 2026-06-03 15:16:18">2026-06-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/UE-C/">UE-C++</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">3.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>13分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="一、CommonUI-概述"><a href="#一、CommonUI-概述" class="headerlink" title="一、CommonUI 概述"></a>一、CommonUI 概述</h2><p>CommonUI 是 Epic Games 在 UE5 中正式推出的跨平台 UI 开发框架，其前身最早可追溯至 UE4.27 的 Experimental 阶段。官方在开发《Fortnite》跨平台版本时深刻体会到：一套代码同时适配键盘鼠标、手柄和触屏三种输入模式所带来的复杂度呈指数增长。CommonUI 正是这一经验的产物。</p>
+<h3 id="1-1-解决的核心问题"><a href="#1-1-解决的核心问题" class="headerlink" title="1.1 解决的核心问题"></a>1.1 解决的核心问题</h3><p>在传统 UMG 开发流程中，开发者需要手动处理以下问题：</p>
+<ul>
+<li><strong>输入模式切换</strong>：键盘鼠标与手柄之间的光标显隐、导航方式切换</li>
+<li><strong>按钮状态管理</strong>：Hover &#x2F; Press &#x2F; Focus &#x2F; Disabled 等状态的样式和音效</li>
+<li><strong>焦点导航冲突</strong>：手柄 D-Pad 导航与鼠标点击的焦点抢占</li>
+<li><strong>跨平台样式</strong>：同一套 UI 在 PC 和主机上的视觉差异处理</li>
+<li><strong>激活栈管理</strong>：多层弹窗时的输入归属和模态控制</li>
+</ul>
+<p>CommonUI 将这些共性需求抽象为统一的基类和配置资产，开发者只需继承和配置，无需从零搭建。其设计哲学可概括为三条：<strong>输入无关（Input Agnostic）</strong>、<strong>平台无关（Platform Agnostic）</strong>、<strong>样式数据驱动（Style Data-Driven）</strong>。</p>
+<h3 id="1-2-与普通-UMG-的关系"><a href="#1-2-与普通-UMG-的关系" class="headerlink" title="1.2 与普通 UMG 的关系"></a>1.2 与普通 UMG 的关系</h3><p>CommonUI 并非替代 UMG，而是建立在 UMG 之上的一层高级封装。所有 CommonUI Widget 仍然是 <code>UUserWidget</code> 的子类，兼容 UMG 的全部功能。两者的关系类似 UE 的 <code>APawn</code> 与 <code>ACharacter</code>：后者在前者基础上内置了移动组件和动画蓝图等常用能力，CommonUI 则为 UMG 内置了输入路由、焦点管理和样式系统。</p>
+<h2 id="二、核心架构"><a href="#二、核心架构" class="headerlink" title="二、核心架构"></a>二、核心架构</h2><h3 id="2-1-ActivatableWidget-—-最小可激活单元"><a href="#2-1-ActivatableWidget-—-最小可激活单元" class="headerlink" title="2.1 ActivatableWidget — 最小可激活单元"></a>2.1 ActivatableWidget — 最小可激活单元</h3><p><code>UCommonActivatableWidget</code> 是 CommonUI 的基石。任何需要独立管理输入和焦点的 UI 面板都应继承它，而非直接继承 <code>UUserWidget</code>。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 继承 CommonActivatableWidget 而非 UUserWidget</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">UMySettingsPanel</span> : <span class="keyword">public</span> UCommonActivatableWidget</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 自动获得激活/去激活生命周期</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>核心生命周期：</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>构建</td>
+<td><code>NativeOnInitialized()</code></td>
+<td>Widget 首次初始化</td>
+</tr>
+<tr>
+<td>激活前</td>
+<td><code>NativeOnActivated()</code></td>
+<td>即将获得输入焦点</td>
+</tr>
+<tr>
+<td>激活后</td>
+<td><code>NativeOnActivated()</code> 返回后</td>
+<td>已接收输入路由</td>
+</tr>
+<tr>
+<td>去激活前</td>
+<td><code>NativeOnDeactivated()</code></td>
+<td>即将失去输入焦点</td>
+</tr>
+<tr>
+<td>激活状态变化</td>
+<td><code>OnActivationStateChanged()</code></td>
+<td>状态机回调</td>
+</tr>
+</tbody></table>
+<p><code>UCommonActivatableWidget</code> 内置了 <code>bIsTransitioning</code> 防止重入激活，以及 <code>GetDesiredInputMode()</code> 让每个面板声明自己期望的输入模式。</p>
+<h3 id="2-2-CommonButtonBase-—-跨平台按钮"><a href="#2-2-CommonButtonBase-—-跨平台按钮" class="headerlink" title="2.2 CommonButtonBase — 跨平台按钮"></a>2.2 CommonButtonBase — 跨平台按钮</h3><p><code>UCommonButtonBase</code> 是 CommonUI 中最重要的交互控件。它通过三层抽象处理跨平台交互：</p>
+<ol>
+<li><strong>交互方法（Interaction Method）</strong>：自动检测当前输入类型（鼠标&#x2F;手柄&#x2F;触摸），切换对应的样式和行为</li>
+<li><strong>选择状态（Selection State）</strong>：Pressed &#x2F; Released &#x2F; Hovered &#x2F; Selected &#x2F; Disabled</li>
+<li><strong>触发动作（Triggering Action）</strong>：通过绑定 <code>DataAsset</code> 而非硬编码按键</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在蓝图中设置按钮的触发动作</span></span><br><span class="line"><span class="comment">// CommonButtonBase 自动处理：</span></span><br><span class="line"><span class="comment">// - 键盘：对应的 Enhanced Input Action</span></span><br><span class="line"><span class="comment">// - 手柄：Face Button Bottom（A / Cross）</span></span><br><span class="line"><span class="comment">// - 触摸：Click / Tap 事件</span></span><br></pre></td></tr></table></figure>
+
+<p>关键配置属性：</p>
+<ul>
+<li><code>bSelectable</code> — 是否可通过手柄导航选中</li>
+<li><code>InputActionData</code> — 关联的 <code>CommonInputActionDataBase</code></li>
+<li><code>TriggeringEnhancedInputAction</code> — 绑定的 Enhanced Input Action</li>
+</ul>
+<h3 id="2-3-CommonTabListWidgetBase-—-Tab-切换容器"><a href="#2-3-CommonTabListWidgetBase-—-Tab-切换容器" class="headerlink" title="2.3 CommonTabListWidgetBase — Tab 切换容器"></a>2.3 CommonTabListWidgetBase — Tab 切换容器</h3><p><code>UCommonTabListWidgetBase</code> 提供了一套完整的 Tab 页签管理方案。它自动处理：</p>
+<ul>
+<li>Tab 注册与注销</li>
+<li>选中状态同步</li>
+<li>上一个&#x2F;下一个 Tab 导航</li>
+<li>关联内容面板的切换</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 注册 Tab</span></span><br><span class="line">TabList-&gt;<span class="built_in">RegisterTab</span>(TabButtonClass, ContentWidget, TabIndex);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 监听 Tab 切换</span></span><br><span class="line">TabList-&gt;OnTabSelected.<span class="built_in">AddDynamic</span>(<span class="keyword">this</span>, &amp;AMyHUD::OnTabChanged);</span><br></pre></td></tr></table></figure>
+
+<p>Tab 切换时，<code>CommonTabListWidgetBase</code> 自动调用前一个面板的 <code>DeactivateWidget()</code> 和新面板的 <code>ActivateWidget()</code>，开发者无需手动管理焦点转移。</p>
+<h2 id="三、输入模式系统"><a href="#三、输入模式系统" class="headerlink" title="三、输入模式系统"></a>三、输入模式系统</h2><h3 id="3-1-三种-InputMode"><a href="#3-1-三种-InputMode" class="headerlink" title="3.1 三种 InputMode"></a>3.1 三种 InputMode</h3><p>CommonUI 定义了三种输入模式，由 <code>ECommonInputMode</code> 枚举管理：</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>光标</th>
+<th>手柄焦点</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Menu</code></td>
+<td>可见</td>
+<td>强制显示</td>
+<td>主菜单、设置界面</td>
+</tr>
+<tr>
+<td><code>Game</code></td>
+<td>隐藏</td>
+<td>不拦截</td>
+<td>游玩中 HUD</td>
+</tr>
+<tr>
+<td><code>All</code></td>
+<td>半透明</td>
+<td>叠加显示</td>
+<td>背包半透明覆盖</td>
+</tr>
+</tbody></table>
+<p>输入模式的切换由 <code>UCommonUIActionRouterBase</code> 统一管理。当 <code>ActivatableWidget</code> 被激活时，系统对比其 <code>GetDesiredInputMode()</code> 与当前模式，若不同则自动切换。切换过程有平滑过渡（<code>InputModeTransition</code>），避免视觉闪烁。</p>
+<h3 id="3-2-ActionRouter-vs-传统绑定"><a href="#3-2-ActionRouter-vs-传统绑定" class="headerlink" title="3.2 ActionRouter vs 传统绑定"></a>3.2 ActionRouter vs 传统绑定</h3><p>传统 UMG 的做法是直接在 Widget 上绑定输入事件：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 传统做法 — 需要手动处理多种输入设备</span></span><br><span class="line">Button-&gt;OnClicked.<span class="built_in">AddDynamic</span>(<span class="keyword">this</span>, &amp;UMyWidget::OnButtonClicked);</span><br><span class="line">Button-&gt;OnHovered.<span class="built_in">AddDynamic</span>(<span class="keyword">this</span>, &amp;UMyWidget::OnButtonHovered);</span><br></pre></td></tr></table></figure>
+
+<p>CommonUI 的做法是通过 <code>UCommonUIActionRouterBase</code> 进行统一的动作路由：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// CommonUI 做法 — ActionRouter 自动分发</span></span><br><span class="line"><span class="comment">// 在 CommonInputActionData 中定义 &quot;Confirm&quot; 动作</span></span><br><span class="line"><span class="comment">// 绑定到 CommonButtonBase 后自动处理键盘 Enter / 手柄 A / 触摸 Tap</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>ActionRouter 的优势</strong>：</p>
+<ul>
+<li><strong>统一抽象</strong>：同一语义动作映射到不同设备的输入</li>
+<li><strong>优先级管理</strong>：根据激活栈自动决定哪个 Widget 接收输入</li>
+<li><strong>调试友好</strong>：内置 <code>CommonUI.ActionRouter.Debug</code> 控制台命令</li>
+</ul>
+<h3 id="3-3-Enhanced-Input-集成"><a href="#3-3-Enhanced-Input-集成" class="headerlink" title="3.3 Enhanced Input 集成"></a>3.3 Enhanced Input 集成</h3><p>CommonUI 5.1+ 深度集成了 Enhanced Input System。通过 <code>UCommonInputMetadata</code>，可以将 <code>InputAction</code> 直接映射到 CommonUI 动作：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在项目设置中配置 CommonInputSettings</span></span><br><span class="line"><span class="comment">// EnhancedInputSettings -&gt; InputData -&gt; 绑定 CommonInputActionDataBase</span></span><br><span class="line"><span class="comment">// 之后 CommonButtonBase 可直接响应 Enhanced Input Action</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="四、聚焦管理"><a href="#四、聚焦管理" class="headerlink" title="四、聚焦管理"></a>四、聚焦管理</h2><h3 id="4-1-Focus-Path-机制"><a href="#4-1-Focus-Path-机制" class="headerlink" title="4.1 Focus Path 机制"></a>4.1 Focus Path 机制</h3><p>CommonUI 的焦点管理基于 Slate 的 Focus Path，但增加了平台感知层。核心类 <code>UCommonUIActionRouterBase</code> 维护一棵激活树，确保焦点始终落在当前激活栈最顶层的 Widget 上。</p>
+<p>焦点流程：</p>
+<ol>
+<li>新 Widget 激活 → 注册到激活树</li>
+<li>系统遍历 Focus Path → 确定下一个应该获得焦点的控件</li>
+<li>若当前输入设备是手柄 → 自动将焦点导航到第一个 <code>bSelectable</code> 控件</li>
+<li>弹窗关闭 → 焦点恢复到上层 Widget 的 “挂起焦点”</li>
+</ol>
+<h3 id="4-2-导航策略"><a href="#4-2-导航策略" class="headerlink" title="4.2 导航策略"></a>4.2 导航策略</h3><p>CommonUI 支持三种导航策略：</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>行为</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Explicit</code></td>
+<td>手动设置每个方向的导航目标</td>
+<td>不规则布局</td>
+</tr>
+<tr>
+<td><code>Custom</code></td>
+<td>通过 <code>OnNavigation</code> 事件自定义逻辑</td>
+<td>环形菜单</td>
+</tr>
+<tr>
+<td><code>CustomBoundary</code></td>
+<td>自定义 + 边界溢出处理</td>
+<td>网格布局</td>
+</tr>
+</tbody></table>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Custom 导航示例：在 Grid 中自定义导航规则</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">UMyGridWidget::OnNavigation</span><span class="params">(EUINavigation Direction)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 根据当前选中索引 + 方向计算下一项</span></span><br><span class="line">    int32 NextIndex = <span class="built_in">CalculateNextIndex</span>(CurrentIndex, Direction);</span><br><span class="line">    <span class="built_in">SetSelectedItem</span>(NextIndex);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-Custom-Focus-规则"><a href="#4-3-Custom-Focus-规则" class="headerlink" title="4.3 Custom Focus 规则"></a>4.3 Custom Focus 规则</h3><p>对于滚轴、自定义 UI 组件等特殊场景，可以通过覆写 <code>UCommonActivatableWidget::NativeOnFocusChanging</code> 来接管焦点行为：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">UMyScrollPanel::NativeOnFocusChanging</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> FFocusEvent&amp; InFocusEvent,</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> FWeakWidgetPath&amp; OldFocusedWidgetPath,</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> TSharedPtr&lt;SWidget&gt;&amp; OldFocusedWidget,</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> FWidgetPath&amp; NewFocusedWidgetPath,</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> TSharedPtr&lt;SWidget&gt;&amp; NewFocusedWidget)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 防止焦点离开当前面板进入底层 UI</span></span><br><span class="line">    <span class="keyword">if</span> (!NewFocusedWidgetPath.<span class="built_in">ContainsWidget</span>(<span class="keyword">this</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span>; <span class="comment">// 拦截焦点离开</span></span><br><span class="line">    &#125;</span><br><span class="line">    Super::<span class="built_in">NativeOnFocusChanging</span>(...);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="五、样式系统"><a href="#五、样式系统" class="headerlink" title="五、样式系统"></a>五、样式系统</h2><h3 id="5-1-CommonTextStyle"><a href="#5-1-CommonTextStyle" class="headerlink" title="5.1 CommonTextStyle"></a>5.1 CommonTextStyle</h3><p><code>UCommonTextStyle</code> 是一个 DataAsset，将字体、字号、颜色、阴影等文本属性打包为一个可配置资产：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">UCLASS</span>()</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">UCommonTextStyle</span> : <span class="keyword">public</span> UObject</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 字体</span></span><br><span class="line">    FSlateFontInfo Font;</span><br><span class="line">    <span class="comment">// 颜色</span></span><br><span class="line">    FLinearColor Color;</span><br><span class="line">    <span class="comment">// 阴影偏移和颜色</span></span><br><span class="line">    FVector2D ShadowOffset;</span><br><span class="line">    FLinearColor ShadowColor;</span><br><span class="line">    <span class="comment">// 变换策略</span></span><br><span class="line">    ETextTransformPolicy TransformPolicy;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>使用方式：在 <code>UCommonTextBlock</code> 上指定 <code>Style</code> 引用即可全局统一风格。修改一个 DataAsset，所有引用它的文本控件同步更新。</p>
+<h3 id="5-2-CommonButtonStyle"><a href="#5-2-CommonButtonStyle" class="headerlink" title="5.2 CommonButtonStyle"></a>5.2 CommonButtonStyle</h3><p><code>UCommonButtonStyle</code> 管理按钮在每种状态（Normal &#x2F; Hovered &#x2F; Pressed &#x2F; Disabled &#x2F; Selected）下的样式。它在 <code>CommonButtonBase</code> 的 <code>UpdateCurrentStyle</code> 中根据当前 Interaction Method 自动切换。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 按钮样式关键配置</span></span><br><span class="line">- Normal / Hovered / Pressed / Disabled / Selected 五种状态的 Brush</span><br><span class="line">- 每种状态对应的音效 (FOnButtonSounds)</span><br><span class="line">- Pressed 和 Hovered 的 Material 实例（即时特效切换）</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-3-StyleSheet-动态换肤"><a href="#5-3-StyleSheet-动态换肤" class="headerlink" title="5.3 StyleSheet 动态换肤"></a>5.3 StyleSheet 动态换肤</h3><p>CommonUI 的 <code>UCommonStyleSheet</code> 系统支持运行时动态切换整套样式：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 运行时切换主题</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">SwitchToDarkTheme</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    UCommonStyleSheet* DarkSheet = <span class="built_in">LoadObject</span>&lt;UCommonStyleSheet&gt;(...);</span><br><span class="line">    CommonUISubsystem-&gt;<span class="built_in">ApplyStyleSheet</span>(DarkSheet);</span><br><span class="line">    <span class="comment">// 所有文本、按钮、面板即刻切换为深色主题</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Stylesheet 的查找优先级：<strong>StyleSheet 覆盖 → 控件本地属性 → 默认样式</strong>。这套系统在《Fortnite》中用于赛季主题切换，运营多年验证了稳定性。</p>
+<h2 id="六、Widget-激活栈"><a href="#六、Widget-激活栈" class="headerlink" title="六、Widget 激活栈"></a>六、Widget 激活栈</h2><h3 id="6-1-激活-去激活生命周期"><a href="#6-1-激活-去激活生命周期" class="headerlink" title="6.1 激活 &#x2F; 去激活生命周期"></a>6.1 激活 &#x2F; 去激活生命周期</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[构建] → NativeOnInitialized()</span><br><span class="line">   ↓</span><br><span class="line">[激活] → NativeOnActivated()</span><br><span class="line">   ↓           ↑</span><br><span class="line">[活跃] ────────┤  (用户交互、输入路由生效中)</span><br><span class="line">   ↓           ↓</span><br><span class="line">[去激活] → NativeOnDeactivated()</span><br></pre></td></tr></table></figure>
+
+<p>激活触发场景：</p>
+<ul>
+<li>手动调用 <code>ActivateWidget()</code> &#x2F; <code>DeactivateWidget()</code></li>
+<li><code>CommonTabListWidgetBase</code> 切换 Tab</li>
+<li>上层弹窗关闭后自动恢复</li>
+</ul>
+<h3 id="6-2-层级管理与模态"><a href="#6-2-层级管理与模态" class="headerlink" title="6.2 层级管理与模态"></a>6.2 层级管理与模态</h3><p>CommonUI 通过 <code>UCommonActivatableWidgetStack</code> 和 <code>UCommonActivatableWidgetQueue</code> 两个容器管理层级：</p>
+<ul>
+<li><strong>Stack</strong>：后进先出，适合弹窗栈（设置 → 子设置 → 确认框）</li>
+<li><strong>Queue</strong>：先进先出，适合通知队列（提示消息顺次显示）</li>
+</ul>
+<p>模态设置：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 设置为模态：阻止所有下层 Widget 的输入</span></span><br><span class="line">ActivatableWidget-&gt;<span class="built_in">SetIsModal</span>(<span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 常见的输入阻挡配置</span></span><br><span class="line"><span class="built_in">GetDesiredInputConfig</span>() → FUIInputConfig</span><br><span class="line">    → InputMode: Menu</span><br><span class="line">    → MouseCaptureMode: CapturePermanently</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-3-挂起焦点恢复"><a href="#6-3-挂起焦点恢复" class="headerlink" title="6.3 挂起焦点恢复"></a>6.3 挂起焦点恢复</h3><p>弹窗关闭时，系统自动恢复之前挂起的焦点位置。这是通过 <code>UCommonUIActionRouterBase</code> 的 <code>SuspendInput</code> &#x2F; <code>ResumeInput</code> 机制实现的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ActionRouter 内部逻辑（简化）</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">SuspendFocus</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    SavedFocusPath = CurrentFocusPath; <span class="comment">// 保存当前焦点路径</span></span><br><span class="line">    <span class="built_in">ClearCurrentFocus</span>();              <span class="comment">// 清除焦点</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">ResumeFocus</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">RestoreFocus</span>(SavedFocusPath);     <span class="comment">// 恢复到挂起时的焦点</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="七、平台适配"><a href="#七、平台适配" class="headerlink" title="七、平台适配"></a>七、平台适配</h2><h3 id="7-1-PlatformTraits-机制"><a href="#7-1-PlatformTraits-机制" class="headerlink" title="7.1 PlatformTraits 机制"></a>7.1 PlatformTraits 机制</h3><p>CommonUI 使用 <code>FGameplayTag</code> 标记平台特性，称为 PlatformTraits：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义平台 Tag</span></span><br><span class="line">Platform.Trait.PC          <span class="comment">// 桌面平台</span></span><br><span class="line">Platform.Trait.Console     <span class="comment">// 主机平台</span></span><br><span class="line">Platform.Trait.Mobile      <span class="comment">// 移动平台</span></span><br><span class="line">Platform.Trait.Touch       <span class="comment">// 支持触摸</span></span><br><span class="line">Platform.Trait.Controller  <span class="comment">// 支持手柄</span></span><br></pre></td></tr></table></figure>
+
+<p>通过 <code>UCommonUISubsystem</code> 的 <code>HasTrait()</code> 方法，可在运行时判断：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (CommonUISystem-&gt;<span class="built_in">HasTrait</span>(PlatformTrait::Console))</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 显示手柄提示图标</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 显示键盘快捷键文字</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-2-平台特定-Widget-切换"><a href="#7-2-平台特定-Widget-切换" class="headerlink" title="7.2 平台特定 Widget 切换"></a>7.2 平台特定 Widget 切换</h3><p>CommonUI 的 <code>UCommonActivatableWidgetSwitcher</code> 支持根据 PlatformTraits 自动切换子面板：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 配置示例</span></span><br><span class="line">- 面板 A：绑定 Tag <span class="string">&quot;Platform.Trait.PC&quot;</span> → PC 上激活</span><br><span class="line">- 面板 B：绑定 Tag <span class="string">&quot;Platform.Trait.Console&quot;</span> → 主机上激活</span><br><span class="line">- 面板 C：绑定 Tag <span class="string">&quot;Platform.Trait.Mobile&quot;</span> → 手机上激活</span><br></pre></td></tr></table></figure>
+
+<p>这套机制使得同一 UI 蓝图在不同平台上展示不同布局，而无需维护多份蓝图。</p>
+<h2 id="八、实战案例：跨平台设置菜单"><a href="#八、实战案例：跨平台设置菜单" class="headerlink" title="八、实战案例：跨平台设置菜单"></a>八、实战案例：跨平台设置菜单</h2><p>这里展示一个完整的跨平台设置菜单实现，涵盖 Tab 切换、按钮聚焦导航和多平台适配。</p>
+<h3 id="8-1-蓝图层级结构"><a href="#8-1-蓝图层级结构" class="headerlink" title="8.1 蓝图层级结构"></a>8.1 蓝图层级结构</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">BP_SettingsPanel (CommonActivatableWidget)</span><br><span class="line">├── TitleText (CommonTextBlock, Style: TitleStyle)</span><br><span class="line">├── TabList (CommonTabListWidgetBase)</span><br><span class="line">│   ├── Tab_Video (CommonButtonBase)</span><br><span class="line">│   ├── Tab_Audio (CommonButtonBase)</span><br><span class="line">│   └── Tab_Controls (CommonButtonBase)</span><br><span class="line">├── ContentSwitcher (WidgetSwitcher)</span><br><span class="line">│   ├── Panel_Video (CommonActivatableWidget)</span><br><span class="line">│   ├── Panel_Audio (CommonActivatableWidget)</span><br><span class="line">│   └── Panel_Controls (CommonActivatableWidget)</span><br><span class="line">├── Button_Apply (CommonButtonBase)</span><br><span class="line">└── Button_Back (CommonButtonBase)</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-2-C-核心逻辑"><a href="#8-2-C-核心逻辑" class="headerlink" title="8.2 C++ 核心逻辑"></a>8.2 C++ 核心逻辑</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SettingsPanel.h</span></span><br><span class="line"><span class="built_in">UCLASS</span>()</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">USettingsPanel</span> : <span class="keyword">public</span> UCommonActivatableWidget</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">GENERATED_BODY</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">NativeOnActivated</span><span class="params">()</span> <span class="keyword">override</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">NativeOnDeactivated</span><span class="params">()</span> <span class="keyword">override</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> FUIInputConfig <span class="title">GetDesiredInputConfig</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">UFUNCTION</span>()</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">OnTabSelected</span><span class="params">(FName TabId)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="built_in">UPROPERTY</span>(meta = (BindWidget))</span><br><span class="line">    UCommonTabListWidgetBase* TabList;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">UPROPERTY</span>(meta = (BindWidget))</span><br><span class="line">    UWidgetSwitcher* ContentSwitcher;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">UPROPERTY</span>(meta = (BindWidget))</span><br><span class="line">    UCommonButtonBase* Button_Apply;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">UPROPERTY</span>(meta = (BindWidget))</span><br><span class="line">    UCommonButtonBase* Button_Back;</span><br><span class="line"></span><br><span class="line">    TMap&lt;FName, UCommonActivatableWidget*&gt; TabContentMap;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// SettingsPanel.cpp</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">USettingsPanel::NativeOnActivated</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Super::<span class="built_in">NativeOnActivated</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注册 Tab</span></span><br><span class="line">    TabList-&gt;<span class="built_in">RegisterTab</span>(<span class="built_in">FName</span>(<span class="string">&quot;Video&quot;</span>), Panel_Video, <span class="number">0</span>);</span><br><span class="line">    TabList-&gt;<span class="built_in">RegisterTab</span>(<span class="built_in">FName</span>(<span class="string">&quot;Audio&quot;</span>), Panel_Audio, <span class="number">1</span>);</span><br><span class="line">    TabList-&gt;<span class="built_in">RegisterTab</span>(<span class="built_in">FName</span>(<span class="string">&quot;Controls&quot;</span>), Panel_Controls, <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">    TabList-&gt;OnTabSelected.<span class="built_in">AddDynamic</span>(<span class="keyword">this</span>, &amp;USettingsPanel::OnTabSelected);</span><br><span class="line">    TabList-&gt;<span class="built_in">SelectTabByIndex</span>(<span class="number">0</span>); <span class="comment">// 默认选中第一个</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 手柄进入时，自动聚焦第一个 Tab</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">GetOwningPlayer</span>()-&gt;<span class="built_in">GetCommonInputSubsystem</span>()</span><br><span class="line">        -&gt;<span class="built_in">GetCurrentInputType</span>() == ECommonInputType::Gamepad)</span><br><span class="line">    &#123;</span><br><span class="line">        TabList-&gt;<span class="built_in">SetFocus</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">FUIInputConfig <span class="title">USettingsPanel::GetDesiredInputConfig</span><span class="params">()</span> <span class="type">const</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 设置面板使用 Menu 模式</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">FUIInputConfig</span>(ECommonInputMode::Menu, EMouseCaptureMode::NoCapture);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">USettingsPanel::NativeOnDeactivated</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    TabList-&gt;OnTabSelected.<span class="built_in">RemoveDynamic</span>(<span class="keyword">this</span>, &amp;USettingsPanel::OnTabSelected);</span><br><span class="line">    Super::<span class="built_in">NativeOnDeactivated</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">USettingsPanel::OnTabSelected</span><span class="params">(FName TabId)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 自动切换内容面板（由 TabList 内部管理）</span></span><br><span class="line">    <span class="comment">// 此处处理额外的业务逻辑，如播放切换音效</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-3-输入配置"><a href="#8-3-输入配置" class="headerlink" title="8.3 输入配置"></a>8.3 输入配置</h3><p>在 Enhanced Input 中定义动作：</p>
+<table>
+<thead>
+<tr>
+<th>Input Action</th>
+<th>键盘</th>
+<th>手柄</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>IA_TabLeft</code></td>
+<td>Q &#x2F; ←</td>
+<td>LB</td>
+</tr>
+<tr>
+<td><code>IA_TabRight</code></td>
+<td>E &#x2F; →</td>
+<td>RB</td>
+</tr>
+<tr>
+<td><code>IA_Confirm</code></td>
+<td>Enter &#x2F; Space</td>
+<td>A (Face Button Bottom)</td>
+</tr>
+<tr>
+<td><code>IA_Back</code></td>
+<td>Escape &#x2F; Backspace</td>
+<td>B (Face Button Right)</td>
+</tr>
+</tbody></table>
+<p>将 <code>IA_Confirm</code> 和 <code>IA_Back</code> 分别绑定到 <code>Button_Apply</code> 和 <code>Button_Back</code> 的 <code>TriggeringEnhancedInputAction</code>，CommonUI 自动处理跨平台分发。</p>
+<h3 id="8-4-手柄导航测试"><a href="#8-4-手柄导航测试" class="headerlink" title="8.4 手柄导航测试"></a>8.4 手柄导航测试</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在编辑器 PIE 中测试手柄导航：</span></span><br><span class="line"><span class="comment">// 1. 启动 PIE</span></span><br><span class="line"><span class="comment">// 2. 控制台执行：CommonUI.SetInputType Gamepad 1</span></span><br><span class="line"><span class="comment">// 3. D-Pad 导航生效，焦点框自动跟随</span></span><br><span class="line"><span class="comment">// 4. 鼠标移出屏幕 → 焦点回到手柄导航</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="九、与-Lyra-项目的集成"><a href="#九、与-Lyra-项目的集成" class="headerlink" title="九、与 Lyra 项目的集成"></a>九、与 Lyra 项目的集成</h2><p>Epic 的 Lyra Starter Game 是 CommonUI 的最佳参考实现。它展示了以下几个关键集成模式：</p>
+<h3 id="9-1-UI-策略（UIPolicy）"><a href="#9-1-UI-策略（UIPolicy）" class="headerlink" title="9.1 UI 策略（UIPolicy）"></a>9.1 UI 策略（UIPolicy）</h3><p>Lyra 的 <code>ULyraUIPolicy</code> 继承自 <code>UCommonUIPolicy</code>，负责全局 UI 管理：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Lyra 中的典型流程</span></span><br><span class="line"><span class="comment">// 1. GameFeatureAction_AddWidget 注册 UI</span></span><br><span class="line"><span class="comment">// 2. UIPolicy 通过 Experience 配置加载对应 UI 蓝图</span></span><br><span class="line"><span class="comment">// 3. 前端/游戏中自动切换 UI 布局</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="9-2-前端与游戏内-UI-切换"><a href="#9-2-前端与游戏内-UI-切换" class="headerlink" title="9.2 前端与游戏内 UI 切换"></a>9.2 前端与游戏内 UI 切换</h3><p>Lyra 在前端（主菜单）和游戏内使用了完全不同的 <code>UIPolicy</code> 配置：</p>
+<ul>
+<li><strong>前端</strong>：<code>InputMode = Menu</code>，光标可见，完整焦点导航</li>
+<li><strong>游戏内</strong>：<code>InputMode = Game</code>，光标隐藏，仅 HUD 层接收输入</li>
+</ul>
+<p>两者的切换在 <code>ULyraExperienceManager</code> 中通过 <code>OnExperienceLoaded</code> 自动触发，开发者只需配置不同的 UI 蓝图即可。</p>
+<h3 id="9-3-确认弹窗模式"><a href="#9-3-确认弹窗模式" class="headerlink" title="9.3 确认弹窗模式"></a>9.3 确认弹窗模式</h3><p>Lyra 的确认弹窗使用了 CommonUI 的标准模式：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">ShowConfirmDialog</span><span class="params">(<span class="type">const</span> FText&amp; Message, FOnConfirmed OnConfirm)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    UCommonActivatableWidget* Dialog = <span class="built_in">CreateWidget</span>&lt;...&gt;(...);</span><br><span class="line">    Dialog-&gt;<span class="built_in">SetIsModal</span>(<span class="literal">true</span>);                  <span class="comment">// 阻止下层输入</span></span><br><span class="line">    Dialog-&gt;<span class="built_in">OnDeactivated</span>().<span class="built_in">AddLambda</span>([] &#123; ... &#125;); <span class="comment">// 关闭后恢复</span></span><br><span class="line">    Dialog-&gt;<span class="built_in">ActivateWidget</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这套模式在 Lyra 中用于游戏退出确认、设置重置警告等多个场景。</p>
+<h2 id="十、常见坑点与最佳实践"><a href="#十、常见坑点与最佳实践" class="headerlink" title="十、常见坑点与最佳实践"></a>十、常见坑点与最佳实践</h2><h3 id="10-1-焦点丢失问题"><a href="#10-1-焦点丢失问题" class="headerlink" title="10.1 焦点丢失问题"></a>10.1 焦点丢失问题</h3><p><strong>现象</strong>：打开弹窗后，手柄导航焦点消失，D-Pad 无法选中任何按钮。</p>
+<p><strong>原因</strong>：激活栈中的新 Widget 没有可聚焦控件，或 <code>NativeOnActivated</code> 中未手动调用 <code>SetFocus()</code>。</p>
+<p><strong>解决</strong>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">UMyPopup::NativeOnActivated</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Super::<span class="built_in">NativeOnActivated</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 确保至少有一个可聚焦控件</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">ensure</span>(FirstButton))</span><br><span class="line">    &#123;</span><br><span class="line">        FirstButton-&gt;<span class="built_in">SetFocus</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="10-2-Enhanced-Input-冲突"><a href="#10-2-Enhanced-Input-冲突" class="headerlink" title="10.2 Enhanced Input 冲突"></a>10.2 Enhanced Input 冲突</h3><p><strong>现象</strong>：UI 打开后，Enhanced Input 的 <code>Triggered</code> 事件同时触发 UI 和游戏逻辑。</p>
+<p><strong>原因</strong>：Enhanced Input 的 Priority 未正确设置，UI 输入未被提升。</p>
+<p><strong>解决</strong>：在 <code>GetDesiredInputConfig()</code> 中返回 <code>Menu</code> 模式并配合 Enhanced Input 的 Priority 设置：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">FUIInputConfig <span class="title">UMyWidget::GetDesiredInputConfig</span><span class="params">()</span> <span class="type">const</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">FUIInputConfig</span>(</span><br><span class="line">        ECommonInputMode::Menu,</span><br><span class="line">        EMouseCaptureMode::CapturePermanently_IncludingInitialMouseDown</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="10-3-CommonTextBlock-样式不生效"><a href="#10-3-CommonTextBlock-样式不生效" class="headerlink" title="10.3 CommonTextBlock 样式不生效"></a>10.3 CommonTextBlock 样式不生效</h3><p><strong>现象</strong>：设置了 <code>CommonTextStyle</code> DataAsset 但文本外观无变化。</p>
+<p><strong>原因</strong>：Widget 类型是普通 <code>UTextBlock</code> 而非 <code>UCommonTextBlock</code>。CommonUI 的样式系统仅对 Common 前缀的控件生效。</p>
+<p><strong>解决</strong>：将所有文本控件改为 <code>CommonTextBlock</code>，按钮改为 <code>CommonButtonBase</code>。</p>
+<h3 id="10-4-激活栈内存泄漏"><a href="#10-4-激活栈内存泄漏" class="headerlink" title="10.4 激活栈内存泄漏"></a>10.4 激活栈内存泄漏</h3><p><strong>现象</strong>：反复开关 UI 后内存持续增长。</p>
+<p><strong>原因</strong>：动态创建的 <code>ActivatableWidget</code> 未正确释放，或激活栈中存在循环引用。</p>
+<p><strong>最佳实践</strong>：</p>
+<ul>
+<li>非持久性弹窗在 <code>NativeOnDeactivated</code> 中调用 <code>RemoveFromParent()</code></li>
+<li>使用 <code>UCommonActivatableWidgetStack</code> 管理弹窗生命周期</li>
+<li>避免在 <code>NativeOnActivated</code> 中创建大量动态 Widget（改用对象池）</li>
+</ul>
+<h3 id="10-5-平台检测时序问题"><a href="#10-5-平台检测时序问题" class="headerlink" title="10.5 平台检测时序问题"></a>10.5 平台检测时序问题</h3><p><strong>现象</strong>：<code>HasTrait()</code> 在 <code>NativeOnInitialized</code> 中返回错误值。</p>
+<p><strong>原因</strong>：<code>UCommonUISubsystem</code> 的平台特性检测依赖于输入设备检测，而设备检测在 Widget 初始化时可能尚未完成。</p>
+<p><strong>解决</strong>：将平台判断逻辑放在 <code>NativeOnActivated()</code> 中，而非 <code>NativeOnInitialized()</code>。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 错误：可能在初始化时判断不准确</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">UMyWidget::NativeOnInitialized</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">GetCommonUISubsystem</span>()-&gt;<span class="built_in">HasTrait</span>(Tag_Console)) &#123; ... &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 正确：在激活时判断，此时输入设备已确定</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">UMyWidget::NativeOnActivated</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">GetCommonUISubsystem</span>()-&gt;<span class="built_in">HasTrait</span>(Tag_Console)) &#123; ... &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="10-6-最佳实践总结"><a href="#10-6-最佳实践总结" class="headerlink" title="10.6 最佳实践总结"></a>10.6 最佳实践总结</h3><ol>
+<li><strong>始终使用 Common 前缀控件</strong>：CommonTextBlock、CommonButtonBase、CommonActivatableWidget 等</li>
+<li><strong>样式走 DataAsset</strong>：不要硬编码颜色&#x2F;字体，统一走 CommonTextStyle &#x2F; CommonButtonStyle</li>
+<li><strong>输入走 CommonInputActionData</strong>：不要直接绑定按键，让 CommonUI 做跨平台映射</li>
+<li><strong>激活栈统一管理</strong>：复杂 UI 场景使用 <code>UCommonActivatableWidgetStack</code></li>
+<li><strong>测试三平台输入</strong>：键盘鼠标、手柄、触摸都测一遍，尤其关注焦点切换</li>
+<li><strong>参考 Lyra</strong>：遇到设计困惑时，先在 Lyra 项目中搜索类似场景的实现</li>
+</ol>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/5.4/en-US/common-ui-for-advanced-user-interfaces-in-unreal-engine/">Epic 官方文档：Common UI</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/EpicGames/UnrealEngine/tree/release/Samples/Games/Lyra">Lyra Starter Game 源码</a></li>
+<li><a target="_blank" rel="noopener" href="https://dev.epicgames.com/documentation/en-us/unreal-engine/common-ui-quickstart-guide-in-unreal-engine">Epic 开发者社区：CommonUI Quick Start Guide</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/EpicGames/UnrealEngine/tree/release/Engine/Plugins/Runtime/CommonUI">UE5 CommonUI Plugin 源码</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/5.4/en-US/enhanced-input-in-unreal-engine/">Enhanced Input System 文档</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="/about/">Megumin</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://megumin-1204.github.io/2026/06/03/ue-commonui-deep-dive/">https://megumin-1204.github.io/2026/06/03/ue-commonui-deep-dive/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://megumin-1204.github.io" target="_blank">UE探偵の開発室</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/C/">C++</a><a class="post-meta__tags" href="/tags/UE5/">UE5</a><a class="post-meta__tags" href="/tags/UI%E6%A1%86%E6%9E%B6/">UI框架</a><a class="post-meta__tags" href="/tags/CommonUI/">CommonUI</a><a class="post-meta__tags" href="/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/">跨平台</a></div><div class="post-share"><div class="social-share" data-image="https://picsum.photos/seed/anime7/800/400" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/06/03/ue-enhanced-input-deep-dive/" title="UE Enhanced Input 深度解析 - 新一代输入系统从原理到实战"><img class="cover" src="https://picsum.photos/seed/anime8/800/400" onerror="onerror=null;src='https://picsum.photos/seed/anime404b/800/400'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">UE Enhanced Input 深度解析 - 新一代输入系统从原理到实战</div></div><div class="info-2"><div class="info-item-1">UE Enhanced Input 深度解析：新一代输入系统从原理到实战一、概述：Enhanced Input 诞生的背景Unreal Engine 传统的 APlayerController::SetupInputComponent() + BindAction/BindAxis 输入体系，自 UE4 早期沿用至今，在小型项目中尚可应付，但随着项目规模扩大，其设计上的根本缺陷日益凸显：  输入与逻辑强耦合：输入绑定硬编码在 PlayerController 或 Pawn 的 C++ 代码中，修改输入映射需要重新编译，无法在运行时动态调整。 缺乏上下文感知能力：传统输入系统无法根据游戏状态（如战斗&#x2F;驾驶&#x2F;UI 打开）自动切换输入映射，只能通过手动启用&#x2F;禁用 InputComponent，极易出错。 按键重映射困难：玩家自定义按键是当代游戏的标配，传统系统需要开发者自行实现一套按键映射管理层，成本高且易出 bug。 轴输入处理粗糙：BindAxis 只能提供原始轴值，死区处理、平滑滤波、坐标轴重排等需求需要开发者自行实现，重复劳动严重。  Enhanc...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/06/03/ue-enhanced-input-deep-dive/" title="UE Enhanced Input 深度解析 - 新一代输入系统从原理到实战"><img class="cover" src="https://picsum.photos/seed/anime8/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-03</div><div class="info-item-2">UE Enhanced Input 深度解析 - 新一代输入系统从原理到实战</div></div><div class="info-2"><div class="info-item-1">UE Enhanced Input 深度解析：新一代输入系统从原理到实战一、概述：Enhanced Input 诞生的背景Unreal Engine 传统的 APlayerController::SetupInputComponent() + BindAction/BindAxis 输入体系，自 UE4 早期沿用至今，在小型项目中尚可应付，但随着项目规模扩大，其设计上的根本缺陷日益凸显：  输入与逻辑强耦合：输入绑定硬编码在 PlayerController 或 Pawn 的 C++ 代码中，修改输入映射需要重新编译，无法在运行时动态调整。 缺乏上下文感知能力：传统输入系统无法根据游戏状态（如战斗&#x2F;驾驶&#x2F;UI 打开）自动切换输入映射，只能通过手动启用&#x2F;禁用 InputComponent，极易出错。 按键重映射困难：玩家自定义按键是当代游戏的标配，传统系统需要开发者自行实现一套按键映射管理层，成本高且易出 bug。 轴输入处理粗糙：BindAxis 只能提供原始轴值，死区处理、平滑滤波、坐标轴重排等需求需要开发者自行实现，重复劳动严重。  Enhanc...</div></div></div></a><a class="pagination-related" href="/2026/06/02/ue-architecture-design/" title="UE 客户端架构设计 - 从混乱到优雅"><img class="cover" src="https://picsum.photos/seed/uearch/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-02</div><div class="info-item-2">UE 客户端架构设计 - 从混乱到优雅</div></div><div class="info-2"><div class="info-item-1">架构的困境 「混沌から秩序へ」—— 从混沌走向秩序，是每个项目的必经之路。  项目初期，功能少、人少，一切看似美好。当团队扩张到 20+ 人、代码量突破百万行时，如果没有清晰的架构，噩梦就开始了：  C++ 和 Lua 的交互散落在各处 UI 逻辑、战斗逻辑、网络同步纠缠不清 一个改动引发连锁崩溃  双层架构设计我们的核心思路：C++ 层提供能力，Lua 层编排逻辑。 12345678910111213┌─────────────────────────────────────────┐│               Lua 脚本层                  ││  ┌─────────┐ ┌─────────┐ ┌───────────┐  ││  │  UI 模块 │ │ 战斗模块 │ │  任务模块  │  ││  └─────────┘ └─────────┘ └───────────┘  │├─────────────────────────────────────────┤│            slua-unreal 桥接层            │├──...</div></div></div></a><a class="pagination-related" href="/2026/06/03/ue-gas-deep-dive/" title="UE GAS 深度剖析 - 从原理到实战"><img class="cover" src="https://picsum.photos/seed/anime6/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-03</div><div class="info-item-2">UE GAS 深度剖析 - 从原理到实战</div></div><div class="info-2"><div class="info-item-1">一、GAS 概述与设计哲学Gameplay Ability System（GAS）是 Epic 为 UE 打造的一套数据驱动的技能&#x2F;属性框架，最初为《Paragon》设计，后在《Fortnite》中大规模验证。它的核心设计哲学可以归纳为以下几点：  数据驱动而非硬编码：技能效果、属性修改、冷却时间等均通过 DataAsset 和 GameplayEffect 定义，策划可直接在编辑器中调整数值而无需 C++ 改代码。 网络先行：GAS 从设计第一天就将客户端-服务器同步作为一等公民，AbilitySystemComponent（ASC）内置了完整的 RPC 与属性复制机制。 组合优于继承：通过 GameplayTags 实现技能间的条件判断、互斥与层级管理，避免深层次类继承带来的维护灾难。 可预测性（Prediction）：支持客户端预测，使技能响应”零延迟”，同时服务器权威保证最终一致性。  二、核心组件全景GAS 由五大核心组件组成，它们的分工如下：    组件 职责    AbilitySystemComponent (ASC) 总调度中心，管理 GA 激活、GE...</div></div></div></a><a class="pagination-related" href="/2026/06/02/ue-performance-optimization/" title="UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致"><img class="cover" src="https://picsum.photos/seed/ueperf/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-02</div><div class="info-item-2">UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致</div></div><div class="info-2"><div class="info-item-1">性能优化的哲学 「最適化のないコードは、ただの詩だ」—— 不优化的代码，只是一首诗。  UE 客户端开发中，60fps 是必须死守的底线。本文从实际项目出发，分享 C++ 和 Lua 两个层面的优化经验。 C++ 侧优化1. Tick 优化Tick 是 UE 中最常见的性能杀手。每帧执行 1000 个 Actor 的 Tick，即使每个只有 0.1ms，总量也高达 100ms。 优化策略： 1234567891011121314151617181920212223242526272829// ❌ 每个 Actor 单独 Tickvoid AMyActor::Tick(float DeltaTime)&#123;    Super::Tick(DeltaTime);    UpdateBehavior(); // 每帧更新 1000+ 次&#125;// ✅ 集中管理 + 分帧UCLASS()class UBehaviorManager : public UObject&#123;    TArray&lt;TWeakObjectPtr&lt;AMyActor&gt;&gt; Ma...</div></div></div></a><a class="pagination-related" href="/2026/06/03/cpp-ue-deep-dive/" title="C++ 深度解析 - 现代特性与 UE 引擎开发实战"><img class="cover" src="https://picsum.photos/seed/anime7/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-03</div><div class="info-item-2">C++ 深度解析 - 现代特性与 UE 引擎开发实战</div></div><div class="info-2"><div class="info-item-1">1. C++ 在 UE 中的角色UE5 的核心由约 400 万行 C++ 代码构成。从渲染管线（RHI → RDG → 平台后端）到网络同步（Replication Graph）、从 GAS（Gameplay Ability System）到 Niagara VFX、从 Chaos 物理到 MassEntity 框架——所有性能敏感路径都由 C++ 实现。 蓝图很好，但在以下场景必须回归 C++：  每帧执行的热路径：Tick 中高频调用的逻辑，蓝图虚拟机开销不可忽略。 大规模数据操作：数千个 Actor 的批量处理，C++ 的数据局部性优势碾压蓝图。 底层系统对接：自定义物理查询、渲染 Hook、网络序列化等只有 C++ 能触及。 第三方库集成：Protobuf、RPC 框架、加密库等需要 C++ 桥接。  理解 UE C++ 不仅仅是掌握语言本身，更是理解 UE 在标准 C++ 之上构建的一整套反射、GC、序列化、委托体系。 2. 现代 C++ 特性与 UE 的结合2.1 智能指针UE 实现了自己的一套智能指针体系，与标准库并行存在：    UE 类型 std 对应 用途  ...</div></div></div></a><a class="pagination-related" href="/2026/06/03/mvc-mvp-mvvm-game-dev/" title="MVC &#x2F; MVP &#x2F; MVVM 架构模式深度解析 - 从 UI 到游戏开发实战"><img class="cover" src="https://picsum.photos/seed/anime7/800/400" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-03</div><div class="info-item-2">MVC &#x2F; MVP &#x2F; MVVM 架构模式深度解析 - 从 UI 到游戏开发实战</div></div><div class="info-2"><div class="info-item-1">一、概述：三种架构模式的起源与核心问题架构模式的出现，源于软件工程对复杂度管理的永恒追求。当代码库膨胀到数十万行，团队规模扩展到数十人，如果没有一套清晰的代码组织原则，项目便会迅速堕入「大泥球」（Big Ball of Mud）的深渊。 1.1 Smalltalk MVC：架构模式的原点1979 年，Trygve Reenskaug 在 Xerox PARC 为 Smalltalk-80 设计了 Model-View-Controller，这是 GUI 架构模式的鼻祖。其核心思想在当时极具革命性：将用户界面拆分为三个协作对象。  Model：管理数据与业务逻辑，不感知任何 UI 细节。当数据发生变化时，通过 Observer 模式通知 View。 View：负责将 Model 的数据渲染为可视界面，同时将用户输入转发给 Controller。 Controller：接收输入事件，将其翻译为 Model 的操作指令，本质上是「输入解释器」。  Smalltalk MVC 的数据流是闭环的：用户输入 → Controller → Model（数据变更）→ View（观察者通知）→ U...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://q1.qlogo.cn/g?b=qq&amp;nk=10000&amp;s=640" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404/400/200'" alt="avatar"/></div><div class="author-info-name">Megumin</div><div class="author-info-description">UE 客户端开发 | C++ / Lua / slua-unreal</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">10</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">27</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://www.bilibili.com/" target="_blank" title="哔哩哔哩"><i class="fab fa-bilibili" style="color: #FB7299;"></i></a><a class="social-icon" href="mailto:hello@ue.dev" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://discord.com/" target="_blank" title="Discord"><i class="fab fa-discord" style="color: #5865F2;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">🎮 欢迎来到 UE 开发室！<br>这里记录着 UE 客户端开发的技术点滴～</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81CommonUI-%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">一、CommonUI 概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E8%A7%A3%E5%86%B3%E7%9A%84%E6%A0%B8%E5%BF%83%E9%97%AE%E9%A2%98"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 解决的核心问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E4%B8%8E%E6%99%AE%E9%80%9A-UMG-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 与普通 UMG 的关系</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%A0%B8%E5%BF%83%E6%9E%B6%E6%9E%84"><span class="toc-number">2.</span> <span class="toc-text">二、核心架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-ActivatableWidget-%E2%80%94-%E6%9C%80%E5%B0%8F%E5%8F%AF%E6%BF%80%E6%B4%BB%E5%8D%95%E5%85%83"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 ActivatableWidget — 最小可激活单元</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-CommonButtonBase-%E2%80%94-%E8%B7%A8%E5%B9%B3%E5%8F%B0%E6%8C%89%E9%92%AE"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 CommonButtonBase — 跨平台按钮</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-CommonTabListWidgetBase-%E2%80%94-Tab-%E5%88%87%E6%8D%A2%E5%AE%B9%E5%99%A8"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 CommonTabListWidgetBase — Tab 切换容器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E8%BE%93%E5%85%A5%E6%A8%A1%E5%BC%8F%E7%B3%BB%E7%BB%9F"><span class="toc-number">3.</span> <span class="toc-text">三、输入模式系统</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E4%B8%89%E7%A7%8D-InputMode"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 三种 InputMode</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-ActionRouter-vs-%E4%BC%A0%E7%BB%9F%E7%BB%91%E5%AE%9A"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 ActionRouter vs 传统绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-Enhanced-Input-%E9%9B%86%E6%88%90"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 Enhanced Input 集成</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E8%81%9A%E7%84%A6%E7%AE%A1%E7%90%86"><span class="toc-number">4.</span> <span class="toc-text">四、聚焦管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-Focus-Path-%E6%9C%BA%E5%88%B6"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 Focus Path 机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E5%AF%BC%E8%88%AA%E7%AD%96%E7%95%A5"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 导航策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-Custom-Focus-%E8%A7%84%E5%88%99"><span class="toc-number">4.3.</span> <span class="toc-text">4.3 Custom Focus 规则</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%A0%B7%E5%BC%8F%E7%B3%BB%E7%BB%9F"><span class="toc-number">5.</span> <span class="toc-text">五、样式系统</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-CommonTextStyle"><span class="toc-number">5.1.</span> <span class="toc-text">5.1 CommonTextStyle</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-CommonButtonStyle"><span class="toc-number">5.2.</span> <span class="toc-text">5.2 CommonButtonStyle</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-StyleSheet-%E5%8A%A8%E6%80%81%E6%8D%A2%E8%82%A4"><span class="toc-number">5.3.</span> <span class="toc-text">5.3 StyleSheet 动态换肤</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81Widget-%E6%BF%80%E6%B4%BB%E6%A0%88"><span class="toc-number">6.</span> <span class="toc-text">六、Widget 激活栈</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E6%BF%80%E6%B4%BB-%E5%8E%BB%E6%BF%80%E6%B4%BB%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-number">6.1.</span> <span class="toc-text">6.1 激活 &#x2F; 去激活生命周期</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E5%B1%82%E7%BA%A7%E7%AE%A1%E7%90%86%E4%B8%8E%E6%A8%A1%E6%80%81"><span class="toc-number">6.2.</span> <span class="toc-text">6.2 层级管理与模态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E6%8C%82%E8%B5%B7%E7%84%A6%E7%82%B9%E6%81%A2%E5%A4%8D"><span class="toc-number">6.3.</span> <span class="toc-text">6.3 挂起焦点恢复</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E5%B9%B3%E5%8F%B0%E9%80%82%E9%85%8D"><span class="toc-number">7.</span> <span class="toc-text">七、平台适配</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-PlatformTraits-%E6%9C%BA%E5%88%B6"><span class="toc-number">7.1.</span> <span class="toc-text">7.1 PlatformTraits 机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E5%B9%B3%E5%8F%B0%E7%89%B9%E5%AE%9A-Widget-%E5%88%87%E6%8D%A2"><span class="toc-number">7.2.</span> <span class="toc-text">7.2 平台特定 Widget 切换</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E5%AE%9E%E6%88%98%E6%A1%88%E4%BE%8B%EF%BC%9A%E8%B7%A8%E5%B9%B3%E5%8F%B0%E8%AE%BE%E7%BD%AE%E8%8F%9C%E5%8D%95"><span class="toc-number">8.</span> <span class="toc-text">八、实战案例：跨平台设置菜单</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E8%93%9D%E5%9B%BE%E5%B1%82%E7%BA%A7%E7%BB%93%E6%9E%84"><span class="toc-number">8.1.</span> <span class="toc-text">8.1 蓝图层级结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-C-%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91"><span class="toc-number">8.2.</span> <span class="toc-text">8.2 C++ 核心逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E8%BE%93%E5%85%A5%E9%85%8D%E7%BD%AE"><span class="toc-number">8.3.</span> <span class="toc-text">8.3 输入配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-%E6%89%8B%E6%9F%84%E5%AF%BC%E8%88%AA%E6%B5%8B%E8%AF%95"><span class="toc-number">8.4.</span> <span class="toc-text">8.4 手柄导航测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E4%B8%8E-Lyra-%E9%A1%B9%E7%9B%AE%E7%9A%84%E9%9B%86%E6%88%90"><span class="toc-number">9.</span> <span class="toc-text">九、与 Lyra 项目的集成</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-UI-%E7%AD%96%E7%95%A5%EF%BC%88UIPolicy%EF%BC%89"><span class="toc-number">9.1.</span> <span class="toc-text">9.1 UI 策略（UIPolicy）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-%E5%89%8D%E7%AB%AF%E4%B8%8E%E6%B8%B8%E6%88%8F%E5%86%85-UI-%E5%88%87%E6%8D%A2"><span class="toc-number">9.2.</span> <span class="toc-text">9.2 前端与游戏内 UI 切换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-3-%E7%A1%AE%E8%AE%A4%E5%BC%B9%E7%AA%97%E6%A8%A1%E5%BC%8F"><span class="toc-number">9.3.</span> <span class="toc-text">9.3 确认弹窗模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E3%80%81%E5%B8%B8%E8%A7%81%E5%9D%91%E7%82%B9%E4%B8%8E%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="toc-number">10.</span> <span class="toc-text">十、常见坑点与最佳实践</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-%E7%84%A6%E7%82%B9%E4%B8%A2%E5%A4%B1%E9%97%AE%E9%A2%98"><span class="toc-number">10.1.</span> <span class="toc-text">10.1 焦点丢失问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-Enhanced-Input-%E5%86%B2%E7%AA%81"><span class="toc-number">10.2.</span> <span class="toc-text">10.2 Enhanced Input 冲突</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-3-CommonTextBlock-%E6%A0%B7%E5%BC%8F%E4%B8%8D%E7%94%9F%E6%95%88"><span class="toc-number">10.3.</span> <span class="toc-text">10.3 CommonTextBlock 样式不生效</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-4-%E6%BF%80%E6%B4%BB%E6%A0%88%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="toc-number">10.4.</span> <span class="toc-text">10.4 激活栈内存泄漏</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-5-%E5%B9%B3%E5%8F%B0%E6%A3%80%E6%B5%8B%E6%97%B6%E5%BA%8F%E9%97%AE%E9%A2%98"><span class="toc-number">10.5.</span> <span class="toc-text">10.5 平台检测时序问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-6-%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93"><span class="toc-number">10.6.</span> <span class="toc-text">10.6 最佳实践总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">11.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/06/02/ue-performance-optimization/" title="UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致"><img src="https://picsum.photos/seed/ueperf/800/400" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404b/800/400'" alt="UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致"/></a><div class="content"><a class="title" href="/2026/06/02/ue-performance-optimization/" title="UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致">UE C++ 与 Lua 性能优化实战 - 把每一帧用到极致</a><time datetime="2026-06-03T08:57:54.331Z" title="更新于 2026-06-03 16:57:54">2026-06-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/02/ue-architecture-design/" title="UE 客户端架构设计 - 从混乱到优雅"><img src="https://picsum.photos/seed/uearch/800/400" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404b/800/400'" alt="UE 客户端架构设计 - 从混乱到优雅"/></a><div class="content"><a class="title" href="/2026/06/02/ue-architecture-design/" title="UE 客户端架构设计 - 从混乱到优雅">UE 客户端架构设计 - 从混乱到优雅</a><time datetime="2026-06-03T08:57:54.328Z" title="更新于 2026-06-03 16:57:54">2026-06-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/02/slua-unreal-guide/" title="slua-unreal 入門 - Lua 与 UE 的完美邂逅"><img src="https://picsum.photos/seed/slua1/800/400" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404b/800/400'" alt="slua-unreal 入門 - Lua 与 UE 的完美邂逅"/></a><div class="content"><a class="title" href="/2026/06/02/slua-unreal-guide/" title="slua-unreal 入門 - Lua 与 UE 的完美邂逅">slua-unreal 入門 - Lua 与 UE 的完美邂逅</a><time datetime="2026-06-03T08:57:54.326Z" title="更新于 2026-06-03 16:57:54">2026-06-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/03/design-patterns-game-dev/" title="设计模式深度解析 - 经典模式在游戏开发中的优雅应用"><img src="https://picsum.photos/seed/anime8/800/400" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404b/800/400'" alt="设计模式深度解析 - 经典模式在游戏开发中的优雅应用"/></a><div class="content"><a class="title" href="/2026/06/03/design-patterns-game-dev/" title="设计模式深度解析 - 经典模式在游戏开发中的优雅应用">设计模式深度解析 - 经典模式在游戏开发中的优雅应用</a><time datetime="2026-06-03T08:40:16.618Z" title="更新于 2026-06-03 16:40:16">2026-06-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/03/mvc-mvp-mvvm-game-dev/" title="MVC / MVP / MVVM 架构模式深度解析 - 从 UI 到游戏开发实战"><img src="https://picsum.photos/seed/anime7/800/400" onerror="this.onerror=null;this.src='https://picsum.photos/seed/anime404b/800/400'" alt="MVC / MVP / MVVM 架构模式深度解析 - 从 UI 到游戏开发实战"/></a><div class="content"><a class="title" href="/2026/06/03/mvc-mvp-mvvm-game-dev/" title="MVC / MVP / MVVM 架构模式深度解析 - 从 UI 到游戏开发实战">MVC / MVP / MVVM 架构模式深度解析 - 从 UI 到游戏开发实战</a><time datetime="2026-06-03T08:37:40.847Z" title="更新于 2026-06-03 16:37:40">2026-06-03</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By Megumin</span></div><div class="footer_custom_text">「コードは嘘をつかない、ただ世界を創るだけだ」</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/sakura-js@1.1.1/dist/sakura.min.js"></script><script> new Sakura('body', {
+  colors: [
+    { gradientColorStart: 'rgba(255, 183, 197, 0.9)', gradientColorEnd: 'rgba(255, 197, 208, 0.9)', gradientColorDegree: 120 },
+    { gradientColorStart: 'rgba(255,189,189,0.9)', gradientColorEnd: 'rgba(227,170,181,0.8)', gradientColorDegree: 120 },
+    { gradientColorStart: 'rgba(212,152,163,0.8)', gradientColorEnd: 'rgba(242,185,196,0.9)', gradientColorDegree: 120 }
+  ]
+}); </script><div class="aplayer no-destroy" data-id="12967630832" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="true" data-order="random" data-preload="auto" data-autoplay="true" data-mutex="true"></div><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
