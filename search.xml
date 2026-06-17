@@ -2675,7 +2675,7 @@
   </entry>
   <entry>
     <title>Wwise 音频引擎深度解析 - 从入门到 UE 游戏开发实战</title>
-    <url>/2026/06/03/wwise-ue-deep-dive/</url>
+    <url>/2026/06/17/wwise-ue-deep-dive/</url>
     <content><![CDATA[<h2 id="一、Wwise-概述"><a href="#一、Wwise-概述" class="headerlink" title="一、Wwise 概述"></a>一、Wwise 概述</h2><h3 id="1-1-Wwise-是什么"><a href="#1-1-Wwise-是什么" class="headerlink" title="1.1 Wwise 是什么"></a>1.1 Wwise 是什么</h3><p>Wwise（Wave Works Interactive Sound Engine）是由 Audiokinetic 公司开发的商用音频中间件，全球超过 1000 款游戏使用 Wwise 作为音频管线。与 Unreal Engine 内置的 MetaSounds &#x2F; SoundCue 系统不同，Wwise 将音频设计从游戏引擎中<strong>完全解耦</strong>出来：声音设计师在 Wwise Authoring Tool 中独立完成音频资产的整合、混音和逻辑编排，程序端仅负责用极少量的代码触发事件和传递参数。</p>
 <p>UE 原生音频系统的设计重心是「让开发者能播放声音」，而 Wwise 的设计重心是「让声音设计师能独立完成整个音频管线」。两者的核心差异如下：</p>
 <table>
